@@ -23,6 +23,7 @@ use App\Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use App\Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
 use App\Model\Unit\ReadModel\Queries\UnitsDetailQuery;
 use App\Model\Unit\Unit;
+use App\Model\Utils\MoneyFactory;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
@@ -30,6 +31,7 @@ use Component\Forms\DateControl;
 use DateTimeImmutable;
 use LogicException;
 use Nette\Application\UI\Form;
+use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Controls\TextBase;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\FileSystem;
@@ -86,6 +88,7 @@ final class GroupForm extends BaseControl
     protected function createComponentForm(): BaseForm
     {
         $form = new BaseForm();
+        $form->getElementPrototype()->addClass('inline-errors');
         $bankAccountItems = $this->bankAccountItems();
         $oAuthItems = $this->oAuthItems();
         $defaults = $this->buildDefaultsFromGroup($bankAccountItems, $oAuthItems);
@@ -100,7 +103,8 @@ final class GroupForm extends BaseControl
             ->setHtmlAttribute('class', 'form-control')
             ->setRequired(false)
             ->setNullable()
-            ->addRule(Form::FLOAT, 'Částka musí být zadaná jako číslo');
+            ->addRule(Form::FLOAT, 'Částka musí být zadaná jako číslo')
+            ->addRule(Form::PATTERN, PaymentFormFields::MONEY_PATTERN_MESSAGE, PaymentFormFields::MONEY_PATTERN);
 
         $form->addDate('dueDate', 'Výchozí splatnost')
             ->disableWeekends()
@@ -170,6 +174,10 @@ final class GroupForm extends BaseControl
             $this->formError($form);
         };
 
+        $form->onValidate[] = function (BaseForm $form, ArrayHash $values): void {
+            $this->validateEmailTemplatesRequireBankAccount($form, $values);
+        };
+
         $form->onSuccess[] = function (BaseForm $form): void {
             $this->formSucceeded($form);
         };
@@ -186,12 +194,12 @@ final class GroupForm extends BaseControl
 
     private function formSucceeded(BaseForm $form): void
     {
-        $v = $form->getValues();
+        $v = $form->getValues(ArrayHash::class);
 
         $originalGroupData = $this->buildDefaultsFromGroup($this->bankAccountItems(), $this->oAuthItems());
 
         $paymentDefaults = new PaymentDefaults(
-            $v->amount,
+            $v->amount === null ? null : MoneyFactory::fromDecimal((string) $v->amount),
             $v->dueDate === null ? null : new ChronosDate($v->dueDate),
             $v->constantSymbol,
             $v->nextVs ?? $originalGroupData['nextVs'] ?? null,
@@ -248,6 +256,34 @@ final class GroupForm extends BaseControl
         $this->getPresenter()->redirect(':Payments:Payment:default', ['id' => $this->groupId]);
     }
 
+    private function validateEmailTemplatesRequireBankAccount(BaseForm $form, ArrayHash $values): void
+    {
+        if ($values->bankAccount !== null && $values->bankAccount !== '') {
+            return;
+        }
+
+        $emails = [
+            $this->buildEmailTemplate($values, EmailType::PAYMENT_INFO),
+            $this->buildEmailTemplate($values, EmailType::PAYMENT_COMPLETED),
+            $this->buildEmailTemplate($values, EmailType::PAYMENT_REMINDER),
+        ];
+
+        foreach ($emails as $email) {
+            if ($email?->requiresBankAccount()) {
+                $bankAccount = $form['bankAccount'];
+                if (! $bankAccount instanceof SelectBox) {
+                    throw new LogicException('Assertion failed.');
+                }
+
+                $bankAccount->addError(
+                    'Šablonu s proměnnou %account% nebo %qrcode% nelze uložit bez bankovního účtu. Upravte šablonu, nebo připojte bankovní účet.',
+                );
+
+                return;
+            }
+        }
+    }
+
     private function getDefaultEmailBody(string $name): string
     {
         return FileSystem::read(__DIR__.'/../../Presentation/Payments/InvoiceSequenceList/defaultEmails/'.$name.'.html');
@@ -284,7 +320,7 @@ final class GroupForm extends BaseControl
 
         $defaults = [
             'name' => $group->getName(),
-            'amount' => $group->getDefaultAmount(),
+            'amount' => $group->getDefaultAmount() === null ? null : MoneyFactory::toDecimal($group->getDefaultAmount()),
             'dueDate' => $group->getDueDate(),
             'constantSymbol' => $group->getConstantSymbol(),
             'oAuthId' => $this->isOAuthAvailable($group->getOAuthId()?->toString(), $oAuthItems)

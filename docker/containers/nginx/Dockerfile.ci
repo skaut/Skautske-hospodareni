@@ -1,3 +1,4 @@
 FROM nginx:latest
 
-COPY . /app/
+COPY --from=application /app/www /app/www
+COPY conf.d-ci/app.conf /etc/nginx/conf.d/default.conf

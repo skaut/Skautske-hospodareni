@@ -25,6 +25,20 @@ class VehicleTest extends \Codeception\Test\Unit
         $this->assertTrue($metadata->equals($vehicle->getMetadata()));
     }
 
+    public function testArchiveAndRestore(): void
+    {
+        $unit = m::mock(Unit::class, ['getId' => 10]);
+        $vehicle = new Vehicle('Test', $unit, null, '333-333', 2, new Metadata(new DateTimeImmutable(), 'FM'));
+
+        $this->assertFalse($vehicle->isArchived());
+
+        $vehicle->archive();
+        $this->assertTrue($vehicle->isArchived());
+
+        $vehicle->restore();
+        $this->assertFalse($vehicle->isArchived());
+    }
+
     public function testAddRoadworthyScan(): void
     {
         $unit = m::mock(Unit::class, ['getId' => 10]);

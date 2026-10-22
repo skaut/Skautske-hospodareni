@@ -6,7 +6,7 @@
     </span>
 {else}
     <div class="btn-group d-inline-block">
-        <span n:snippet="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span n:snippet="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-popper-config='{ "strategy": "fixed" }' aria-haspopup="true" aria-expanded="false" data-test="roadworthy-menu-toggle">
             {var $count = count($files)}
             {if $count === 0}
                 <button type="button" class="btn btn-primary dropdown-toggle">
@@ -21,21 +21,26 @@
         </span>
         <div class="dropdown-menu dropdown-menu-start roadworthy-menu" n:snippet="">
             {foreach $files as $file}
-            <div class="px-4 py-1" data-test="roadworthy-file">
-                {$file->getOriginalFilename()|truncate:26}
+            <div class="d-flex align-items-center gap-2 px-4 py-1" data-test="roadworthy-file">
+                <span class="me-auto text-truncate" title="{$file->getOriginalFilename()}">{$file->getOriginalFilename()|truncate:26}</span>
+                {include '../../../../../Components/templates/FileActionButton.latte',
+                    label => 'Stáhnout soubor',
+                    downloadUrl => $presenter->link(':Travel:Vehicle:downloadScan', [$vehicleId, $file->getPath()]),
+                    openUrl => $file->isPdf() ? $presenter->link(':Travel:Vehicle:downloadScan', [$vehicleId, $file->getPath(), open => true]) : null,
+                    variant => 'light',
+                    compact => true,
+                    dataTest => 'roadworthy-file-' . ($file->getOriginalFilename()|webalize),
+                }
                 <a n:href="remove! $file->getPath()"
                         n:if="$isEditable"
                         title="Smazat soubor"
+                        aria-label="Smazat soubor"
                         data-bs-toggle="tooltip"
-                        class="text-danger float-end ms-3 ajax"><i class="fi fi-rr-trash" aria-hidden="true"></i></a>
-                <a href="{plink :Travel:Vehicle:downloadScan $vehicleId, $file->getPath()}"
-                   class="float-end" title="Stáhnout soubor" data-bs-toggle="tooltip">
-                    <i class="fi fi-rr-arrow-down" aria-hidden="true"></i>
-                </a>
+                        class="btn btn-sm btn-outline-danger ajax"><i class="fi fi-rr-trash" aria-hidden="true"></i></a>
             </div>
             <div class="dropdown-divider"></div>
             {/foreach}
-            <form n:name="uploadForm" class="px-4 py-1 text-center ajax" n:if="$isEditable">
+            <form n:name="uploadForm" class="px-4 py-1 text-center ajax inline-errors" n:if="$isEditable">
                 <input n:name="scan" class="d-none" id="scan-upload-control">
                 <label for="scan-upload-control" class="btn btn-light">
                     <i class="fi fi-rr-cloud-upload-alt" aria-hidden="true"></i>

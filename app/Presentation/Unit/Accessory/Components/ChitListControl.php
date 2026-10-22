@@ -33,7 +33,7 @@ class ChitListControl extends BaseControl
 
     public function handleLockChit(int $chitId): void
     {
-        $this->commandBus->handle(new LockChit($this->cashbookId, $chitId, $this->user->getId()));
+        $this->commandBus->handle(new LockChit($this->cashbookId, $chitId, (int) $this->user->getId()));
 
         $this->flashMessage('Doklad byl uzamčen', 'success');
         $this->redrawControl();
@@ -63,21 +63,21 @@ class ChitListControl extends BaseControl
     /** @return Chit[] */
     private function getChits(): array
     {
-        if ($this->chits === null) {
-            $chits = $this->queryBus->handle(ChitListQuery::all($this->cashbookId));
-
-            if ($this->onlyUnlocked) {
-                $chits = array_filter(
-                    $chits,
-                    function (Chit $chit): bool {
-                        return ! $chit->isLocked();
-                    },
-                );
-            }
-
-            $this->chits = $chits;
+        if ($this->chits !== null) {
+            return $this->chits;
         }
 
-        return $this->chits;
+        $chits = $this->queryBus->handle(ChitListQuery::all($this->cashbookId));
+
+        if ($this->onlyUnlocked) {
+            $chits = array_filter(
+                $chits,
+                function (Chit $chit): bool {
+                    return ! $chit->isLocked();
+                },
+            );
+        }
+
+        return $this->chits = $chits;
     }
 }

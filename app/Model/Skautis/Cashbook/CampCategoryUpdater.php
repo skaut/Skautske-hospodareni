@@ -8,16 +8,16 @@ use App\Model\Auth\IAuthorizator;
 use App\Model\Auth\Resources\Camp;
 use App\Model\Cashbook\CampBudgetUpdateNotAllowed;
 use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\NegativeCampCategoryTotal;
 use App\Model\Cashbook\Repositories\ICampCategoryRepository;
 use App\Model\Cashbook\Repositories\ICampRepository;
 use App\Model\Cashbook\Services\ICampCategoryUpdater;
 use App\Model\Event\SkautisCampId;
-use App\Model\Skautis\Exception\AmountMustBeGreaterThanZero;
 use App\Model\Utils\MoneyFactory;
 use Skautis\Wsdl\WebServiceInterface;
 use Skautis\Wsdl\WsdlException;
 
-use function array_diff;
+use function array_diff_key;
 use function array_fill_keys;
 use function array_filter;
 use function array_keys;
@@ -46,21 +46,32 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
 
         $skautisTotals = $this->getSkautisTotals($campSkautisId);
 
-        // Update categories that are not in cashbook, has total > 0 in Skautis
-        $categoriesOnlyInSkautis = array_diff(array_keys($skautisTotals), array_keys($cashbookTotals));
-        $categoriesOnlyInSkautis = array_filter($categoriesOnlyInSkautis, function (float $total) {
-            return $total === 0.0;
-        });
+        // Reset categories that are no longer in the cashbook but still hold an amount in Skautis
+        $categoriesOnlyInSkautis = array_filter(
+            array_diff_key($skautisTotals, $cashbookTotals),
+            function (float $total): bool {
+                return $total !== 0.0;
+            },
+        );
 
         // Update categories that have different total in cashbook and Skautis
         $cashbookTotals = array_filter($cashbookTotals, function (float $total, int $categoryId) use ($skautisTotals) {
             return isset($skautisTotals[$categoryId]) && $skautisTotals[$categoryId] !== $total;
         }, ARRAY_FILTER_USE_BOTH);
 
-        $cashbookTotals += array_fill_keys($categoriesOnlyInSkautis, 0);
+        $cashbookTotals += array_fill_keys(array_keys($categoriesOnlyInSkautis), 0.0);
 
         if (count($cashbookTotals) === 0) {
             return;
+        }
+
+        // Skautis rejects negative amounts. Check only the totals that are actually
+        // about to be sent - totals filtered out above never reach Skautis, so they
+        // must not block saving a chit in an unrelated category.
+        foreach ($cashbookTotals as $total) {
+            if ($total < 0) {
+                throw new NegativeCampCategoryTotal();
+            }
         }
 
         try {
@@ -77,7 +88,7 @@ final class CampCategoryUpdater implements ICampCategoryUpdater
                 throw $exc;
             }
 
-            throw new AmountMustBeGreaterThanZero();
+            throw new NegativeCampCategoryTotal();
         }
     }
 

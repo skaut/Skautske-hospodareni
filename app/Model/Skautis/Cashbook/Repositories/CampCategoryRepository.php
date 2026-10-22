@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Model\Skautis\Cashbook\Repositories;
 
 use App\Model\Cashbook\CampCategory;
-use App\Model\Cashbook\ICategory;
 use App\Model\Cashbook\Operation;
 use App\Model\Cashbook\ParticipantType;
 use App\Model\Cashbook\Repositories\ICampCategoryRepository;
@@ -46,10 +45,6 @@ final class CampCategoryRepository implements ICampCategoryRepository
             if (! $category instanceof stdClass) {
                 throw new LogicException('Assertion failed.');
             }
-            if ($category->ID_EventCampStatementType === ICategory::CAMP_RESERVE_ID) {
-                continue;
-            }
-
             $operation = Operation::get($category->IsRevenue ? Operation::INCOME : Operation::EXPENSE);
 
             $categories[] = new CampCategory(
@@ -67,7 +62,7 @@ final class CampCategoryRepository implements ICampCategoryRepository
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     private function getParticipantType(stdClass $category): ?ParticipantType
     {
-        $categoryId = $category->ID_EventCampStatementType ?? null;
+        $categoryId = isset($category->ID_EventCampStatementType) ? (int) $category->ID_EventCampStatementType : null;
 
         if ($categoryId === null || ! isset(self::PARTICIPANT_CATEGORIES[$categoryId])) {
             return null;

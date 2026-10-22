@@ -13,6 +13,9 @@ $chits - paragony akce
     .totalReport td {
         text-align: center;
     }
+    .totalReport h1 {
+        text-align: center;
+    }
     table {
         border-spacing: 0;
     }
@@ -28,7 +31,7 @@ $chits - paragony akce
 <h3>Základní údaje</h3>
 {var $functionsWithName = [
     'Vedoucí akce' => $functions->leader,
-    'Zástupce vedoucího' => $functions->assistant,
+    'Zástupce vedoucího akce' => $functions->assistant,
     'Hospodář' => $functions->accountant,
     'Zdravotník' => $functions->medic,
 ]}
@@ -92,9 +95,9 @@ $chits - paragony akce
     {/for}
 
     <tr>
-        <td>Celkem</td>
+        <td><b>Celkem</b></td>
         <td style="text-align: right;"><b>{$totalIncome|price}</b></td>
-        <td>Celkem</td>
+        <td><b>Celkem</b></td>
         <td style="text-align: right;"><b>{$totalExpense|price}</b></td>
     </tr>
 </table>
@@ -131,12 +134,14 @@ $chits - paragony akce
     {/for}
 
     <tr>
-        <td>Celkem</td>
+        <td><b>Celkem</b></td>
         <td style="text-align: right;"><b>{$virtualTotalIncome|price}</b></td>
-        <td>Celkem</td>
+        <td><b>Celkem</b></td>
         <td style="text-align: right;"><b>{$virtualTotalExpense|price}</b></td>
     </tr>
 </table>
+
+<h4>Výsledek hospodaření: {$finalRealBalance |number:2, ',', ' '} Kč</h4>
 
 <h3>Hlášení předkládá</h3>
 

@@ -6,11 +6,7 @@ namespace App\Model\Infrastructure\DoctrineNullableEmbeddables;
 
 use Attribute;
 
-/**
- * @Annotation
- * @Target({"PROPERTY"})
- */
-#[Attribute]
-class Nullable
+#[Attribute(Attribute::TARGET_PROPERTY)]
+final class Nullable
 {
 }

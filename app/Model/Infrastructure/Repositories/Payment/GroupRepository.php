@@ -12,7 +12,7 @@ use App\Model\Payment\Group;
 use App\Model\Payment\Group\Type;
 use App\Model\Payment\GroupNotFound;
 use App\Model\Payment\Repositories\IGroupRepository;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
@@ -24,7 +24,7 @@ use function implode;
 
 final class GroupRepository implements IGroupRepository
 {
-    public function __construct(private EntityManager $em, private EventBus $eventBus)
+    public function __construct(private EntityManagerInterface $em, private EventBus $eventBus)
     {
     }
 
@@ -154,10 +154,10 @@ final class GroupRepository implements IGroupRepository
     public function remove(Group $group): void
     {
         $this->em->wrapInTransaction(
-            function (EntityManager $entityManager) use ($group): void {
+            function (EntityManagerInterface $entityManager) use ($group): void {
                 $entityManager->remove($group);
 
-                $this->eventBus->handle(new GroupWasRemoved($group->getId()));
+                $this->eventBus->handle(new GroupWasRemoved((int) $group->getId()));
 
                 $entityManager->flush();
             },

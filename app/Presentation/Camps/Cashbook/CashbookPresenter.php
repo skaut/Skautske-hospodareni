@@ -16,6 +16,7 @@ use App\Model\Cashbook\Cashbook\ChitBody;
 use App\Model\Cashbook\Cashbook\PaymentMethod;
 use App\Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use App\Model\Cashbook\MissingCategory;
+use App\Model\Cashbook\NegativeCampCategoryTotal;
 use App\Model\Cashbook\ParticipantType;
 use App\Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use App\Model\Cashbook\ReadModel\Queries\CampParticipantCategoryIdQuery;
@@ -143,7 +144,7 @@ final class CashbookPresenter extends BasePresenter
             $this->redirect('default', ['aid' => $this->getCampId()]);
         }
 
-        $values = $form->getValues();
+        $values = $form->getValues(\Nette\Utils\ArrayHash::class);
 
         try {
             $amount = $this->queryBus->handle(new CampParticipantIncomeQuery(
@@ -151,7 +152,7 @@ final class CashbookPresenter extends BasePresenter
                 $values->cat === 'adult',
                 $values->isAccount === 'Y',
             ));
-            if (! $amount instanceof Amount) {
+            if (! $amount instanceof Money) {
                 throw new LogicException('Assertion failed.');
             }
         } catch (ZeroParticipantIncome) {
@@ -167,9 +168,13 @@ final class CashbookPresenter extends BasePresenter
         );
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 
-        $items = [new ChitItem($amount, $categoriesDto[$categoryId], $purpose)];
+        $items = [new ChitItem(Amount::fromMoney($amount), $categoriesDto[$categoryId], $purpose)];
         try {
             $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, $values->isAccount === 'Y' ? PaymentMethod::BANK() : PaymentMethod::CASH(), $items));
+        } catch (NegativeCampCategoryTotal) {
+            $form->addError('Nelze importovat účastnické příjmy, protože výsledný součet kategorie by byl záporný. Upravte nejdříve vratky nebo příjmy účastníků.');
+
+            return;
         } catch (CampBudgetUpdateNotAllowed) {
             $this->flashMessage('Nemáte oprávnění upravovat rozpočtové kategorie tábora ve skautISu. Účastnické příjmy nebyly importovány.', 'danger');
             $this->redirect('default', ['aid' => $this->getCampId()]);
@@ -194,6 +199,6 @@ final class CashbookPresenter extends BasePresenter
 
     protected function createComponentCategoryAutocomputedControl(): MissingAutocomputedCategoryControl
     {
-        return $this->categoryAutocomputedFactory->create(new SkautisCampId($this->aid));
+        return $this->categoryAutocomputedFactory->create(new SkautisCampId((int) $this->aid));
     }
 }

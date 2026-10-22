@@ -8,11 +8,65 @@ use AcceptanceTester;
 use Cake\Chronos\ChronosDate;
 use PHPUnit\Framework\Assert;
 
+use function parse_url;
 use function random_int;
+
+use const PHP_URL_PATH;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 class PaymentDashboardCest extends PaymentAcceptanceCest
 {
+    private const GROUP_TYPE_LINKS = [
+        'general' => '/platby/skupiny/nova',
+        'camp' => '/platby/tabory',
+        'event' => '/platby/akce',
+        'registration' => '/platby/registrace/nova',
+        'education' => '/platby/vzdelavacky',
+    ];
+
+    /** @group payment */
+    public function paymentNavigationTilesUseReadableTypography(): void
+    {
+        $I = $this->I;
+
+        $I->amOnPage('/platby');
+        $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        foreach (['groups', 'invoices'] as $tile) {
+            $card = '[data-test="payments-card-'.$tile.'"]';
+            $I->seeElement($card.' h2.h4');
+            $I->dontSeeElement($card.' p.small');
+        }
+    }
+
+    /** @group payment */
+    public function createGroupMenusOfferAllGroupTypesAboveTheContent(): void
+    {
+        $I = $this->I;
+
+        $I->wantTo('choose the payment group type from both create buttons on the payment dashboard');
+
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/platby', '[data-test="payments-page"]');
+
+        // Dlaždice „Platební skupiny“ i hlavička „Naposledy navštívené platební skupiny“.
+        foreach (['[data-test="payments-card-groups"]', '[data-test="dashboard-payment-groups"]'] as $scope) {
+            $toggle = $scope.' [data-test="create-button-toggle"]';
+
+            // Skutečný kurzor: menu nad kartou pod myší je přesně situace, kdy se dřív schovávalo.
+            $I->click($toggle);
+            $I->waitForElementVisible($scope.' [data-test="create-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+            foreach (self::GROUP_TYPE_LINKS as $type => $href) {
+                $item = $scope.' [data-test="create-button-item-'.$type.'"]';
+                $I->seeElementNotCovered($item);
+                Assert::assertSame($href, parse_url((string) $I->grabAttributeFrom($item, 'href'), PHP_URL_PATH));
+            }
+
+            $I->click($toggle);
+            $I->waitForElementNotVisible($scope.' [data-test="create-button-menu"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        }
+    }
+
     /** @group payment */
     public function dashboardPaymentGroupTileShowsCountsAndLinksToDetail(): void
     {
@@ -23,7 +77,7 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
             $I->haveInDatabase('pa_payment', [
                 'group_id' => $groupId,
                 'name' => 'Dashboard platba '.($index + 1),
-                'amount' => 100,
+                'amount' => 10000, // 100 Kč v haléřích
                 'due_date' => ChronosDate::today()->format('Y-m-d'),
                 'variable_symbol' => (string) (910000 + $index),
                 'constant_symbol' => null,
@@ -116,9 +170,12 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
 
         $I->wantTo('open system settings from the utility navigation on the payment dashboard');
 
-        $I->clickStable('[data-test="global-nav-payments"]');
-        $I->waitForElementVisible('[data-test="payments-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/platby');
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            '[data-test="global-nav-payments"]',
+            '[data-test="payments-page"]',
+            '/platby',
+        );
         $I->seeElement('[data-test="payment-nav-overview"]');
         $I->seeElement('[data-test="payments-card-groups"].navigation-card');
         $I->seeElement('[data-test="payments-link-groups"].stretched-link');
@@ -126,11 +183,14 @@ class PaymentDashboardCest extends PaymentAcceptanceCest
         $I->seeElement('[data-test="payments-card-invoices"].navigation-card');
         $I->seeElement('[data-test="payments-link-invoices"].stretched-link');
         $I->dontSeeElement('[data-test="payments-card-settings"]');
-        $I->waitForElementVisible('[data-test="utility-nav-settings"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->clickStable('[data-test="utility-nav-settings"]');
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            '[data-test="utility-nav-settings"]',
+            '[data-test="settings-page"]',
+            '/nastaveni',
+        );
 
         $I->waitForText('Nastavení', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeInCurrentUrl('/nastaveni');
     }
 
     /** @group payment */

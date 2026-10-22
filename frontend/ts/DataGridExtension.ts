@@ -31,10 +31,15 @@ export class DataGridExtension implements Extension {
         // 1) řádkový checkbox → přepnout tlačítka/select + spočítat
         const gridKey = t.getAttribute('data-check');
         if (gridKey) {
-            const checked = document.querySelectorAll<HTMLInputElement>(`input[data-check-all-${gridKey}]:checked`);
-            const select  = document.querySelector<HTMLSelectElement>(`.datagrid-${gridKey} select[name="group_action[group_action]"]`);
-            const buttons = document.querySelectorAll<HTMLButtonElement>(`.datagrid-${gridKey} .row-group-actions *[type="submit"]`);
-            const counter = document.querySelector<HTMLElement>(`.datagrid-${gridKey} .datagrid-selected-rows-count`);
+            const grid = DataGridExtension.findGrid(gridKey);
+            if (grid === null) {
+                return;
+            }
+
+            const checked = grid.querySelectorAll<HTMLInputElement>(`input[data-check-all-${gridKey}]:checked`);
+            const select = grid.querySelector<HTMLSelectElement>('select[name="group_action[group_action]"]');
+            const buttons = grid.querySelectorAll<HTMLButtonElement>('.row-group-actions *[type="submit"]');
+            const counter = grid.querySelector<HTMLElement>('.datagrid-selected-rows-count');
 
             const any = checked.length > 0;
             buttons.forEach(b => { b.disabled = !any; });
@@ -43,7 +48,7 @@ export class DataGridExtension implements Extension {
                 if (!any) select.value = '';
             }
             if (counter) {
-                const total = document.querySelectorAll<HTMLInputElement>(`input[data-check-all-${gridKey}]`).length;
+                const total = grid.querySelectorAll<HTMLInputElement>(`input[data-check-all-${gridKey}]`).length;
                 counter.innerHTML = any ? `${checked.length}/${total}` : '';
             }
 
@@ -60,6 +65,11 @@ export class DataGridExtension implements Extension {
                 input.dispatchEvent(new Event('change', { bubbles: true }));
             });
         }
+    }
+
+    private static findGrid(gridKey: string): HTMLElement | null {
+        return [...document.querySelectorAll<HTMLElement>('[data-datagrid-name]')]
+            .find(grid => grid.dataset.datagridName === gridKey) ?? null;
     }
 
     // Volitelné: SHIFT výběr rozsahu mezi dvěma kliky
@@ -95,4 +105,3 @@ export class DataGridExtension implements Extension {
         DataGridExtension.lastCheckboxCell = cell;
     }
 }
-

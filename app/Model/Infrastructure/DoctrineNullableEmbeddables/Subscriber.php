@@ -4,28 +4,24 @@ declare(strict_types=1);
 
 namespace App\Model\Infrastructure\DoctrineNullableEmbeddables;
 
-use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostLoadEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use ReflectionProperty;
 
+use function is_object;
 use function strpos;
 
 class Subscriber implements EventSubscriber
 {
-    public function __construct(private Reader $reader)
-    {
-    }
-
     /** @return string[] */
     public function getSubscribedEvents(): array
     {
         return ['postLoad'];
     }
 
-    private function clearEmbeddablesIfNecessary(mixed $object, EntityManagerInterface $entityManager): void
+    private function clearEmbeddablesIfNecessary(object $object, EntityManagerInterface $entityManager): void
     {
         $metadata = $entityManager->getClassMetadata($object::class);
 
@@ -35,9 +31,14 @@ class Subscriber implements EventSubscriber
             }
 
             $field = $metadata->getReflectionProperty($fieldName);
+
+            if ($field === null) {
+                continue;
+            }
+
             $value = $field->getValue($object);
 
-            if ($value === null) {
+            if (! is_object($value)) {
                 continue;
             }
 
@@ -50,7 +51,7 @@ class Subscriber implements EventSubscriber
                 $entityManager,
             );
 
-            if (! $this->isEmpty($value, $entityManager->getClassMetadata($embeddable['class']))) {
+            if (! $this->isEmpty($value, $entityManager->getClassMetadata($embeddable->class))) {
                 continue;
             }
 
@@ -58,13 +59,11 @@ class Subscriber implements EventSubscriber
         }
     }
 
-    public function postLoad(LifecycleEventArgs $args): void
+    public function postLoad(PostLoadEventArgs $args): void
     {
-        $object = $args->getObject();
-
         $this->clearEmbeddablesIfNecessary(
-            $object,
-            $args->getEntityManager(),
+            $args->getObject(),
+            $args->getObjectManager(),
         );
     }
 
@@ -73,7 +72,7 @@ class Subscriber implements EventSubscriber
         foreach ($metadata->getFieldNames() as $fieldName) {
             $field = $metadata->getReflectionProperty($fieldName);
 
-            if (! $field->isInitialized($object)) {
+            if ($field === null || ! $field->isInitialized($object)) {
                 continue;
             }
 
@@ -89,6 +88,6 @@ class Subscriber implements EventSubscriber
 
     private function hasNullableAnnotation(ReflectionProperty $property): bool
     {
-        return $this->reader->getPropertyAnnotation($property, Nullable::class) !== null;
+        return $property->getAttributes(Nullable::class) !== [];
     }
 }

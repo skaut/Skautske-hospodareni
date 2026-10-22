@@ -7,17 +7,21 @@ namespace App\Model\Skautis\Factory;
 use App\Model\Participant\Participant;
 use App\Model\Participant\Payment;
 use Cake\Chronos\ChronosDate;
+use RuntimeException;
 use stdClass;
 
 use function preg_match;
 use function property_exists;
+use function sprintf;
 
 final class ParticipantFactory
 {
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public static function create(stdClass $skautisParticipant, Payment $payment): Participant
     {
-        preg_match('/(?P<last>\S+)\s+(?P<first>[^(]+)(\((?P<nick>.*)\))?.*/', $skautisParticipant->Person, $matches);
+        if (preg_match('/(?P<last>\S+)\s+(?P<first>[^(]+)(\((?P<nick>.*)\))?.*/', (string) $skautisParticipant->Person, $matches) !== 1) {
+            throw new RuntimeException(sprintf('Unexpected SkautIS person name format: "%s"', (string) $skautisParticipant->Person));
+        }
 
         return new Participant(
             $skautisParticipant->ID,

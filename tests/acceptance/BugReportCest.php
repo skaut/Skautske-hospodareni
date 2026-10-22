@@ -60,7 +60,7 @@ final class BugReportCest extends BaseAcceptanceCest
         $I->amOnPage('/admin/hlaseni-chyb');
         $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->see($prefix.' 24', '[data-test="admin-bug-reports-grid"]');
-        $I->waitForElementVisible('[data-test="admin-bug-report-github-grid"] svg[data-icon="github"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->waitForElementVisible('[data-test="admin-bug-report-github-grid"] i.fi-brands-github', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeElement('[data-test="admin-bug-report-github-grid"][href="https://github.com/skaut/Skautske-hospodareni/issues/987"][target="_blank"]');
 
         $paginatorLayout = $I->executeJS(<<<'JS'
@@ -110,15 +110,17 @@ final class BugReportCest extends BaseAcceptanceCest
         $description = 'Acceptance technická chyba '.uniqid('', true);
         $reportedUrl = 'http://moje-hospodareni.cz/platby?test=bug-report';
 
-        $I->amOnPage('/nastenka');
-        $I->waitForElementVisible('[data-test="dashboard"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/nastenka', '[data-test="dashboard"]');
         $I->seeElement('[data-test="footer-bug-report-link"]');
-        $I->clickStable('[data-test="footer-bug-report-link"]');
 
-        $I->waitForElementVisible('[data-test="bug-report-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openLinkAndWaitForElementWithSkautisRetry(
+            $I,
+            '[data-test="footer-bug-report-link"]',
+            '[data-test="bug-report-page"]',
+        );
         $I->see('výhradně k hlášení technických chyb');
         $I->see('Není to helpdesk');
-        $I->seeElement('[data-test="bug-report-help"]');
+        $I->seeElement('[data-test="help-sidebar"]');
         $I->seeElement('[data-test="bug-report-form"] textarea[name="description"]');
         $I->seeElement('[data-test="bug-report-form"] input[name="url"]');
         $I->dontSeeElement('[data-test="bug-report-form"] input[name="url"][required]');
@@ -150,7 +152,7 @@ final class BugReportCest extends BaseAcceptanceCest
         $I->clickStable('[data-test="bug-report-form"] input[type="submit"]');
 
         $I->waitForElementVisible('[data-test="bug-report-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $I->seeElement('.alert-success');
+        $I->waitForText('Hlášení technické chyby bylo uloženo', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '.flash-message');
         $I->seeInDatabase('technical_error_report', [
             'description' => $description,
             'reported_url' => $reportedUrl,
@@ -175,16 +177,22 @@ final class BugReportCest extends BaseAcceptanceCest
             'created_at' => '2026-06-18 12:00:00',
         ]);
 
-        $I->amOnPage('/admin/hlaseni-chyb');
-        $I->waitForElementVisible('[data-test="admin-bug-reports-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry(
+            $I,
+            '/admin/hlaseni-chyb',
+            '[data-test="admin-bug-reports-page"]',
+        );
         $I->seeElement('[data-test="admin-bug-reports-grid"]');
         $I->see($description);
         $I->seeElement('[data-test="admin-nav-bug-reports"].btn-primary');
-        $I->seeElement('[data-test="admin-bug-report-detail-grid"] svg[data-icon="eye"]');
-        $I->seeElement('[data-test="admin-bug-report-resolve-grid"] svg[data-icon="circle-check"]');
+        $I->seeElement('[data-test="admin-bug-report-detail-grid"] .fi-rr-eye');
+        $I->seeElement('[data-test="admin-bug-report-resolve-grid"] .fi-rr-check-circle');
 
-        $I->amOnPage('/admin/hlaseni-chyb/'.$reportId);
-        $I->waitForElementVisible('[data-test="admin-bug-report-detail"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->openPageAndWaitForElementWithSkautisRetry(
+            $I,
+            '/admin/hlaseni-chyb/'.$reportId,
+            '[data-test="admin-bug-report-detail"]',
+        );
         $I->see($description);
         $I->see($reportedUrl);
         $I->seeElement('[data-test="admin-bug-report-diagnostics"]');

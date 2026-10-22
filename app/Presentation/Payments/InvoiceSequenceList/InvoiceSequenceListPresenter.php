@@ -31,6 +31,7 @@ use App\Model\User\SkautisRole;
 use App\Presentation\InvoiceAccess\InvoiceAccessGuard;
 use App\Presentation\Payments\PaymentsBasePresenter;
 use Component\Forms\BaseForm;
+use Contributte\Datagrid\Column\Action\Confirmation\StringConfirmation;
 use Illuminate\Support\Collection;
 use LogicException;
 use Nette\Forms\Controls\TextInput;
@@ -38,7 +39,6 @@ use Nette\Forms\Form;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\FileSystem;
 use Throwable;
-use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 
 use function array_filter;
 use function array_keys;
@@ -92,17 +92,17 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
             ->setSortable();
 
         $grid->addAction('edit', '', ':Payments:InvoiceList:default', ['invoiceSequenceId' => 'id'])
-            ->setIcon('far fa-file-lines')
+            ->setIcon('fi fi-rr-document')
             ->setTitle('Faktury')
             ->setClass('btn btn-sm btn-light');
 
         $grid->addAction('settings', '', ':Payments:InvoiceSequence:edit', ['id' => 'id'])
-            ->setIcon('far fa-pen-to-square')
+            ->setIcon('fi fi-rr-edit')
             ->setTitle('Nastavení řady')
             ->setClass('btn btn-sm btn-light');
 
         $grid->addAction('close', '', 'close!', ['id' => 'id'])
-            ->setIcon('far fa-circle-xmark')
+            ->setIcon('fi fi-rr-cross-circle')
             ->setTitle('Uzavřít řadu')
             ->setClass('btn btn-sm btn-outline-warning')
             ->setConfirmation(
@@ -110,12 +110,12 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
             );
 
         $grid->addAction('reopen', '', 'reopen!', ['id' => 'id'])
-            ->setIcon('far fa-circle-check')
+            ->setIcon('fi fi-rr-check-circle')
             ->setTitle('Znovu otevřít řadu')
             ->setClass('btn btn-sm btn-outline-warning');
 
         $grid->addAction('delete', '', 'remove!', ['id' => 'id'])
-            ->setIcon('far fa-trash-can')
+            ->setIcon('fi fi-rr-trash')
             ->setTitle('Smazat fakturační řadu')
             ->setClass('btn btn-sm btn-outline-danger')
             ->setConfirmation(
@@ -291,7 +291,7 @@ class InvoiceSequenceListPresenter extends PaymentsBasePresenter
 
     public function formSucceeded(BaseForm $form): void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(ArrayHash::class);
 
         $role = $this->queryBus->handle(new ActiveSkautisRoleQuery());
         if (! $role instanceof SkautisRole) {

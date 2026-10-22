@@ -1,7 +1,7 @@
 <!-- Button trigger modal -->
 <button class="btn btn-sm btn-light d-inline" type="button" id="chitScanList" data-bs-toggle="modal" aria-haspopup="true" aria-expanded="false" data-bs-target="#chitScanModal-{$chitId}">
-    <i class="far fa-folder-open"></i>
-    <span n:if="count($files) > 0" class="badge bg-light text-dark">{count($files)}</span>
+    <i class="fi fi-rr-folder-open" aria-hidden="true"></i>
+    <span n:if="count($files) > 0" class="badge text-bg-light">{count($files)}</span>
 </button>
 
 
@@ -14,19 +14,23 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
             </div>
             <div class="modal-body">
-                <div n:foreach="$files as $file" class="dropdown-item text-nowrap" title="{$file->getFilePath()->getOriginalFilename()}">
-                    {$file->getFilePath()->getOriginalFilename()|truncate:26}
-
-                    <a n:href="remove! $file->getFilePath()->getPath()"
+                <div n:foreach="$files as $file" class="d-flex align-items-center gap-2 py-1" data-test="chit-scan-file">
+                    {var $filePath = $file->getFilePath()}
+                    <span class="me-auto text-truncate" title="{$filePath->getOriginalFilename()}">{$filePath->getOriginalFilename()|truncate:26}</span>
+                    {include '../../templates/FileActionButton.latte',
+                        label => 'Stáhnout soubor',
+                        downloadUrl => $presenter->link(':Unit:CashbookExport:downloadScan', [$cashbookId, $chitId, $filePath->getPath()]),
+                        openUrl => $filePath->isPdf() ? $presenter->link(':Unit:CashbookExport:downloadScan', [$cashbookId, $chitId, $filePath->getPath(), open => true]) : null,
+                        variant => 'light',
+                        compact => true,
+                    }
+                    <a n:href="remove! $filePath->getPath()"
                     n:if="$isEditable"
                             title="Smazat soubor"
+                            aria-label="Smazat soubor"
                             data-bs-toggle="tooltip"
-                            onclick="return confirm('Opravdu chcete smazat sken?');"
-                            class="text-danger float-end ms-2"><i class="far fa-trash-alt"></i></a>
-                    <a href="{plink :Unit:CashbookExport:downloadScan $cashbookId, $chitId, $file->getFilePath()->getPath()}"
-                       class="float-end" title="Stáhnout soubor" data-bs-toggle="tooltip">
-                        <i class="fas fa-arrow-down"></i>
-                    </a>
+                            data-confirm="Opravdu chcete smazat sken?"
+                            class="btn btn-sm btn-outline-danger"><i class="fi fi-rr-trash" aria-hidden="true"></i></a>
                 </div>
                 {control uploadForm}
             </div>

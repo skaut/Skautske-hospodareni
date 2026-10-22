@@ -26,6 +26,7 @@ use App\Model\Export\ExportService;
 use App\Model\Grant\ReadModel\Queries\GrantQuery;
 use App\Model\Services\PdfRenderer;
 use App\Presentation\Education\BasePresenter;
+use LogicException;
 
 use function array_filter;
 use function array_map;
@@ -50,13 +51,13 @@ final class EducationPresenter extends BasePresenter
         }
 
         $cashbook = $this->event->startDate !== null
-            ? $this->queryBus->handle(new CashbookQuery($this->getCashbookId($aid, $this->event->startDate->year)))
+            ? $this->queryBus->handle(new CashbookQuery($this->getCashbookId($aid, ($this->event->getStartDate() ?? throw new LogicException('Vzdělávací akce nemá datum zahájení.'))->year)))
             : null;
 
         $finalRealBalance = null;
         if ($this->event->startDate !== null && $this->authorizator->isAllowed(Education::ACCESS_BUDGET, $aid)) {
             try {
-                $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($aid, $this->event->startDate->year)));
+                $finalRealBalance = $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($aid, $this->event->getStartDate()->year)));
             } catch (MissingCategory) {
             }
         }
@@ -127,12 +128,11 @@ final class EducationPresenter extends BasePresenter
         $this->redrawControl('contentSnip');
     }
 
-    public function renderReport(int $aid): void
+    public function renderReport(int $aid, bool $download = false): void
     {
-        $template = $this->exportService->getEducationReport(new SkautisEducationId($aid), $this->event->startDate->year);
+        $template = $this->exportService->getEducationReport(new SkautisEducationId($aid), ($this->event->getStartDate() ?? throw new LogicException('Vzdělávací akce nemá datum zahájení.'))->year);
 
-        $this->pdf->render($template, 'report.pdf');
-        $this->terminate();
+        $this->sendResponse($this->pdf->createResponse($template, 'report.pdf', false, $download));
     }
 
     private function getCashbookId(int $skautisEducationId, int $year): CashbookId
@@ -163,6 +163,6 @@ final class EducationPresenter extends BasePresenter
             },
         );
 
-        return count($propertyValues) > 0 ? array_sum($propertyValues) : null;
+        return count($propertyValues) > 0 ? (int) array_sum($propertyValues) : null;
     }
 }

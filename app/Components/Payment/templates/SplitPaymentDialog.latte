@@ -7,14 +7,14 @@
         <div class="alert alert-danger" data-test="payment-split-not-found">Zadaná platba neexistuje.</div>
     {else}
         <div class="alert alert-info mb-3" data-test="payment-split-infobar">
-            <i class="fas fa-info-circle" aria-hidden="true"></i>
+            <i class="fi fi-rr-info" aria-hidden="true"></i>
             Zadané částky se odečtou od původní platby. Pro každý variabilní symbol vznikne nová platba se stejným názvem,
             příjemci, splatností, konstantním symbolem a osobou. Pokud poznámku nevyplníte, převezme se z původní platby.
         </div>
 
         <div class="d-flex flex-wrap justify-content-between gap-2 mb-3 small">
             <span><strong>Původní platba:</strong> {$payment->getName()}</span>
-            <span><strong>Částka:</strong> {$payment->getAmount()|number:2, ',', ' '} Kč</span>
+            <span><strong>Částka:</strong> {$payment->getAmount()|price} Kč</span>
         </div>
 
         <form n:name="form" class="inline-errors" data-test="payment-split-form">

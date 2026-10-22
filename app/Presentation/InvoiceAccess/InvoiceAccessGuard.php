@@ -106,7 +106,7 @@ trait InvoiceAccessGuard
             $this->redirect('default');
         }
 
-        $values = $form->getValues();
+        $values = $form->getValues(\Nette\Utils\ArrayHash::class);
         $request = $this->invoiceAccessRequestManager->createRequest(
             $userId,
             $this->unitId->toInt(),

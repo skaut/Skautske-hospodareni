@@ -11,12 +11,17 @@
                    data-dependent-checkboxes=".export-dependent-checkboxes">
             <label for="export-check-all" class="fw-bold">Vybrat vše</label>
         </div>
-        <form n:name="form" class="export-dependent-checkboxes">
+        <form n:name="form" class="export-dependent-checkboxes inline-errors">
             <div class="form-check" n:foreach="$form['campIds']->items as $key => $label">
                 <input n:name="campIds:$key" class="form-check-input">
                 <label n:name="campIds:$key" class="form-check-label">{$label}</label>
             </div>
-            <input n:name="download" class="btn btn-primary">
+            {include '../../templates/FileActionButton.latte',
+                label => 'Stáhnout Excel',
+                downloadButton => $form['download'],
+                variant => 'primary',
+                small => false,
+            }
         </form>
     </div>
 {/block}

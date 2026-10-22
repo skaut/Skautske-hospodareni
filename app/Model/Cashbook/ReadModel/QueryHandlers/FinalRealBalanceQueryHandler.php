@@ -12,8 +12,6 @@ use App\Model\Utils\MoneyFactory;
 use Money\Money;
 
 use function array_filter;
-use function array_map;
-use function array_sum;
 
 class FinalRealBalanceQueryHandler
 {
@@ -29,10 +27,12 @@ class FinalRealBalanceQueryHandler
             return ! $categorySummary->isVirtual();
         });
 
-        $balance = array_sum(array_map(function (CategorySummary $categorySummary): float {
-            return ($categorySummary->isIncome() ? 1 : -1) * MoneyFactory::toFloat($categorySummary->getTotal());
-        }, $categories));
+        $total = MoneyFactory::zero();
+        foreach ($categories as $categorySummary) {
+            $amount = $categorySummary->getTotal();
+            $total = $total->add($categorySummary->isIncome() ? $amount : $amount->multiply(-1));
+        }
 
-        return MoneyFactory::fromFloat($balance);
+        return $total;
     }
 }

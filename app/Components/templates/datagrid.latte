@@ -1,15 +1,27 @@
-{extends DataGrid.layout.latte}
+{**
+ * Tenká přizpůsobovací vrstva nad výchozí šablonou Contributte\Datagrid (7.x). Extends přes proměnnou
+ * $originalTemplate, kterou grid nastavuje na vendor default – nedržíme vlastní kopii celé šablony.
+ * Konkrétní gridy dědí z této šablony (viz GridFactory: baseTemplate) a přepisují bloky col-*, filters,
+ * global-actions apod.
+ *}
+{extends $originalTemplate}
 
 {block table-class}table table-vcenter table-hover table-striped{/block}
+
+{block data}
+    <div class="table-responsive">
+        {include parent}
+    </div>
+{/block}
 
 {block outer-filters}
     <div class="d-md-flex justify-content-between">
         <div data-naja-history="on">
-                <div class="row auto-submit">
-                    {ifset #filters}
-                        {include #filters}
-                    {/ifset}
-                </div>
+            <div class="row auto-submit">
+                {ifset #filters}
+                    {include #filters}
+                {/ifset}
+            </div>
         </div>
         <div class="text-md-end">
             {ifset #global-actions}
@@ -20,15 +32,15 @@
 {/block}
 
 {block icon-sort-up}
-    <i class="fas fa-sort-up"></i>
+    <i class="fi fi-rr-caret-up" aria-hidden="true"></i>
 {/block}
 
 {block icon-sort}
-    <i class="fas fa-sort"></i>
+    <i class="fi fi-rr-sort" aria-hidden="true"></i>
 {/block}
 
 {block icon-sort-down}
-    <i class="fas fa-sort-down"></i>
+    <i class="fi fi-rr-caret-down" aria-hidden="true"></i>
 {/block}
 
 {block tfoot}
@@ -38,7 +50,7 @@
     <div class="col-auto mb-2">
         <div class="input-group">
             <label n:name="filter-{$name}" class="input-group-text">
-                <i n:ifset="$icon" class="{$icon} me-1"></i>
+                <i n:ifset="$icon" class="{$icon} me-1" aria-hidden="true"></i>
                 {$label}
             </label>
             <select n:name="filter-{$name}" class="form-control form-select"/>
@@ -49,15 +61,19 @@
 {block filter-type-search}
     <div class="col-auto mb-2">
         <div class="input-group">
+            {* The icon is decorative, so the label needs its own text for screen readers.
+               Including templates pass `searchLabel` to name what is being searched. *}
             <label n:name="filter-search" class="input-group-text">
-                <i class="fas fa-search"></i>
+                <i class="fi fi-rr-search" aria-hidden="true"></i>
+                <span class="visually-hidden">{$searchLabel ?? 'Hledat'}</span>
             </label>
-            <input n:name="filter-search" class="form-control">
+            <input n:name="filter-search" class="form-control" data-test="datagrid-filter-search">
         </div>
     </div>
 {/block}
 
 {block actions}
+    <div class="datagrid-row-actions">
         {foreach $actions as $key => $action}
             {if $row->hasAction($key)}
                 {if $action->hasTemplate()}
@@ -68,14 +84,159 @@
             {/if}
         {/foreach}
         <span class="handle-sort btn btn-sm btn-light" n:if="$control->isSortable()">
-												<i n:block = "icon-arrows-v" class="{$iconPrefix}arrows-v"></i>
-											</span>
+            <i n:block="icon-arrows-v" class="{$iconPrefix}arrows-v" aria-hidden="true"></i>
+        </span>
         {if $inlineEdit && $row->hasInlineEdit()}
             {$inlineEdit->renderButton($row)|noescape}
         {/if}
-        {if $items_detail && $items_detail->shouldBeRendered($row)}
-            {$items_detail->renderButton($row)|noescape}
+        {if $itemsDetail && $itemsDetail->shouldBeRendered($row)}
+            {$itemsDetail->renderButton($row)|noescape}
         {/if}
+    </div>
+{/block}
+
+{block tbody}
+    <tbody n:snippet="tbody" {if $control->isSortable()}data-sortable data-sortable-url="{plink $control->getSortableHandler()}" data-sortable-parent-path="{$control->getSortableParentPath()}"{/if}>
+        {snippetArea items}
+            {if $inlineAdd && $inlineAdd->isPositionTop()}
+                {include inlineAddRow, columns => $columns}
+            {/if}
+
+            {if $columnsSummary && $columnsSummary->getPositionTop()}
+                {include columnSummary}
+            {/if}
+
+            {foreach $rows as $row}
+                {var $item = $row->getItem()}
+
+                {if !isset($toggle_detail)}
+                    {if $inlineEdit && $inlineEdit->getItemId() == $row->getId()}
+                        {php $inlineEdit->onSetDefaults($filter['inline_edit'], $item) }
+
+                        <tr data-id="{$row->getId()}" n:snippet="item-{$row->getId()}" n:attr="$row->getControl()->attrs">
+                            <td n:if="$hasGroupActions" class="col-checkbox"></td>
+
+                            {foreach $columns as $key => $column}
+                                {var $col = 'col-' . $key}
+
+                                {var $td = $column->getElementForRender('td', $key, $row)}
+                                {var $td->class[] = 'datagrid-inline-edit'}
+                                {$td->startTag()|noescape}
+                                    {if isset($filter['inline_edit'][$key])}
+                                        {if $filter['inline_edit'][$key] instanceof \Nette\Forms\Container}
+                                            {foreach $filter['inline_edit'][$key]->getControls() as $inlineEditControl}
+                                                {input $inlineEditControl}
+                                            {/foreach}
+                                        {else}
+                                            {input $filter['inline_edit'][$key]}
+                                        {/if}
+                                    {elseif $inlineEdit->showNonEditingColumns()}
+                                        {include column-value, column => $column, row => $row, key => $key}
+                                    {/if}
+                                {$td->endTag()|noescape}
+                            {/foreach}
+
+                            <td class="col-action col-action-inline-edit">
+                                {input $filter['inline_edit']['cancel'], class => 'btn btn-xs btn-danger'}
+                                {input $filter['inline_edit']['submit'], class => 'btn btn-xs btn-primary'}
+                                {input $filter['inline_edit']['_id']}
+                                {input $filter['inline_edit']['_primary_where_column']}
+                            </td>
+                        </tr>
+                    {else}
+                        {var $dataRowControl = clone $row->getControl()}
+                        {do $dataRowControl->appendAttribute('class', 'datagrid-data-row')}
+                        <tr data-id="{$row->getId()}" n:snippet="item-{$row->getId()}" n:attr="$dataRowControl->attrs">
+                            <td n:if="$hasGroupActions" class="col-checkbox">
+                                {if $row->hasGroupAction()}
+                                    <input class="form-check-input" type="checkbox" data-check="{$control->getFullName()}" data-check-all-{$control->getFullName()|noescape} name="{$control->getFullName()|lower}_group_action_item[{$row->getId()}]">
+                                {/if}
+                            </td>
+                            {foreach $columns as $key => $column}
+                                {php $column = $row->applyColumnCallback($key, clone $column)}
+
+                                {var $td = $column->getElementForRender('td', $key, $row)}
+                                {if $key === 'actions'}
+                                    {var $td->class[] = 'datagrid-actions-cell'}
+                                {/if}
+                                {$td->startTag()|noescape}
+                                    {include column-value, column => $column, row => $row, key => $key}
+                                {$td->endTag()|noescape}
+                            {/foreach}
+                            <td n:if="$actions || $control->isSortable() || $itemsDetail || $inlineEdit || $inlineAdd" class="col-action datagrid-actions-cell">
+                                {include actions, item => $item, row => $row}
+                            </td>
+                        </tr>
+                        {if isset($columns['actions'])}
+                            {var $actionsColumn = $row->applyColumnCallback('actions', clone $columns['actions'])}
+                            <tr class="datagrid-actions-row" data-id="{$row->getId()}-actions">
+                                <td colspan="{$control->getColumnsCount()}">
+                                    {include column-value, column => $actionsColumn, row => $row, key => 'actions'}
+                                </td>
+                            </tr>
+                        {else}
+                        <tr n:if="$actions || $control->isSortable() || $itemsDetail || $inlineEdit || $inlineAdd" class="datagrid-actions-row" data-id="{$row->getId()}-actions">
+                            <td colspan="{$control->getColumnsCount()}">
+                                {include actions, item => $item, row => $row}
+                            </td>
+                        </tr>
+                        {/if}
+                    {/if}
+                {/if}
+
+                {if $itemsDetail && $itemsDetail->shouldBeRendered($row)}
+                    <tr class="row-item-detail item-detail-{$control->getFullname()}-id-{$row->getId()}" n:snippet="item-{$row->getId()}-detail">
+                        {if isset($toggle_detail) && $toggle_detail == $row->getId()}
+                            {var $item_detail_params = ['item' => $item, '_form' => $filter] + $itemsDetail->getTemplateVariables()}
+
+                            {if isset($filter['items_detail_form'])}
+                                {var $item_detail_params['items_detail_form'] = $filter['items_detail_form']}
+                            {/if}
+
+                            {ifset #detail}
+                                <td colspan="{$control->getColumnsCount()}">
+                                    <div class="item-detail-content">
+                                        {include #detail, (expand) $item_detail_params}
+                                    </div>
+                                </td>
+                            {elseif $itemsDetail}
+                                <td colspan="{$control->getColumnsCount()}">
+                                    <div class="item-detail-content">
+                                        {if $itemsDetail->getType() == 'template'}
+                                            {include $itemsDetail->getTemplate(), (expand) $item_detail_params}
+                                        {else}
+                                            {$itemsDetail->render($item)|noescape}
+                                        {/if}
+                                    </div>
+                                </td>
+                            {/ifset}
+                        {/if}
+                    </tr>
+                    <tr class="row-item-detail-helper"></tr>
+                {/if}
+            {/foreach}
+
+            {if $inlineAdd && $inlineAdd->isPositionBottom()}
+                {include inlineAddRow, columns => $columns}
+            {/if}
+
+            {if ($columnsSummary && !$columnsSummary->getPositionTop()) || $control->hasSomeAggregationFunction()}
+                {include columnSummary}
+            {/if}
+
+            {block noItems}
+                <tr n:if="!$rows">
+                    <td colspan="{$control->getColumnsCount()}">
+                        {if $filter_active}
+                            Nenalezeny žádné záznamy. <a class="link ajax" n:href="resetFilter!">Zrušit filtr</a>.
+                        {else}
+                            Nenalezeny žádné záznamy.
+                        {/if}
+                    </td>
+                </tr>
+            {/block}
+        {/snippetArea}
+    </tbody>
 {/block}
 
 {define inlineAddRow}

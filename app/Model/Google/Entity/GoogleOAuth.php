@@ -26,10 +26,10 @@ class GoogleOAuth extends Aggregate
     #[Column(type: 'unit_id')]
     private UnitId $unitId;
 
-    #[Column(type: 'string')]
+    #[Column(type: 'string', length: 255)]
     private string $email;
 
-    #[Column(type: 'string')]
+    #[Column(type: 'string', length: 255)]
     private string $token;
 
     #[Column(type: 'datetime_immutable')]

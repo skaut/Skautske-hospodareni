@@ -55,15 +55,18 @@ class BankPairingCandidateProvider
     /** @return list<PairingCandidate> */
     public function getDomainCandidatesForBankAccount(int $bankAccountId): array
     {
-        return [
-            ...array_map(
+        return array_values(array_merge(
+            array_map(
                 static fn (Payment $payment): PairingCandidate => PairingCandidate::forPayment($payment),
-                $this->payments->findOpenByBankAccount($bankAccountId),
+                array_filter(
+                    $this->payments->findOpenByBankAccount($bankAccountId),
+                    static fn (Payment $payment): bool => $payment->canBePaired(),
+                ),
             ),
-            ...array_map(
+            array_map(
                 static fn (\App\Model\Invoice\Entity\Invoice $invoice): PairingCandidate => PairingCandidate::forInvoice($invoice),
                 $this->invoices->findOpenTransferInvoicesForBankAccount($bankAccountId),
             ),
-        ];
+        ));
     }
 }

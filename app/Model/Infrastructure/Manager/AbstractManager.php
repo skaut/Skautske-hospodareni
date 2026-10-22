@@ -36,7 +36,6 @@ use function max;
 abstract class AbstractManager
 {
     protected EntityManagerInterface $em;
-    // private ManagerRegistry $managerRegistry;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -45,13 +44,6 @@ abstract class AbstractManager
 
     public function setManagerRegistry(EntityManagerInterface $entityManager): void
     {
-        // $this->managerRegistry = $managerRegistry;
-        // $em = $managerRegistry->getManagerForClass($this->getEntityClass());
-
-        //        if (! $em instanceof EntityManagerInterface) {
-        //            throw new LogicException('Could not find an entity manager for class '.static::class);
-        //        }
-
         $this->em = $entityManager;
     }
 
@@ -207,19 +199,16 @@ abstract class AbstractManager
         $this->em->initializeObject($entity);
     }
 
-    /** @phpstan-param LockMode::* $lockMode */
-    public function refresh(object $entity, ?int $lockMode = null): void
+    public function refresh(object $entity, ?LockMode $lockMode = null): void
     {
         $this->em->refresh($entity, $lockMode);
     }
 
     /**
-     * @phpstan-param LockMode::* $lockMode
-     *
      * @throws OptimisticLockException
      * @throws PessimisticLockException
      */
-    public function lock(object $entity, int $lockMode, int|DateTimeInterface|null $lockVersion = null): void
+    public function lock(object $entity, LockMode $lockMode, int|DateTimeInterface|null $lockVersion = null): void
     {
         $this->em->lock($entity, $lockMode, $lockVersion);
     }
@@ -291,7 +280,7 @@ abstract class AbstractManager
                 $placeholders = implode(', ', array_fill(0, count($columns), '?'));
                 $query = 'INSERT INTO '.$table.' ('.implode(', ', $columns).') VALUES ';
             } elseif (array_keys($row) !== $columns) {
-                /** @var string[] $columns */
+                /** @var list<int|string> $columns */
                 throw new InvalidArgumentException("Row [{$i}] must contain exactly these columns: ".implode(', ', $columns));
             }
 

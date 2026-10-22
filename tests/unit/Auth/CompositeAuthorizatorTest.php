@@ -17,9 +17,9 @@ use App\Model\User\Repository\InvoiceAccessUserRepository;
 use App\Model\User\Repository\SystemUserRoleRepository;
 use Codeception\Test\Unit;
 use Mockery;
-use Nette\Security\IUserStorage;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
+use Nette\Security\UserStorage;
 use Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 
@@ -133,6 +133,26 @@ final class CompositeAuthorizatorTest extends Unit
         self::assertTrue($authorizator->isAllowed(BugReports::ACCESS, null));
     }
 
+    public function testAnnouncementManagerHasScopedAdministrationAccess(): void
+    {
+        $webservice = Mockery::mock(WebServiceInterface::class);
+        $webservice->shouldNotReceive('ActionVerify');
+        $repository = Mockery::mock(SystemUserRoleRepository::class);
+        $repository->shouldReceive('hasRole')->with(1942, SystemRole::ADMIN)->times(3)->andReturn(false);
+        $repository->shouldReceive('hasRole')->with(1942, SystemRole::SUPPORT)->once()->andReturn(false);
+        $repository->shouldReceive('hasRole')->with(1942, SystemRole::ANNOUNCEMENT_MANAGER)->twice()->andReturn(true);
+
+        $authorizator = new CompositeAuthorizator(
+            new SkautisAuthorizator($webservice),
+            new AdminAccessChecker($this->mockUser(1942), $repository, []),
+            $this->invoiceAccessChecker(),
+        );
+
+        self::assertFalse($authorizator->isAllowed(Admin::ACCESS, null));
+        self::assertTrue($authorizator->isAllowed(Admin::ANY_ACCESS, null));
+        self::assertTrue($authorizator->isAllowed(Admin::ANNOUNCEMENTS_ACCESS, null));
+    }
+
     private function invoiceAccessChecker(): InvoiceAccessChecker
     {
         $repository = Mockery::mock(InvoiceAccessUserRepository::class);
@@ -143,13 +163,9 @@ final class CompositeAuthorizatorTest extends Unit
 
     private function mockUser(?int $userId): User
     {
-        $storage = Mockery::mock(IUserStorage::class);
-        $storage->shouldReceive('isAuthenticated')
-            ->andReturn($userId !== null);
-        $storage->shouldReceive('getIdentity')
-            ->andReturn($userId !== null ? new SimpleIdentity($userId) : null);
-        $storage->shouldReceive('getLogoutReason')
-            ->andReturn(null);
+        $storage = Mockery::mock(UserStorage::class);
+        $storage->shouldReceive('getState')
+            ->andReturn([$userId !== null, $userId !== null ? new SimpleIdentity($userId) : null, null]);
 
         return new User($storage);
     }

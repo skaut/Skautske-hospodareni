@@ -15,6 +15,7 @@ use DateTimeImmutable;
 
 use function array_filter;
 use function array_map;
+use function array_merge;
 use function array_values;
 use function count;
 use function hash;
@@ -80,14 +81,27 @@ final class BankTransactionImportManager extends AbstractManager
         DateTimeImmutable $importedAt,
         ?BankTransactionImportBatch $batch = null,
     ): int {
+        // Kromě aktuálního klíče se hledá i klíč z dřívější implementace parseru, aby znovunahrání
+        // dříve importovaného souboru nevytvořilo duplicity.
         $existingKeys = $this->bankTransactions->findExistingTransactionKeys(
-            array_values(array_map(static fn (Transaction $transaction): string => $transaction->getId(), $transactions)),
+            array_merge([], ...array_map(
+                static fn (Transaction $transaction): array => $transaction->getKnownIds(),
+                $transactions,
+            )),
         );
 
         $newTransactions = array_values(
             array_filter(
                 $transactions,
-                static fn (Transaction $transaction): bool => ! in_array($transaction->getId(), $existingKeys, true),
+                static function (Transaction $transaction) use ($existingKeys): bool {
+                    foreach ($transaction->getKnownIds() as $key) {
+                        if (in_array($key, $existingKeys, true)) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                },
             ),
         );
 

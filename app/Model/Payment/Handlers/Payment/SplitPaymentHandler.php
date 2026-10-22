@@ -15,8 +15,6 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 
 use function array_map;
-use function array_sum;
-use function round;
 use function sprintf;
 
 final class SplitPaymentHandler
@@ -40,34 +38,34 @@ final class SplitPaymentHandler
                 throw new InvalidPaymentSplit('Zadejte alespoň jednu část platby.');
             }
 
-            $sourceAmountInCents = $this->toCents($source->getAmount());
-            $splitAmountInCents = array_sum(array_map(
-                fn (SplitPaymentPart $part): int => $this->toCents($part->getAmount()),
-                $parts,
-            ));
+            $sourceAmount = $source->getAmount();
+            $splitAmount = \Money\Money::CZK(0);
+            foreach ($parts as $part) {
+                $splitAmount = $splitAmount->add($part->getAmount());
+            }
 
-            if ($splitAmountInCents > $sourceAmountInCents) {
+            if ($splitAmount->greaterThan($sourceAmount)) {
                 throw new InvalidPaymentSplit('Součet dělených částek nesmí být větší než původní částka.');
             }
 
             $group = $this->groups->find($source->getGroupId());
             $sourceVariableSymbol = $source->getVariableSymbol();
-            $remainingSourceAmountInCents = $sourceAmountInCents - $splitAmountInCents;
+            $remainingSourceAmount = $sourceAmount->subtract($splitAmount);
             $usedVariableSymbols = [];
 
             foreach ($parts as $part) {
-                if ($part->getAmount() <= 0) {
+                if ($part->getAmount()->isZero() || $part->getAmount()->isNegative()) {
                     throw new InvalidPaymentSplit('Každá dělená částka musí být větší než 0.');
                 }
 
                 $variableSymbol = $part->getVariableSymbol();
                 $variableSymbolValue = (string) $variableSymbol;
-                $partAmountInCents = $this->toCents($part->getAmount());
+                $partAmount = $part->getAmount();
 
                 if (
                     $sourceVariableSymbol !== null
                     && $sourceVariableSymbol->toInt() === $variableSymbol->toInt()
-                    && $remainingSourceAmountInCents === $partAmountInCents
+                    && $remainingSourceAmount->equals($partAmount)
                 ) {
                     throw new InvalidPaymentSplit('Stejný variabilní symbol lze při rozdělení použít jen u rozdílných částek.');
                 }
@@ -84,7 +82,7 @@ final class SplitPaymentHandler
                 $this->variableSymbolCollisionChecker->assertUniqueForPayment($group, $source->getId(), $variableSymbol);
             }
 
-            $source->reduceAmountBySplit($splitAmountInCents / 100);
+            $source->reduceAmountBySplit($splitAmount);
 
             $splitPayments = array_map(
                 fn (SplitPaymentPart $part): Payment => new Payment(
@@ -104,10 +102,5 @@ final class SplitPaymentHandler
 
             $this->payments->saveMany([$source, ...$splitPayments]);
         });
-    }
-
-    private function toCents(float $amount): int
-    {
-        return (int) round($amount * 100);
     }
 }

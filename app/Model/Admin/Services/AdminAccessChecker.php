@@ -48,7 +48,14 @@ final class AdminAccessChecker
     public function canAccessAdministration(): bool
     {
         return $this->hasCurrentUserRole(SystemRole::ADMIN)
-            || $this->hasCurrentUserRole(SystemRole::SUPPORT);
+            || $this->hasCurrentUserRole(SystemRole::SUPPORT)
+            || $this->hasCurrentUserRole(SystemRole::ANNOUNCEMENT_MANAGER);
+    }
+
+    public function canManageAnnouncements(): bool
+    {
+        return $this->hasCurrentUserRole(SystemRole::ADMIN)
+            || $this->hasCurrentUserRole(SystemRole::ANNOUNCEMENT_MANAGER);
     }
 
     public function canAccessBugReports(): bool

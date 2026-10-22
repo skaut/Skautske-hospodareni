@@ -19,10 +19,18 @@ use function array_merge;
 
 class PairButton extends BaseControl
 {
+    /**
+     * @method void                    onSuccess()
+     * @var    array<callable(): void>
+     */
+    public array $onSuccess = [];
+
     /** @var array<string, string> */
     protected array $css = [];
 
     private PairButtonScope $scope;
+
+    private bool $ajaxEnabled = false;
 
     public function __construct(
         private PaymentService $payments,
@@ -32,17 +40,14 @@ class PairButton extends BaseControl
         private PairButtonBankAccountSupport $bankAccountSupport,
     ) {
         $this->scope = new EmptyPairButtonScope();
-        $style = 'primary';
-        $this->css = [
+        $this->css = array_merge([
             'wrap' => 'd-inline-block',
-            'btn' => 'btn btn-sm btn-'.$style,
-            'toggle' => 'btn btn-sm btn-'.$style.' dropdown-toggle',
             'menu' => 'dropdown-menu dropdown-menu-end p-3',
             'icon' => 'fi fi-rr-bank',
             'inputGroup' => 'input-group input-group-sm',
             'submit' => 'btn btn-sm btn-primary',
             'submitCol' => 'col-4',
-        ];
+        ], self::buttonCssForStyle('primary'));
     }
 
     /** @param array<string, string> $css */
@@ -54,6 +59,11 @@ class PairButton extends BaseControl
     public function setCss(string $key, string $value): void
     {
         $this->css[$key] = $value;
+    }
+
+    public function enableAjax(): void
+    {
+        $this->ajaxEnabled = true;
     }
 
     public function handlePair(): void
@@ -97,6 +107,7 @@ class PairButton extends BaseControl
             'scopeLabel' => 'úhrady',
             'disabledReason' => $this->scope->getDisabledReason(),
             'css' => $this->css,
+            'ajaxEnabled' => $this->ajaxEnabled,
         ]);
         $this->template->setFile(__DIR__.'/templates/PairButton.latte');
         $this->template->render();
@@ -104,8 +115,17 @@ class PairButton extends BaseControl
 
     public function renderLight(): void
     {
-        $this->template->setParameters(['style' => 'light']);
+        $this->addCss(self::buttonCssForStyle('light'));
         $this->render();
+    }
+
+    /** @return array<string, string> */
+    private static function buttonCssForStyle(string $style): array
+    {
+        return [
+            'btn' => 'btn btn-sm btn-'.$style,
+            'toggle' => 'btn btn-sm btn-'.$style.' dropdown-toggle',
+        ];
     }
 
     protected function createComponentForm(): BaseForm
@@ -141,6 +161,12 @@ class PairButton extends BaseControl
             $this->presenter->flashMessage(BankPairingUiMessages::wrongTokenAccountMessage($e), 'danger');
         } catch (InvalidOAuth $exc) {
             $this->presenter->flashMessage($exc->getExplainedMessage(), 'danger');
+        }
+
+        if ($this->ajaxEnabled && $this->presenter->isAjax()) {
+            $this->onSuccess();
+
+            return;
         }
 
         $this->presenter->redirect('this');

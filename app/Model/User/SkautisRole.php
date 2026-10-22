@@ -63,6 +63,12 @@ class SkautisRole
         $this->unitName = (string) ($values['unitName'] ?? '');
     }
 
+    /** Raw skautIS key, e.g. `vedouciStredisko`. */
+    public function getKey(): string
+    {
+        return $this->key;
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -86,6 +92,11 @@ class SkautisRole
     public function isAccountant(): bool
     {
         return Strings::startsWith($this->key, self::ACCOUNTANT_PREFIX);
+    }
+
+    public function isAccountantOf(int $unitId): bool
+    {
+        return $this->isAccountant() && $this->unitId === $unitId;
     }
 
     public function isOfficer(): bool

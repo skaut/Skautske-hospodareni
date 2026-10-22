@@ -20,6 +20,8 @@ use App\Model\Cashbook\CashbookNotFound;
 use App\Model\Cashbook\ChitLocked;
 use App\Model\Cashbook\Commands\Cashbook\AddChitToCashbook;
 use App\Model\Cashbook\Commands\Cashbook\UpdateChit;
+use App\Model\Cashbook\ICategory;
+use App\Model\Cashbook\NegativeCampCategoryTotal;
 use App\Model\Cashbook\Operation;
 use App\Model\Cashbook\ReadModel\Queries\CashbookQuery;
 use App\Model\Cashbook\ReadModel\Queries\CategoryListQuery;
@@ -36,9 +38,9 @@ use App\Model\DTO\Cashbook\ChitItem;
 use App\Model\Skautis\Exception\AmountMustBeGreaterThanZero;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
+use Contributte\FormMultiplier\Multiplier;
 use InvalidArgumentException;
 use LogicException;
-use NasExt\Forms\DependentData;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Container;
 use Nette\Forms\Control;
@@ -50,6 +52,8 @@ use Psr\Log\LoggerInterface;
 use Skautis\Wsdl\WsdlException;
 
 use function array_values;
+use function ctype_digit;
+use function is_string;
 use function sprintf;
 
 final class ChitForm extends BaseControl
@@ -69,6 +73,9 @@ final class ChitForm extends BaseControl
     private bool $isEditable;
 
     private int $itemsCount = 0;
+
+    /** @var array<string, array<int, string>> */
+    private array $storedCategoryOptions = [];
 
     public function __construct(
         private CashbookId $cashbookId,
@@ -117,11 +124,12 @@ final class ChitForm extends BaseControl
 
     public function setDisplayChitParent(bool $displayChitForm): void
     {
-        if (! $this->parent instanceof CashbookControl) {
+        $parent = $this->getParent();
+        if (! $parent instanceof CashbookControl) {
             return;
         }
 
-        $this->parent->displayChitForm = $displayChitForm;
+        $parent->displayChitForm = $displayChitForm;
     }
 
     public function editChit(int $chitId): void
@@ -140,6 +148,8 @@ final class ChitForm extends BaseControl
         if ($chit->isLocked()) {
             throw new BadRequestException('Can\'t edit locked chit', IResponse::S403_Forbidden);
         }
+
+        $this->setStoredCategoryOptions($chit);
 
         $form = $this['form'];
 
@@ -166,25 +176,10 @@ final class ChitForm extends BaseControl
         $this->redrawControl();
     }
 
-    /** @param mixed[] $values */
-    public function getCategoryItems(array $values): DependentData
-    {
-        $type = $values['type'];
-
-        if ($type !== null) {
-            return new DependentData(
-                $this->getCategoryPairsByType(Operation::get($type)),
-            );
-        }
-
-        return new DependentData([
-            Operation::INCOME => $this->getCategoryPairsByType(Operation::get(Operation::INCOME)),
-            Operation::EXPENSE => $this->getCategoryPairsByType(Operation::get(Operation::EXPENSE)),
-        ]);
-    }
-
     protected function createComponentForm(): BaseForm
     {
+        $this->loadStoredCategoryOptionsOfSubmittedChit();
+
         $form = new BaseForm();
 
         $form->addDate('date')
@@ -193,8 +188,8 @@ final class ChitForm extends BaseControl
             ->setHtmlAttribute('placeholder', 'Datum');
 
         $form->addText('num')
-            ->setMaxLength(5)
             ->setRequired(false)
+            ->addRule($form::MaxLength, 'Číslo dokladu může mít nejvýše %d znaků.', ChitNumber::MAX_LENGTH)
             ->addRule($form::PATTERN, self::INVALID_CHIT_NUMBER_MESSAGE, ChitNumber::PATTERN)
             ->setHtmlAttribute('placeholder', 'Číslo dokladu')
             ->setHtmlAttribute('class', 'form-control input-sm');
@@ -259,7 +254,7 @@ final class ChitForm extends BaseControl
         $items->addSubmit('addItem', 'Přidat další položku')
             ->setValidationScope([])
             ->onClick[] = function () use ($items): void {
-                $items->createOne();
+                $items->addCopy();
                 $this->reload();
                 $this->setDisplayChitForm(true);
             };
@@ -308,11 +303,15 @@ final class ChitForm extends BaseControl
     private function removeItem(SubmitButton $button): void
     {
         $container = $button->getParent();
-        $replicator = $container->getParent();
-        if (! ($replicator instanceof \Kdyby\Replicator\Container && $container instanceof Container)) {
+        if (! $container instanceof Container) {
             throw new LogicException('Assertion failed.');
         }
-        $replicator->remove($container, true);
+
+        $replicator = $container->getParent();
+        if (! $replicator instanceof Multiplier) {
+            throw new LogicException('Assertion failed.');
+        }
+        $replicator->removeComponent($container);
         $this->reload();
     }
 
@@ -352,7 +351,7 @@ final class ChitForm extends BaseControl
                 $this->flashMessage('Paragon byl úspěšně přidán do seznamu.');
             }
 
-            $this->reload();
+            $this->reloadCashbook();
 
             return true;
         } catch (InvalidArgumentException|CashbookNotFound $exc) {
@@ -361,8 +360,11 @@ final class ChitForm extends BaseControl
         } catch (CampBudgetUpdateNotAllowed) {
             $this->flashMessage('Nemáte oprávnění upravovat rozpočtové kategorie tábora ve skautISu. Doklad nebyl uložen.', 'danger');
         } catch (ChitLocked) {
-            $this->flashMessage('Nelze upravit zamčený paragon', 'error');
-        } catch (AmountMustBeGreaterThanZero) {
+            $this->flashMessage('Nelze upravit zamčený paragon', 'danger');
+        } catch (NegativeCampCategoryTotal|AmountMustBeGreaterThanZero) {
+            // Camp cashbooks throw NegativeCampCategoryTotal, education cashbooks still
+            // translate the Skautis validation error into AmountMustBeGreaterThanZero.
+            // Both must be caught before the generic WsdlException below.
             $form->addError('Nelze uložit doklad, protože kategorie ve skautisu nemůže být záporná!');
         } catch (WsdlException $exc) {
             $this->logger->error(
@@ -389,6 +391,17 @@ final class ChitForm extends BaseControl
         if ($this->getPresenter()->isAjax()) {
             $this->redrawControl();
         }
+    }
+
+    private function reloadCashbook(): void
+    {
+        if (! $this->getPresenter()->isAjax()) {
+            $this->redirect('this');
+
+            return;
+        }
+
+        $this->getPresenter()->redrawControl();
     }
 
     private function assertCanUpdateCampBudget(): void
@@ -427,7 +440,52 @@ final class ChitForm extends BaseControl
     /** @return string[] */
     private function getCategoryPairsByType(?Operation $operation): array
     {
-        return $this->queryBus->handle(new CategoryPairsQuery($this->cashbookId, $operation));
+        $categoryPairs = $this->queryBus->handle(new CategoryPairsQuery($this->cashbookId, $operation));
+
+        if ($operation === null) {
+            return $categoryPairs;
+        }
+
+        return $categoryPairs + ($this->storedCategoryOptions[$operation->toString()] ?? []);
+    }
+
+    /**
+     * Uložení úpravy je samostatný požadavek, ve kterém se editChit() nevolá. Kategorie, které upravovaný
+     * doklad už má, musí být v nabídce i tady – jinak by je výběr kategorie odmítl a doklad nešel uložit.
+     */
+    private function loadStoredCategoryOptionsOfSubmittedChit(): void
+    {
+        $chitId = $this->getPresenter()->getHttpRequest()->getPost('pid');
+        if (! is_string($chitId) || ! ctype_digit($chitId)) {
+            return;
+        }
+
+        $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, (int) $chitId));
+        if (! $chit instanceof Chit) {
+            return;
+        }
+
+        $this->setStoredCategoryOptions($chit);
+    }
+
+    private function setStoredCategoryOptions(Chit $chit): void
+    {
+        $this->storedCategoryOptions = [];
+        $categories = $this->queryBus->handle(new CategoryListQuery($this->cashbookId));
+
+        foreach ($chit->getItems() as $item) {
+            $categoryId = $item->getCategory()->getId();
+            $category = $categories[$categoryId] ?? null;
+            if ($category === null) {
+                throw new LogicException('Category of edited chit not found.');
+            }
+
+            $label = $categoryId === ICategory::UNDEFINED_EXPENSE_ID || $categoryId === ICategory::UNDEFINED_INCOME_ID
+                ? 'Historická nezařazená kategorie'
+                : 'Historická kategorie: '.$category->getName();
+            $operation = $item->getCategory()->isIncome() ? Operation::INCOME : Operation::EXPENSE;
+            $this->storedCategoryOptions[$operation][$categoryId] = $label;
+        }
     }
 
     private function buildChitBodyFromValues(ArrayHash $values): ChitBody

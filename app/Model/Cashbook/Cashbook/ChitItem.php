@@ -6,29 +6,25 @@ namespace App\Model\Cashbook\Cashbook;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="ac_chits_item")
- * USE AS FINAL METHOD
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'ac_chits_item')] // USE AS FINAL METHOD
 class ChitItem
 {
     /**
      * @internal only for mapping
-     *
-     * @ORM\Id()
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue()
      */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private ?int $id = null;
 
-    /** @ORM\Embedded(class=Amount::class, columnPrefix=false) */
+    #[ORM\Embedded(class: Amount::class, columnPrefix: false)]
     private Amount $amount;
 
-    /** @ORM\Embedded(class=Category::class, columnPrefix=false) */
+    #[ORM\Embedded(class: Category::class, columnPrefix: false)]
     private Category $category;
 
-    /** @ORM\Column(type="string", length=120) */
+    #[ORM\Column(type: 'string', length: 120)]
     private string $purpose;
 
     public function __construct(Amount $amount, Category $category, string $purpose)

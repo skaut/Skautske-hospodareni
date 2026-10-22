@@ -123,7 +123,7 @@ final class ParticipantPresenter extends BasePresenter
     protected function createComponentParticipantList(): ParticipantList
     {
         $control = $this->participantListFactory->create(
-            $this->aid,
+            (int) $this->aid,
             $this->eventParticipants(),
             true,
             false,
@@ -157,17 +157,15 @@ final class ParticipantPresenter extends BasePresenter
         return $control;
     }
 
-    public function actionExport(int $aid): void
+    public function actionExport(int $aid, bool $download = false): void
     {
         try {
             $template = $this->exportService->getParticipants($aid, EventType::GENERAL);
-            $this->pdf->render($template, 'seznam-ucastniku.pdf', false);
+            $this->sendResponse($this->pdf->createResponse($template, 'seznam-ucastniku.pdf', false, $download));
         } catch (PermissionException $ex) {
             $this->flashMessage('Nemáte oprávnění k záznamu osoby! ('.$ex->getMessage().')', 'danger');
             $this->redirect('default', ['aid' => $this->aid]);
         }
-
-        $this->terminate();
     }
 
     /** @return Participant[] */

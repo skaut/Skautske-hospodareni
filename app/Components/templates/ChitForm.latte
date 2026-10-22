@@ -2,13 +2,13 @@
     <div class="card bg-body-tertiary mb-2" n:if="$isEditable" id="chitFormHeader">
         <div class="card-header">
             <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#chitCollapse" aria-expanded="false" aria-controls="chitCollapse">
-                {ifset $edit}Upravit doklad číslo : {if $num}{$num}{else}<span title="systémové Id">{$pid}</span> {/if} {else}Nový doklad{/ifset}
+                {ifset $edit}Upravit doklad číslo : {if $num}{$num}{else}---{/if} {else}Nový doklad{/ifset}
             </button>
         </div>
 
         <div class="collapse {if $displayChitForm}show{/if}" id="chitCollapse">
             <div class="card-body" >
-                <form n:name="form" class="chit-form">
+                <form n:name="form" class="chit-form inline-errors">
                     <ul class="alert alert-danger" n:if="$form->hasErrors()">
                         <li n:foreach="$form->errors as $error">{$error}</li>
                     </ul>

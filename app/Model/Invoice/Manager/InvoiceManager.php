@@ -66,7 +66,6 @@ class InvoiceManager extends AbstractManager
     public function delete(Invoice $invoice): void
     {
         $this->wrapInTransaction(function () use ($invoice): void {
-            // $this->logger->log($invoice->getUnit(), $this->userService->getUserDetail()->ID, 'Invoice paymet deleted', Type::get(Type::INVOICE_SEQUENCE), $invoiceSequence->getId());
             $this->deleteEntity($invoice);
         });
     }
@@ -90,7 +89,7 @@ class InvoiceManager extends AbstractManager
         }
 
         if (
-            $sourceInvoice->getPaymentType()->value === InvoicePaymentType::TRANSFER->value
+            $sourceInvoice->getPaymentType() === InvoicePaymentType::TRANSFER
             && $targetSequence->getBankAccount() === null
         ) {
             throw new InvalidArgumentException('Do zvolené řady nelze duplikovat fakturu hrazenou převodem bez bankovního účtu.');

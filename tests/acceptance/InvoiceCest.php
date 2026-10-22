@@ -309,8 +309,8 @@ class InvoiceCest extends BaseAcceptanceCest
         ]);
         Assert::assertNotEmpty($sourceSequenceIds, 'Source invoice sequence was not created.');
         Assert::assertNotEmpty($targetSequenceIds, 'Target invoice sequence was not created.');
-        $sourceSequenceId = (int) max($sourceSequenceIds);
-        $targetSequenceId = (int) max($targetSequenceIds);
+        $sourceSequenceId = $sourceSequenceIds === [] ? 0 : (int) max($sourceSequenceIds);
+        $targetSequenceId = $targetSequenceIds === [] ? 0 : (int) max($targetSequenceIds);
 
         $this->openInvoices();
         $I->clickStable('[data-test="invoice-sequence-create-invoice-'.$sourceSequenceId.'"]');
@@ -572,14 +572,19 @@ class InvoiceCest extends BaseAcceptanceCest
         $I->waitForElementVisible('[data-test="invoice-sequence-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeCurrentUrlMatches('~^/platby/rady/'.$sequenceId.'\?jednotka=\d+(?:&.*)?$~');
         $I->see($expectedInvNumber);
+        $invoiceId = $I->grabFromDatabase('invoice', 'id', ['invoice_number' => $expectedInvNumber]);
+        $I->seePdfFileAction('invoice-pdf-'.$invoiceId);
+        $I->seeNoHorizontalOverflowOnPhone('seznam faktur', '[data-test="invoice-pdf-'.$invoiceId.'-toggle"]');
 
         // ── 4. Open invoice detail ───────────────────────────────
-        $invoiceId = $I->grabFromDatabase('invoice', 'id', ['invoice_number' => $expectedInvNumber]);
         $I->amOnPage('/platby/faktury/'.$invoiceId);
         $I->waitForElementVisible('[data-test="invoice-detail-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $invoicePreview = html_entity_decode((string) $I->grabAttributeFrom('.invoice-preview-frame', 'srcdoc'));
         Assert::assertStringContainsString('Lifecycle Tester', $invoicePreview);
         Assert::assertStringContainsString('Lifecycle služba', $invoicePreview);
+        $I->seePdfFileAction('invoice-pdf');
+        $I->seeNoHorizontalOverflowOnPhone('detail faktury', '[data-test="invoice-pdf-toggle"]');
+        $I->openPdfFileActionInNewTab('invoice-pdf', 'do=downloadPdf');
 
         // ── 5. Cleanup: delete invoice + sequence via DB ─────────
         $sequenceId = $I->grabFromDatabase('invoice_sequence', 'id', ['sequence' => $seqPrefix]);

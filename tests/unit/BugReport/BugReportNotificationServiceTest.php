@@ -11,6 +11,7 @@ use Codeception\Test\Unit;
 use Latte\Engine;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
+use Nette\Application\UI\Control;
 use Nette\Bridges\ApplicationLatte\LatteFactory;
 use Nette\Mail\Mailer;
 use Nette\Mail\Message;
@@ -101,7 +102,8 @@ final class BugReportNotificationServiceTest extends Unit
 
         self::assertInstanceOf(Message::class, $mailer->message);
         self::assertCount(1, $mailer->message->getAttachments());
-        self::assertStringContainsString('filename="screenshot.jpg"', (string) $mailer->message->getAttachments()[0]->getHeader('Content-Disposition'));
+        $contentDisposition = $mailer->message->getAttachments()[0]->getHeader('Content-Disposition');
+        self::assertStringContainsString('filename="screenshot.jpg"', is_string($contentDisposition) ? $contentDisposition : '');
         self::assertSame('jpeg-content', $mailer->message->getAttachments()[0]->getBody());
         self::assertStringContainsString('Screenshot: screenshot.jpg', (string) $mailer->message->getBody());
     }
@@ -224,7 +226,7 @@ final class BugReportNotificationServiceTest extends Unit
                 false,
                 'https://h.skauting.cz',
                 new TemplateFactory(new class implements LatteFactory {
-                    public function create(): Engine
+                    public function create(?Control $control = null): Engine
                     {
                         return new Engine();
                     }

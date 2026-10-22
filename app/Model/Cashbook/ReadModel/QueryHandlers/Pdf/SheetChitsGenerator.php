@@ -47,7 +47,7 @@ class SheetChitsGenerator
                     throw new LogicException('Assertion failed.');
                 }
                 $isIncome = $chit->isIncome();
-                $amount = $chit->getAmount()->toFloat();
+                $amount = \App\Model\Utils\MoneyFactory::toDecimal($chit->getAmount()->toMoney());
                 $prefix = $cashbook->getChitNumberPrefix($chit->getPaymentMethod());
 
                 $sheet->setCellValue('A'.$rowCnt, $item->getDisplayName())

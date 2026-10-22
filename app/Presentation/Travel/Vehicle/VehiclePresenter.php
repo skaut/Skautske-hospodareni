@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Travel\Vehicle;
 
+use App\Http\FileStreamResponse;
 use App\Model\Common\File;
 use App\Model\DTO\Travel\Vehicle as VehicleDTO;
 use App\Model\Travel\Commands\Vehicle\CreateVehicle;
@@ -18,9 +19,9 @@ use App\Presentation\Travel\TravelBasePresenter;
 use App\Presentation\Travel\Vehicle\Components\RoadworthyControl;
 use App\Presentation\Travel\Vehicle\Factories\IRoadworthyControlFactory;
 use Component\Forms\BaseForm;
-use Contributte\Application\Response\PSR7StreamResponse;
 use LogicException;
 use Nette\Application\AbortException;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
@@ -30,7 +31,7 @@ use function in_array;
 
 class VehiclePresenter extends TravelBasePresenter
 {
-    /** @persistent */
+    #[Persistent]
     public int $id = 0;
 
     public function __construct(private TravelService $travelService, private IRoadworthyControlFactory $roadworthyControlFactory)
@@ -57,7 +58,7 @@ class VehiclePresenter extends TravelBasePresenter
         return $vehicle;
     }
 
-    public function actionDownloadScan(int $id, string $path): void
+    public function actionDownloadScan(int $id, string $path, bool $open = false): void
     {
         $this->getVehicle($id);
 
@@ -69,7 +70,7 @@ class VehiclePresenter extends TravelBasePresenter
                 continue;
             }
 
-            $this->sendResponse(new PSR7StreamResponse($scan->getContents(), $scan->getFileName()));
+            $this->sendResponse(new FileStreamResponse($scan->getContents(), $scan->getFileName(), $scan->getContentType(), ! $open));
         }
 
         throw new BadRequestException('Scan not found', IResponse::S404_NotFound);
@@ -137,6 +138,21 @@ class VehiclePresenter extends TravelBasePresenter
 
         $this->travelService->archiveVehicle($vehicleId);
         $this->flashMessage('Vozidlo bylo archivováno', 'success');
+
+        $this->redirect('this');
+    }
+
+    public function handleRestore(int $vehicleId): void
+    {
+        $vehicle = $this->getVehicle($vehicleId);
+        if (! $this->isVehicleEditable($vehicle)) {
+            $this->setView('accessDenied');
+
+            return;
+        }
+
+        $this->travelService->restoreVehicle($vehicleId);
+        $this->flashMessage('Vozidlo bylo vráceno mezi aktivní.', 'success');
 
         $this->redirect('this');
     }

@@ -1,0 +1,17 @@
+====== h.skauting: Vzdělávačky ======
+
+Sekce **Vzdělávačky** obsahuje přehled vzdělávacích akcí převzatých ze SkautISu. V detailu jsou základní údaje, účastníci, pokladna, rozpočet a podle oprávnění závěrečná zpráva.
+
+===== Detail a statistiky =====
+
+Detail zobrazuje stav, pořadatelskou jednotku, termín, místo a vedení akce. Tlačítko **Upravit ve SkautISu** otevře zdrojový záznam. Souhrn obsahuje finanční údaje, prefixy dokladů a podle oprávnění informace o dotaci, kapacitě a skutečných osobodnech.
+
+===== Účastníci =====
+
+Seznam účastníků je převzatý ze SkautISu a lze jej exportovat do PDF nebo Excelu. Před vytvořením výstupů zkontrolujte účast a počet dnů přímo ve SkautISu, protože z nich vycházejí skutečné osobodny.
+
+===== Rozpočet a evidence plateb =====
+
+Rozpočet porovnává plánované a skutečné náklady a výnosy. Upozornění na chybějící rozpočet, termíny nebo nekonzistentní data vyřešte před vytvořením výstupů.
+
+V evidenci plateb vedete pokladnu a lze zde načíst příjmy od účastníků. Záporný stav znamená, že je potřeba zkontrolovat příjmy, výdaje a import příjmů od účastníků.

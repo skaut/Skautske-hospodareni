@@ -1,0 +1,79 @@
+{*
+ * Jednotné ovládání stažení a otevření souboru.
+ *
+ * Hlavní akce vždy soubor stáhne. U PDF (je zadané `openUrl` nebo `openButton`) přibude dělená šipka
+ * s volbou „Otevřít v nové kartě“; Excel, ZIP, obrázky a ostatní formáty nabízejí jen stažení.
+ * Akce mohou být odkazy (`downloadUrl`, `openUrl`) nebo odesílací tlačítka formuláře
+ * (`downloadButton`, `openButton`) – např. hromadný tisk vybraných dokladů.
+ *
+ * @param string                                 $label          popisek hlavní akce („Stáhnout PDF“); v kompaktním režimu title a aria-label
+ * @param string|null                            $downloadUrl    odkaz ke stažení
+ * @param string|null                            $openUrl        odkaz na PDF k zobrazení v prohlížeči
+ * @param Nette\Forms\Controls\SubmitButton|null $downloadButton odesílací tlačítko formuláře pro stažení
+ * @param Nette\Forms\Controls\SubmitButton|null $openButton     odesílací tlačítko formuláře pro otevření PDF v nové kartě
+ * @param string                                 $variant        varianta tlačítka bez prefixu „btn-“
+ * @param bool                                   $small          malé tlačítko (btn-sm)
+ * @param bool                                   $compact        jen ikona, pro řádky tabulek
+ * @param bool                                   $disabled       soubor teď nejde stáhnout
+ * @param string|null                            $dataTest       data-test hlavní akce; šipka a otevření dostanou přípony -toggle a -open
+ * @param string                                 $class          třídy obalu
+ * @param string                                 $buttonClass    další třídy hlavního tlačítka
+ *}
+{default $downloadUrl = null}
+{default $openUrl = null}
+{default $downloadButton = null}
+{default $openButton = null}
+{default $variant = 'outline-secondary'}
+{default $small = true}
+{default $compact = false}
+{default $disabled = false}
+{default $dataTest = null}
+{default $class = ''}
+{default $buttonClass = ''}
+{var $isForm = $downloadButton !== null}
+{var $isPdf = $openUrl !== null || $openButton !== null}
+{var $btn = implode(' ', array_filter(['btn', 'btn-' . $variant, $small ? 'btn-sm' : '']))}
+<div n:class="btn-group, $class" n:attr="role => $isPdf ? 'group', 'aria-label' => $isPdf ? $label">
+    <a n:tag="$isForm ? 'button'"
+       n:class="$btn, $buttonClass, ! $isForm && $disabled ? disabled"
+       n:attr="
+           type => $isForm ? 'submit',
+           name => $isForm ? $downloadButton->getHtmlName(),
+           disabled => $isForm && $disabled,
+           href => ! $isForm && ! $disabled ? $downloadUrl,
+           'aria-disabled' => ! $isForm && $disabled ? 'true',
+           tabindex => ! $isForm && $disabled ? '-1',
+           title => $compact ? $label,
+           'aria-label' => $compact ? $label,
+           'data-test' => $dataTest,
+       ">
+        <i class="fi fi-rr-download" aria-hidden="true"></i>
+        {if ! $compact}{$label}{/if}
+    </a>
+    {if $isPdf}
+        <button type="button"
+                n:class="$btn, dropdown-toggle, dropdown-toggle-split"
+                data-bs-toggle="dropdown"
+                data-bs-popper-config='{ "strategy": "fixed" }'
+                aria-expanded="false"
+                n:attr="disabled => $disabled, 'data-test' => $dataTest !== null ? $dataTest . '-toggle'">
+            <span class="visually-hidden">Další možnosti: {$label}</span>
+        </button>
+        <div class="dropdown-menu dropdown-menu-end">
+            <a n:tag="$isForm ? 'button'"
+               class="dropdown-item"
+               n:attr="
+                   type => $isForm ? 'submit',
+                   name => $isForm ? $openButton->getHtmlName(),
+                   formtarget => $isForm ? '_blank',
+                   href => $isForm ? null : $openUrl,
+                   target => $isForm ? null : '_blank',
+                   rel => $isForm ? null : 'noopener noreferrer',
+                   'data-test' => $dataTest !== null ? $dataTest . '-open',
+               ">
+                <i class="fi fi-rr-arrow-up-right-from-square me-1" aria-hidden="true"></i>
+                Otevřít v nové kartě
+            </a>
+        </div>
+    {/if}
+</div>

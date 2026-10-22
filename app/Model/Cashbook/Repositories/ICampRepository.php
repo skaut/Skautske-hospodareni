@@ -16,6 +16,4 @@ interface ICampRepository
 
     /** @throws CashbookNotFound */
     public function findByCashbookId(CashbookId $cashbookId): Camp;
-
-    // public function save(Cashbook $cashbook): void;
 }

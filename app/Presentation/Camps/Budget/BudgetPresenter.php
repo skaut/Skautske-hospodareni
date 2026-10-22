@@ -7,9 +7,11 @@ namespace App\Presentation\Camps\Budget;
 use App\Components\Camps\MissingAutocomputedCategoryControl;
 use App\Components\Factories\Camps\IMissingAutocomputedCategoryControlFactory;
 use App\Model\Auth\Resources\Camp;
+use App\Model\Cashbook\CampBudgetUpdateNotAllowed;
 use App\Model\Cashbook\Cashbook\CashbookId;
 use App\Model\Cashbook\Commands\Cashbook\UpdateCampCategoryTotals;
 use App\Model\Cashbook\MissingCategory;
+use App\Model\Cashbook\NegativeCampCategoryTotal;
 use App\Model\Cashbook\ReadModel\Queries\CampCashbookIdQuery;
 use App\Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use App\Model\Cashbook\ReadModel\Queries\InconsistentCampCategoryTotalsQuery;
@@ -66,10 +68,19 @@ final class BudgetPresenter extends BasePresenter
      */
     public function handleConvert(int $aid): void
     {
-        $this->editableOnly();
+        if (! $this->authorizator->isAllowed(Camp::UPDATE_BUDGET, $aid)) {
+            $this->flashMessage('Nemáte oprávnění upravovat rozpočtové kategorie tábora ve SkautISu.', 'danger');
+            $this->redirect('this', $aid);
+        }
 
-        $this->commandBus->handle(new UpdateCampCategoryTotals($this->getCashbookId($aid)));
-        $this->flashMessage('Kategorie byly přepočítány.');
+        try {
+            $this->commandBus->handle(new UpdateCampCategoryTotals($this->getCashbookId($aid)));
+            $this->flashMessage('Kategorie byly přepočítány.');
+        } catch (NegativeCampCategoryTotal) {
+            $this->flashMessage('Kategorie nelze přepočítat, protože jejich výsledný součet nesmí být záporný. Upravte nejdříve vratky nebo příjmy účastníků.', 'danger');
+        } catch (CampBudgetUpdateNotAllowed) {
+            $this->flashMessage('Nemáte oprávnění upravovat rozpočtové kategorie tábora ve SkautISu.', 'danger');
+        }
 
         if ($this->isAjax()) {
             $this->redrawControl('flash');
@@ -85,6 +96,6 @@ final class BudgetPresenter extends BasePresenter
 
     protected function createComponentCategoryAutocomputedControl(): MissingAutocomputedCategoryControl
     {
-        return $this->missingAutocomputedCategoryControlFactory->create(new SkautisCampId($this->aid));
+        return $this->missingAutocomputedCategoryControlFactory->create(new SkautisCampId((int) $this->aid));
     }
 }

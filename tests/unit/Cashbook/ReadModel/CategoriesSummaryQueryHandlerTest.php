@@ -12,6 +12,7 @@ use App\Model\Cashbook\Operation;
 use App\Model\Cashbook\ReadModel\Queries\CategoriesSummaryQuery;
 use App\Model\Cashbook\Repositories\CategoryRepository;
 use App\Model\Cashbook\Repositories\ICashbookRepository;
+use App\Model\Utils\MoneyFactory;
 use Codeception\Test\Unit;
 use Mockery as m;
 
@@ -26,9 +27,9 @@ final class CategoriesSummaryQueryHandlerTest extends Unit
         $cashbook->shouldReceive('getType')->andReturn(CashbookType::get(CashbookType::EVENT));
         $cashbook->shouldReceive('getCategoryTotals')
             ->andReturn([
-                1 => 125.5,
-                ICategory::CATEGORY_REFUND_CHILD_ID => 10.0,
-                ICategory::CATEGORY_REFUND_ADULT_ID => 15.0,
+                1 => MoneyFactory::fromDecimal('125.50'),
+                ICategory::CATEGORY_REFUND_CHILD_ID => MoneyFactory::fromDecimal('10.00'),
+                ICategory::CATEGORY_REFUND_ADULT_ID => MoneyFactory::fromDecimal('15.00'),
             ]);
 
         $cashbooks = m::mock(ICashbookRepository::class);
@@ -66,7 +67,7 @@ final class CategoriesSummaryQueryHandlerTest extends Unit
 
         self::assertSame([1], array_keys($result));
         self::assertSame('Income', $result[1]->getName());
-        self::assertSame('12550', $result[1]->getTotal()->getAmount());
+        self::assertSame('10050', $result[1]->getTotal()->getAmount());
         self::assertTrue($result[1]->isIncome());
     }
 

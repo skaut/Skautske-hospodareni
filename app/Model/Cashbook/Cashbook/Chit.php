@@ -6,13 +6,13 @@ namespace App\Model\Cashbook\Cashbook;
 
 use App\Model\Cashbook\Cashbook;
 use App\Model\Cashbook\Category as CategoryAggregate;
+use App\Model\Cashbook\CategoryCatalog;
 use App\Model\Cashbook\ICategory;
 use App\Model\Cashbook\Operation;
 use App\Model\Common\FilePath;
 use App\Model\Common\ScanNotFound;
 use App\Model\Common\ShouldNotHappen;
 use Assert\Assertion;
-use Consistence\Doctrine\Enum\EnumAnnotation;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,68 +25,46 @@ use function implode;
 use function in_array;
 use function sprintf;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="ac_chits")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'ac_chits')]
 class Chit
 {
-    /**
-     * @ORM\Id()
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue()
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private ?int $id = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Cashbook::class, inversedBy="chits")
-     * @ORM\JoinColumn(name="eventId", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: Cashbook::class, inversedBy: 'chits')]
+    #[ORM\JoinColumn(name: 'eventId', nullable: false)]
     private Cashbook $cashbook;
 
-    /** @ORM\Embedded(class=ChitBody::class, columnPrefix=false) */
+    #[ORM\Embedded(class: ChitBody::class, columnPrefix: false)]
     private ChitBody $body;
 
     /**
-     * @ORM\ManyToMany(targetEntity=ChitItem::class, cascade={"persist", "remove"}, orphanRemoval=true)
-     * @ORM\JoinTable(
-     *     name="ac_chit_to_item",
-     *     joinColumns={@ORM\JoinColumn(name="chit_id", referencedColumnName="id", onDelete="CASCADE")},
-     *     inverseJoinColumns={
-     *         @ORM\JoinColumn(name="item_id", referencedColumnName="id", unique=true, onDelete="CASCADE")
-     *     }
-     * )
-     *
      * @var Collection&iterable<ChitItem>
      */
+    #[ORM\ManyToMany(targetEntity: ChitItem::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\JoinTable(name: 'ac_chit_to_item', joinColumns: [new ORM\JoinColumn(name: 'chit_id', referencedColumnName: 'id', onDelete: 'CASCADE')], inverseJoinColumns: [new ORM\JoinColumn(name: 'item_id', referencedColumnName: 'id', unique: true, onDelete: 'CASCADE')])]
     private Collection $items;
 
     /**
-     * @ORM\Column(type="string_enum", length=13)
-     *
      * @var PaymentMethod
-     * @EnumAnnotation(class=PaymentMethod::class)
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
      */
+    #[ORM\Column(type: 'chit_payment_method', length: 13)]
     private $paymentMethod;
 
     /**
      * ID of person that locked this.
-     *
-     * @ORM\Column(type="integer", nullable=true)
      */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $locked = null;
 
     /**
-     * @ORM\OneToMany(
-     *     targetEntity=ChitScan::class,
-     *     mappedBy="chit",
-     *     cascade={"persist", "remove"},
-     *     orphanRemoval=true
-     * )
-     *
      * @var Collection&iterable<ChitScan>
      */
+    #[ORM\OneToMany(targetEntity: ChitScan::class, mappedBy: 'chit', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $scans;
 
     /**
@@ -170,7 +148,7 @@ class Chit
 
     public function getPurpose(): string
     {
-        return implode(', ', $this->items->map(function (?ChitItem $item = null) {
+        return implode(', ', $this->items->map(function (ChitItem $item) {
             return $item->getPurpose();
         })->toArray());
     }
@@ -205,7 +183,7 @@ class Chit
             $newCashbook,
             $this->body,
             $this->paymentMethod,
-            $this->items->map(function (?ChitItem $item = null): ChitItem {
+            $this->items->map(function (ChitItem $item): ChitItem {
                 return clone $item;
             })->toArray(),
             $this->scans->toArray(),
@@ -219,7 +197,7 @@ class Chit
 
     public function copyToCashbookWithUndefinedCategory(Cashbook $newCashbook): self
     {
-        $items = $this->items->map(function (?ChitItem $item = null): ChitItem {
+        $items = $this->items->map(function (ChitItem $item): ChitItem {
             $category = new Category(
                 $this->isIncome() ? CategoryAggregate::UNDEFINED_INCOME_ID : CategoryAggregate::UNDEFINED_EXPENSE_ID,
                 $item->getCategory()->getOperationType(),
@@ -231,6 +209,27 @@ class Chit
         $scans = $this->scans->toArray();
 
         return new self($newCashbook, $this->body, $this->paymentMethod, $items->toArray(), $scans);
+    }
+
+    /**
+     * @param ICategory[] $sourceCategories
+     * @param ICategory[] $targetCategories
+     */
+    public function copyToCashbookWithCompatibleCategories(Cashbook $newCashbook, array $sourceCategories, array $targetCategories): self
+    {
+        $items = $this->items->map(function (ChitItem $item) use ($sourceCategories, $targetCategories): ChitItem {
+            $sourceCategory = $this->findSourceCategory($item->getCategory(), $sourceCategories);
+            $targetCategory = $sourceCategory === null
+                ? null
+                : CategoryCatalog::findCompatibleCategory($sourceCategory, $targetCategories);
+            if ($targetCategory === null) {
+                $targetCategory = $this->findUndefinedCategory($item->getCategory()->getOperationType(), $targetCategories);
+            }
+
+            return $item->withCategory(new Category($targetCategory->getId(), $targetCategory->getOperationType()));
+        });
+
+        return new self($newCashbook, $this->body, $this->paymentMethod, $items->toArray(), $this->scans->toArray());
     }
 
     public function withCategory(Category $category, Cashbook $cashbook): self
@@ -268,6 +267,38 @@ class Chit
     private function getFirstItem(): ChitItem
     {
         return $this->items->first();
+    }
+
+    /**
+     * @param ICategory[] $targetCategories
+     */
+    private function findUndefinedCategory(Operation $operation, array $targetCategories): ICategory
+    {
+        $undefinedId = $operation->equals(Operation::INCOME())
+            ? CategoryAggregate::UNDEFINED_INCOME_ID
+            : CategoryAggregate::UNDEFINED_EXPENSE_ID;
+
+        foreach ($targetCategories as $category) {
+            if ($category->getId() === $undefinedId && $category->getOperationType()->equals($operation)) {
+                return $category;
+            }
+        }
+
+        return new CategoryAggregate($undefinedId, 'Neurčeno', 'undefined', $operation, [], false, 0);
+    }
+
+    /**
+     * @param ICategory[] $sourceCategories
+     */
+    private function findSourceCategory(Category $category, array $sourceCategories): ?ICategory
+    {
+        foreach ($sourceCategories as $sourceCategory) {
+            if ($sourceCategory->getId() === $category->getId() && $sourceCategory->getOperationType()->equals($category->getOperationType())) {
+                return $sourceCategory;
+            }
+        }
+
+        return null;
     }
 
     /**

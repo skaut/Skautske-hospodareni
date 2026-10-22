@@ -172,15 +172,22 @@ final class Environment
             'GOOGLE_CREDENTIALS_FILE',
             $appEnv === 'ci' ? 'ci-google-credentials.json' : 'google-credentials.json',
         );
+        $gotenbergUsername = self::getNullableString('GOTENBERG_USERNAME');
+        $gotenbergPassword = self::getNullableString('GOTENBERG_PASSWORD');
+
+        if (($gotenbergUsername === null) !== ($gotenbergPassword === null)) {
+            throw new RuntimeException('GOTENBERG_USERNAME and GOTENBERG_PASSWORD must be configured together.');
+        }
 
         return [
             'appEnv' => $appEnv,
             'appBaseUrl' => $baseUrl,
+            'gotenbergUrl' => self::getString('GOTENBERG_URL', 'http://gotenberg:3000'),
+            'gotenbergUsername' => $gotenbergUsername,
+            'gotenbergPassword' => $gotenbergPassword,
             'sendEmail' => self::getBool('SEND_EMAIL', $appEnv !== 'dev'),
             'errorEmails' => self::getList('ERROR_EMAILS'),
-            'testBackground' => self::getBool('TEST_BACKGROUND', $appEnv !== 'prod'),
-            'environmentLabel' => self::getString('ENVIRONMENT_LABEL', 'Testovací server'),
-            'environmentColor' => self::getEnvironmentColor(),
+            'environmentMode' => EnvironmentMode::fromAppEnv($appEnv)->value,
             'maintenance' => [
                 'enabled' => self::getBool('MAINTENANCE_MODE', false),
                 'allowedIps' => self::getList('MAINTENANCE_ALLOWED_IPS'),
@@ -273,17 +280,6 @@ final class Environment
         }
 
         return $default;
-    }
-
-    private static function getEnvironmentColor(): string
-    {
-        $value = strtolower(self::getString('ENVIRONMENT_COLOR', 'test'));
-
-        if (in_array($value, ['test', 'beta'], true)) {
-            return $value;
-        }
-
-        return 'test';
     }
 
     /** @return string[] */

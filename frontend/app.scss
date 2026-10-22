@@ -18,9 +18,27 @@ $box-shadow-card: 0 1px 2px rgba(48, 40, 33, 0.04);
 $card-border-color: rgba(74, 101, 112, 0.14);
 $navbar-active-border-color: $primary;
 
+// Tabler is intentionally compact by default. The application is used for
+// sustained financial work, so the default copy and every heading level need a
+// readable scale at the browser's standard zoom.
+$font-size-base: 0.8125rem;
+$h1-font-size: 1.4375rem;
+$h1-line-height: 1.875rem;
+$h2-font-size: 1.25rem;
+$h2-line-height: 1.625rem;
+$h3-font-size: 1rem;
+$h3-line-height: 1.4375rem;
+$h4-font-size: 0.9375rem;
+$h4-line-height: 1.25rem;
+$h5-font-size: 0.8125rem;
+$h5-line-height: 1.25rem;
+$h6-font-size: 0.6875rem;
+$h6-line-height: 1rem;
+
 // Vendor
 @import "@tabler/core/scss/tabler";
 @import "@flaticon/flaticon-uicons/css/regular/all.css";
+@import "@flaticon/flaticon-uicons/css/brands/all.css";
 @import "nprogress/nprogress";
 @import "scss/pikaday";
 

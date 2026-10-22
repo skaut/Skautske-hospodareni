@@ -6,6 +6,7 @@ namespace App\Model\Cashbook\Services;
 
 use App\Model\Cashbook\CampBudgetUpdateNotAllowed;
 use App\Model\Cashbook\Cashbook\CashbookId;
+use App\Model\Cashbook\NegativeCampCategoryTotal;
 use InvalidArgumentException;
 
 interface ICampCategoryUpdater
@@ -17,6 +18,7 @@ interface ICampCategoryUpdater
      *
      * @throws InvalidArgumentException
      * @throws CampBudgetUpdateNotAllowed
+     * @throws NegativeCampCategoryTotal
      */
     public function updateCategories(CashbookId $cashbookId, array $cashbookTotals): void;
 }

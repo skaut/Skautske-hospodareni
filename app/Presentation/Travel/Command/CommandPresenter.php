@@ -8,6 +8,7 @@ use App\Components\Factories\Travel\ICommandFormFactory;
 use App\Components\Factories\Travel\IEditTravelDialogFactory;
 use App\Components\Travel\CommandForm;
 use App\Components\Travel\EditTravelDialog;
+use App\Helpers\AccountancyLatteExtension;
 use App\Model\Services\PdfRenderer;
 use App\Model\Travel\Commands\Command\AddReturnTravel;
 use App\Model\Travel\Commands\Command\DuplicateTravel;
@@ -100,7 +101,7 @@ final class CommandPresenter extends \App\BasePresenter
         ]);
     }
 
-    public function actionPrint(int $id): void
+    public function actionPrint(int $id, bool $download = false): void
     {
         if (! $this->isCommandAccessible($id)) {
             $this->flashMessage('Neoprávněný přístup k záznamu!', 'danger');
@@ -118,9 +119,9 @@ final class CommandPresenter extends \App\BasePresenter
         if (! $template instanceof Template) {
             throw new LogicException('Assertion failed.');
         }
-        $template->getLatte()->addFilterLoader('\\App\\Helpers\AccountancyHelpers::loader');
+        $template->getLatte()->addExtension(new AccountancyLatteExtension());
 
-        $this->pdf->render(
+        $this->sendResponse($this->pdf->createResponse(
             $template->renderToString(
                 __DIR__.'/ex.command.latte',
                 [
@@ -133,8 +134,9 @@ final class CommandPresenter extends \App\BasePresenter
                 ],
             ),
             'cestovni-prikaz.pdf',
-        );
-        $this->terminate();
+            false,
+            $download,
+        ));
     }
 
     public function handleCloseCommand(int $commandId): void
@@ -269,7 +271,7 @@ final class CommandPresenter extends \App\BasePresenter
 
     private function formAddTravelSubmitted(Form $form): void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(\Nette\Utils\ArrayHash::class);
         $commandId = (int) $values['command_id'];
 
         if (! $this->isCommandEditable($commandId)) {

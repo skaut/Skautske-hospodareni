@@ -83,8 +83,8 @@ final class EventPresenter extends BasePresenter
             throw new LogicException('Assertion failed.');
         }
         $this->template->setParameters([
-            'statistic' => $this->queryBus->handle(new EventStatisticsQuery(new SkautisEventId($this->aid))),
-            'finalRealBalance' => $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId($this->aid))),
+            'statistic' => $this->queryBus->handle(new EventStatisticsQuery(new SkautisEventId((int) $this->aid))),
+            'finalRealBalance' => $this->queryBus->handle(new FinalRealBalanceQuery($this->getCashbookId((int) $this->aid))),
             'accessEditBase' => $accessEditBase,
             'accessCloseEvent' => $this->authorizator->isAllowed(Event::CLOSE, $aid),
             'accessOpenEvent' => $this->authorizator->isAllowed(Event::OPEN, $aid),
@@ -146,11 +146,11 @@ final class EventPresenter extends BasePresenter
 
     public function handleActivateStatistic(): void
     {
-        $this->commandBus->handle(new ActivateStatistics($this->aid));
+        $this->commandBus->handle(new ActivateStatistics((int) $this->aid));
         $this->redirect('this', ['aid' => $this->aid]);
     }
 
-    public function actionPrintAll(int $aid): void
+    public function actionPrintAll(int $aid, bool $download = false): void
     {
         $cashbookId = $this->getCashbookId($aid);
 
@@ -159,11 +159,10 @@ final class EventPresenter extends BasePresenter
         $template .= $this->exportService->getCashbook($cashbookId, PaymentMethod::CASH()).$this->exportService->getNewPage();
         $template .= $this->queryBus->handle(ExportChits::all($cashbookId));
 
-        $this->pdf->render($template, 'all.pdf');
-        $this->terminate();
+        $this->sendResponse($this->pdf->createResponse($template, 'all.pdf', false, $download));
     }
 
-    public function renderReport(int $aid): void
+    public function renderReport(int $aid, bool $download = false): void
     {
         if (! $this->authorizator->isAllowed(Event::ACCESS_DETAIL, $aid)) {
             $this->flashMessage('Nemáte právo přistupovat k akci', 'warning');
@@ -172,8 +171,7 @@ final class EventPresenter extends BasePresenter
 
         $template = $this->exportService->getEventReport($aid);
 
-        $this->pdf->render($template, 'report.pdf');
-        $this->terminate();
+        $this->sendResponse($this->pdf->createResponse($template, 'report.pdf', false, $download));
     }
 
     protected function createComponentFormEdit(): Form
@@ -208,6 +206,7 @@ final class EventPresenter extends BasePresenter
         }
 
         $id = (int) $this->aid;
+        /** @var array<string, mixed> $values */
         $values = $button->getForm()->getValues('array');
 
         $this->commandBus->handle(
@@ -228,7 +227,7 @@ final class EventPresenter extends BasePresenter
 
     protected function createComponentFunctions(): FunctionsControl
     {
-        return $this->functionsFactory->create($this->aid, $this->getCurrentUnitId());
+        return $this->functionsFactory->create((int) $this->aid, $this->getCurrentUnitId());
     }
 
     private function getCashbookId(int $skautisEventId): CashbookId

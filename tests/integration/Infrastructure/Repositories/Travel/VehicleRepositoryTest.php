@@ -99,6 +99,40 @@ class VehicleRepositoryTest extends IntegrationTest
         $this->assertSame(1, $vehicles[0]->getId());
     }
 
+    public function testFindByFilterReturnsOnlyArchivedVehiclesWhenAsked(): void
+    {
+        $this->tester->haveInDatabase(self::TABLE, ['id' => 1, 'unit_id' => 5] + $this->getVehicleRow());
+        $this->tester->haveInDatabase(self::TABLE, ['id' => 2, 'unit_id' => 4, 'archived' => 1] + $this->getVehicleRow());
+        $this->tester->haveInDatabase(self::TABLE, ['id' => 3, 'unit_id' => 5, 'archived' => 1] + $this->getVehicleRow());
+
+        $vehicles = array_values($this->repository->findByFilter(5, true)->getQuery()->getResult());
+
+        $this->assertCount(1, $vehicles);
+        $this->assertSame(3, $vehicles[0]->getId());
+    }
+
+    public function testFindByUnitSkipsArchivedVehicles(): void
+    {
+        $this->tester->haveInDatabase(self::TABLE, ['id' => 1, 'unit_id' => 5] + $this->getVehicleRow());
+        $this->tester->haveInDatabase(self::TABLE, ['id' => 2, 'unit_id' => 5, 'archived' => 1] + $this->getVehicleRow());
+
+        $vehicles = $this->repository->findByUnit(5);
+
+        $this->assertCount(1, $vehicles);
+        $this->assertSame(1, $vehicles[0]->getId());
+    }
+
+    public function testSaveRestoredVehicle(): void
+    {
+        $this->tester->haveInDatabase(self::TABLE, ['id' => 1, 'archived' => 1] + $this->getVehicleRow());
+
+        $vehicle = $this->repository->find(1);
+        $vehicle->restore();
+        $this->repository->save($vehicle);
+
+        $this->tester->seeInDatabase(self::TABLE, ['id' => 1, 'archived' => 0]);
+    }
+
     public function testFindNonExistentVehicleThrowsException(): void
     {
         $this->expectException(VehicleNotFound::class);

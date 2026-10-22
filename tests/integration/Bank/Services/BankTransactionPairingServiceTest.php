@@ -27,6 +27,7 @@ use App\Model\Payment\Group;
 use App\Model\Payment\IUnitResolver;
 use App\Model\Payment\Payment;
 use App\Model\Payment\VariableSymbol;
+use App\Model\Utils\MoneyFactory;
 use Brick\Math\BigDecimal;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
@@ -153,7 +154,7 @@ final class BankTransactionPairingServiceTest extends IntegrationTest
         $this->entityManager->persist($group);
         $this->entityManager->flush();
 
-        $payment = new Payment($group, 'Platba', [], $amount, ChronosDate::today(), new VariableSymbol($variableSymbol), null, null, '');
+        $payment = new Payment($group, 'Platba', [], MoneyFactory::fromDecimal((string) $amount), ChronosDate::today(), new VariableSymbol($variableSymbol), null, null, '');
         $this->entityManager->persist($payment);
         $this->entityManager->flush();
 
@@ -196,7 +197,7 @@ final class BankTransactionPairingServiceTest extends IntegrationTest
                 'tx-'.$variableSymbol,
                 BankTransactionSource::FIO,
                 new DateTimeImmutable('2026-03-14 09:00:00'),
-                $amount,
+                MoneyFactory::fromDecimal((string) $amount),
                 '12-3456789/2010',
                 'František Maša',
                 $variableSymbol,

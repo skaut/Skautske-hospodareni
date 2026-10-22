@@ -57,10 +57,6 @@ final class LazyWebService implements WebServiceInterface
 
     private function getWebservice(): WebServiceInterface
     {
-        if ($this->webService === null) {
-            $this->webService = $this->skautis->getWebService($this->webServiceName);
-        }
-
-        return $this->webService;
+        return $this->webService ??= $this->skautis->getWebService($this->webServiceName);
     }
 }

@@ -66,16 +66,16 @@ class BankService
             static fn (Group $group): ?int => $group->getBankAccountId(),
             fn (int $bankAccountId): BankAccount => $this->bankAccounts->find($bankAccountId),
             fn (array $groups): array => $this->pairingCandidates->getScopedCandidatesForGroups(
-                array_values(array_map(static fn (Group $group): int => $group->getId(), $groups)),
+                array_values(array_map(static fn (Group $group): int => (int) $group->getId(), $groups)),
             ),
             fn (array $groups): ChronosDate => $daysBack === null
                 ? $this->resolvePairingIntervalStart($groups)
                 : ChronosDate::today()->subDays($daysBack),
             fn (BankAccount $bankAccount, ChronosDate $pairSince, ChronosDate $now): array => $this->transactions->getPersistentTransactionsForPeriod($bankAccount, $pairSince, $now),
             fn (BankAccount $bankAccount, array $groups): bool => ! (
-                $bankAccount->getTransactionSource()->value === BankTransactionSource::FIO->value
+                $bankAccount->getTransactionSource() === BankTransactionSource::FIO
                 && $bankAccount->getToken() === null
-            ) && $this->payments->findByMultipleGroups(array_values(array_map(static fn (Group $group): int => $group->getId(), $groups))) !== [],
+            ) && $this->payments->findByMultipleGroups(array_values(array_map(static fn (Group $group): int => (int) $group->getId(), $groups))) !== [],
         ) as $result) {
             $this->payments->saveMany($result->payments);
             $pairingResults[] = new PairingResult(
@@ -111,7 +111,7 @@ class BankService
             return [];
         }
 
-        $groupIds = array_values(array_map(static fn (Group $g): int => $g->getId(), $groups));
+        $groupIds = array_values(array_map(static fn (Group $g): int => (int) $g->getId(), $groups));
 
         return $this->pairAllGroups($groupIds);
     }

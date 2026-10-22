@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Payment\Payment;
 
 use App\Model\Payment\Commands\Payment\CreatePayment;
+use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Nette\Schema\ValidationException;
@@ -24,7 +25,7 @@ final class CsvParserTest extends Unit
         $payment = $payments[0];
         self::assertSame(123, $payment->getGroupId());
         self::assertSame('Alice', $payment->getName());
-        self::assertSame(150.5, $payment->getAmount());
+        self::assertTrue(MoneyFactory::fromDecimal('150.50')->equals($payment->getAmount()));
         self::assertTrue($payment->getDueDate()->equals(ChronosDate::create(2026, 3, 4)));
         self::assertSame(['alice@example.com', 'bob@example.com'], array_map('strval', $payment->getRecipients()));
         self::assertSame('123456', $payment->getVariableSymbol()?->__toString());

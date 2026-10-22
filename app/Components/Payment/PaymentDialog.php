@@ -15,9 +15,11 @@ use App\Model\Payment\InvalidVariableSymbol;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use App\Model\Payment\VariableSymbolCollision;
+use App\Model\Utils\MoneyFactory;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
 
@@ -31,7 +33,7 @@ final class PaymentDialog extends Dialog
     /** @var callable[] */
     public array $onSuccess = [];
 
-    /** @persistent */
+    #[Persistent]
     public int $paymentId = -1;
 
     public function __construct(private int $groupId, private CommandBus $commandBus, private QueryBus $queryBus, private PaymentService $paymentService)
@@ -51,6 +53,7 @@ final class PaymentDialog extends Dialog
 
         $this->template->setFile(__DIR__.'/templates/PaymentDialog.latte');
         $this->template->setParameters([
+            'customClasses' => 'modal-dialog-scrollable',
             'payment' => $this->payment(),
             'editing' => $this->isEditing(),
         ]);
@@ -77,8 +80,8 @@ final class PaymentDialog extends Dialog
         if ($payment !== null) {
             $form->setDefaults([
                 'name' => $payment->getName(),
-                'amount' => $payment->getAmount(),
                 'emails' => array_map(static fn (EmailAddress $email): string => $email->getValue(), $payment->getEmailRecipients()),
+                'amount' => MoneyFactory::toDecimal($payment->getAmount()),
                 'dueDate' => $payment->getDueDate(),
                 'variableSymbol' => $payment->getVariableSymbol(),
                 'constantSymbol' => $payment->getConstantSymbol(),
@@ -96,7 +99,7 @@ final class PaymentDialog extends Dialog
             }
 
             $form->setDefaults([
-                'amount' => $group->getDefaultAmount(),
+                'amount' => $group->getDefaultAmount() === null ? null : MoneyFactory::toDecimal($group->getDefaultAmount()),
                 'dueDate' => $group->getDueDate(),
                 'variableSymbol' => $nextVS !== null ? (string) $nextVS : '',
                 'constantSymbol' => $group->getConstantSymbol(),
@@ -116,7 +119,7 @@ final class PaymentDialog extends Dialog
 
     private function paymentSubmitted(Form $form): void
     {
-        $v = $form->getValues();
+        $v = $form->getValues(ArrayHash::class);
 
         try {
             if ($this->isEditing()) {
@@ -150,7 +153,7 @@ final class PaymentDialog extends Dialog
                 $this->paymentId,
                 $values->name,
                 $this->recipients($values),
-                $values->amount,
+                MoneyFactory::fromDecimal((string) $values->amount),
                 new ChronosDate($values->dueDate),
                 $values->variableSymbol,
                 $values->constantSymbol,
@@ -167,7 +170,7 @@ final class PaymentDialog extends Dialog
                 $this->groupId,
                 $values->name,
                 $this->recipients($values),
-                $values->amount,
+                MoneyFactory::fromDecimal((string) $values->amount),
                 new ChronosDate($values->dueDate),
                 null,
                 $values->variableSymbol,

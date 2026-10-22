@@ -42,9 +42,7 @@ services:
         image: traefik:latest
         restart: unless-stopped
         networks:
-            traefik:
-                aliases:
-                    - moje-hospodareni.cz
+            - traefik
         ports:
             - "${TRAEFIK_HOST_PORT:-80}:80"
         volumes:
@@ -76,18 +74,6 @@ services:
             - containers/php/ini/image.ini
             - containers/php/ini/xdebug.ini
 
-    php-test:
-        <<: *php-base
-        hostname: php-test.localhost
-        container_name: ${COMPOSE_PROJECT_NAME:-hskauting}.app-test
-        depends_on:
-            - mysql-test
-        env_file:
-            - containers/php/ini/image.ini
-        environment:
-            APP_ENV: ci
-            HEADLESS: ${HEADLESS:-}
-
     nginx:
         image: nginx:latest
         restart: unless-stopped
@@ -105,7 +91,6 @@ services:
         depends_on:
             - php
             - php-xdebug
-            - php-test
 
     mysql:
         <<: *mysql-base
@@ -116,39 +101,6 @@ services:
         volumes:
             - mysql:/var/lib/mysql
             - ./containers/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
-
-    mysql-test:
-        container_name: ${COMPOSE_PROJECT_NAME:-hskauting}.mysql-test
-        <<: *mysql-base
-        hostname: mysql-test.localhost
-        volumes:
-            - ./containers/mysql-test/my.cnf:/etc/mysql/conf.d/my.cnf
-        tmpfs:
-            - /var/lib/mysql
-        command: [
-            "mysqld",
-            "--innodb-flush-log-at-trx-commit=0",
-            "--sync-binlog=0",
-            "--innodb-use-native-aio=0"
-        ]
-
-    selenium:
-        container_name: ${COMPOSE_PROJECT_NAME:-hskauting}.chrome
-        hostname: selenium.localhost
-        image: selenium/standalone-chrome
-        shm_size: 2g
-        environment:
-            SE_VNC_NO_PASSWORD: 1
-            SE_NODE_SESSION_TIMEOUT: 900
-            SCREEN_WIDTH: 1920
-            SCREEN_HEIGHT: 1080
-        networks:
-            - traefik
-        labels:
-            traefik.enable: true
-            traefik.http.routers.selenium.rule: Host(`selenium.localhost`)
-            traefik.http.routers.selenium.entrypoints: web
-            traefik.http.services.selenium.loadbalancer.server.port: 7900
 
     adminer:
         image: adminer:4.8.1
@@ -172,3 +124,13 @@ services:
             traefik.http.services.adminer.loadbalancer.server.port: 8080
         depends_on:
             - mysql
+
+    gotenberg:
+        image: gotenberg/gotenberg:8
+        restart: unless-stopped
+        networks:
+            - traefik
+        command:
+            - gotenberg
+            - --chromium-disable-javascript=true
+            - --chromium-allow-list=file:///tmp/.*

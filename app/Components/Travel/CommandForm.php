@@ -9,6 +9,7 @@ use App\Model\Common\Services\QueryBus;
 use App\Model\Travel\Passenger;
 use App\Model\Travel\Travel\TransportType;
 use App\Model\Travel\TravelService;
+use App\Model\Travel\VehicleIsArchived;
 use App\Model\Unit\ReadModel\Queries\UnitQuery;
 use App\Model\Unit\Unit;
 use App\Model\Utils\MoneyFactory;
@@ -98,7 +99,8 @@ class CommandForm extends Control
             ->setOption('id', 'passengerAddress');
 
         $form->addGroup('Vozidlo')->setOption('container', Html::el('fieldset')->setAttribute('id', 'vehicle'));
-        $form->addSelect('vehicle_id', 'Vozidlo*', $vehicles)
+        $vehicleSelectBox = $form->addSelect('vehicle_id', 'Vozidlo*', $vehicles);
+        $vehicleSelectBox
             ->setOption('id', 'vehicle_id')
             ->setPrompt('Vyberte vozidlo')
             ->setHtmlAttribute('class', 'form-control')
@@ -123,11 +125,19 @@ class CommandForm extends Control
         $form->addSubmit('send', $this->commandId !== null ? 'Upravit' : 'Založit')
             ->setHtmlAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function (BaseForm $form): void {
-            if ($this->commandId === null) {
-                $this->createCommand($form->getValues());
-            } else {
-                $this->updateCommand($form->getValues());
+        $form->onSuccess[] = function (BaseForm $form) use ($vehicleSelectBox): void {
+            try {
+                if ($this->commandId === null) {
+                    $this->createCommand($form->getValues(ArrayHash::class));
+                } else {
+                    $this->updateCommand($form->getValues(ArrayHash::class));
+                }
+            } catch (VehicleIsArchived) {
+                // Archived vehicles are filtered out of the select, so this only happens
+                // when the vehicle got archived while the form was open (or on a forged request).
+                $vehicleSelectBox->addError('Vybrané vozidlo je archivované, vyberte jiné.');
+
+                return;
             }
 
             $this->onSuccess();
@@ -151,7 +161,7 @@ class CommandForm extends Control
 
     private function loadDefaultValues(BaseForm $form): void
     {
-        $command = $this->model->getCommandDetail($this->commandId);
+        $command = $this->model->getCommandDetail((int) $this->commandId);
 
         if ($command === null) {
             throw new InvalidStateException('Travel command #'.$this->commandId.' not found');
@@ -237,7 +247,7 @@ class CommandForm extends Control
             MoneyFactory::fromFloat((float) $values['fuel_price']),
             MoneyFactory::fromFloat((float) $values['amortization']),
             $values['note'],
-            array_map(fn (string $type) => TransportType::get($type), $values['type']),
+            array_values(array_map(fn (string $type) => TransportType::get($type), $values['type'])),
             $presenter->getLoggedInUserId(),
             $values['unit'],
         );
@@ -248,7 +258,7 @@ class CommandForm extends Control
     private function updateCommand(ArrayHash $values): void
     {
         $this->model->updateCommand(
-            $this->commandId,
+            (int) $this->commandId,
             isset($values['contract_id']) ? (int) $values['contract_id'] : null,
             $this->createPassenger($values),
             $values['vehicle_id'],
@@ -258,7 +268,7 @@ class CommandForm extends Control
             MoneyFactory::fromFloat((float) $values['fuel_price']),
             MoneyFactory::fromFloat((float) $values['amortization']),
             $values['note'],
-            array_map(fn (string $type) => TransportType::get($type), $values['type']),
+            array_values(array_map(fn (string $type) => TransportType::get($type), $values['type'])),
             $values['unit'],
         );
 

@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Model\Cashbook\ReadModel\QueryHandlers;
 
-use App\Model\Cashbook\Cashbook\Amount;
 use App\Model\Cashbook\ReadModel\Queries\CampParticipantIncomeQuery;
 use App\Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Participant\Participant;
 use App\Model\Participant\ZeroParticipantIncome;
+use App\Model\Utils\MoneyFactory;
 use LogicException;
+use Money\Money;
 
 use function preg_match;
 
@@ -20,9 +21,9 @@ class CampParticipantIncomeQueryHandler
     {
     }
 
-    public function __invoke(CampParticipantIncomeQuery $query): Amount
+    public function __invoke(CampParticipantIncomeQuery $query): Money
     {
-        $res = 0.0;
+        $res = MoneyFactory::zero();
         $participants = $this->queryBus->handle(new CampParticipantListQuery($query->getCampId()));
         foreach ($participants as $p) {
             if (! $p instanceof Participant) {
@@ -36,13 +37,13 @@ class CampParticipantIncomeQueryHandler
                 continue;
             }
 
-            $res += $p->getPayment();
+            $res = $res->add($p->getPayment());
         }
 
-        if ($res === 0.0) {
+        if ($res->isZero()) {
             throw new ZeroParticipantIncome();
         }
 
-        return Amount::fromFloat($res);
+        return $res;
     }
 }
