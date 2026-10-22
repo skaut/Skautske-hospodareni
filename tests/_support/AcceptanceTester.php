@@ -529,6 +529,33 @@ JS);
         return $issues;
     }
 
+    /**
+     * Prvek je vidět ve viewportu a nic jiného na stránce ho nepřekrývá – typicky položka
+     * rozbalovacího menu, která by jinak mohla skončit pod následujícím obsahem.
+     */
+    public function seeElementNotCovered(string $selector): void
+    {
+        $this->waitForElementVisible($selector, self::ELEMENT_LOAD_TIMEOUT);
+
+        $coveredBy = (string) $this->executeJS(<<<'JS'
+const element = document.querySelector(arguments[0]);
+const rect = element.getBoundingClientRect();
+const x = rect.left + rect.width / 2;
+const y = rect.top + rect.height / 2;
+if (x < 0 || y < 0 || x > window.innerWidth || y > window.innerHeight) {
+    return 'mimo viewport';
+}
+const topElement = document.elementFromPoint(x, y);
+if (topElement === null || element === topElement || element.contains(topElement)) {
+    return '';
+}
+return topElement.tagName.toLowerCase() + (topElement.dataset.test ? '[data-test=' + topElement.dataset.test + ']' : '')
+    + (typeof topElement.className === 'string' && topElement.className ? '.' + topElement.className.trim().split(/\s+/).join('.') : '');
+JS, [$selector]);
+
+        Assert::assertSame('', $coveredBy, sprintf('Prvek %s překrývá %s.', $selector, $coveredBy));
+    }
+
     /** Content-Disposition odpovědi na adresu v rámci přihlášené relace. */
     public function grabContentDisposition(string $url): string
     {
