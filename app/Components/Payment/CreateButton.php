@@ -13,6 +13,9 @@ class CreateButton extends BaseControl
     /** @var array<string, string> */
     protected array $css = [];
 
+    /** Popisek hlavního tlačítka; bez něj „Založit skupinu plateb“. */
+    private ?string $label = null;
+
     public function __construct()
     {
         $this->css = [
@@ -30,10 +33,16 @@ class CreateButton extends BaseControl
         $this->css = array_merge($this->css, $css);
     }
 
+    public function setLabel(string $label): void
+    {
+        $this->label = $label;
+    }
+
     public function render(): void
     {
         $this->template->setParameters([
             'css' => $this->css,
+            'label' => $this->label,
         ]);
         $this->template->setFile(__DIR__.'/templates/CreateButton.latte');
         $this->template->render();
