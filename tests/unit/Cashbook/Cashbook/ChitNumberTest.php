@@ -47,7 +47,9 @@ class ChitNumberTest extends Unit
     public function getInvalidNumbers(): array
     {
         return [
-            ['123456', 'longer than 6 symbols'],
+            ['1234567', 'longer than 6 symbols'],
+            ['ABC1234', 'prefix and digits longer than 6 symbols'],
+            ['12345/1', 'split number longer than 6 symbols'],
             ['A', 'letters only'],
             ['1A', 'letter postfix'],
             ['', 'empty number'],
@@ -64,6 +66,10 @@ class ChitNumberTest extends Unit
     {
         return [
             ['12345'],
+            ['123456'],
+            ['V12345'],
+            ['ABC123'],
+            ['1234/5'],
             ['1'],
             ['ABC1'],
             ['A1'],

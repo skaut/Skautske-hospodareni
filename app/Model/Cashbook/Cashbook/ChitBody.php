@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Embeddable]
 final class ChitBody
 {
-    #[ORM\Column(type: 'chit_number', nullable: true, name: 'num', length: 5)]
+    #[ORM\Column(type: 'chit_number', nullable: true, name: 'num', length: ChitNumber::MAX_LENGTH)]
     private ?ChitNumber $number = null;
 
     #[ORM\Column(type: 'chronos_date')]
