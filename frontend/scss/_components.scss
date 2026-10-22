@@ -293,6 +293,15 @@ body[data-page-help-expanded="false"] .page-heading:not([data-page-help-initiali
   outline-offset: 2px;
 }
 
+// Hover posouvá kartu přes transform, a tím z ní dělá samostatnou vrstvu. Bez z-index by se
+// rozbalovací menu karty (např. „Založit skupinu plateb“) kreslilo pod následujícím obsahem
+// a při přejetí myší na jeho zakrytou část by karta ztrácela hover – menu by blikalo.
+.navigation-card:hover,
+.navigation-card:focus-within,
+.navigation-card:has(.dropdown-menu.show) {
+  z-index: 3;
+}
+
 .navigation-card-actions {
   position: relative;
   z-index: 2;
