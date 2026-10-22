@@ -22,6 +22,7 @@ use Cake\Chronos\ChronosDate;
 use Helpers;
 use IntegrationTest;
 
+use function array_map;
 use function assert;
 
 /**
@@ -432,5 +433,28 @@ class CashbookIntegrationTest extends IntegrationTest
         $this->assertNull($cashbook->getChits()[1]->getBody()->getNumber());
         $this->assertSame('3', $cashbook->getChits()[2]->getBody()->getNumber()?->toString());
         $this->assertSame('2', $cashbook->getChits()[3]->getBody()->getNumber()?->toString());
+    }
+
+    public function testGeneratedSixCharacterChitNumberIsStored(): void
+    {
+        $cashbook = new Cashbook(CashbookId::generate(), CashbookType::get(CashbookType::EVENT));
+
+        Helpers::addChitToCashbook($cashbook, '99999', PaymentMethod::CASH(), null, null, ChronosDate::yesterday());
+        Helpers::addChitToCashbook($cashbook, null, PaymentMethod::CASH(), null, null, ChronosDate::today());
+
+        $this->entityManager->persist($cashbook);
+        $this->entityManager->flush();
+
+        $cashbook->generateChitNumbers(PaymentMethod::CASH());
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+
+        $stored = $this->entityManager->find(Cashbook::class, $cashbook->getId());
+        $this->assertInstanceOf(Cashbook::class, $stored);
+        $numbers = array_map(
+            static fn (Cashbook\Chit $chit): ?string => $chit->getBody()->getNumber()?->toString(),
+            $stored->getChits(PaymentMethod::CASH()),
+        );
+        $this->assertContains('100000', $numbers);
     }
 }

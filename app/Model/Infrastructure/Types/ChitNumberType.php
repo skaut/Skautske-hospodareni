@@ -13,7 +13,7 @@ class ChitNumberType extends StringType
 {
     public function getDefaultLength(AbstractPlatform $platform): int
     {
-        return 5;
+        return ChitNumber::MAX_LENGTH;
     }
 
     public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string

@@ -188,8 +188,8 @@ final class ChitForm extends BaseControl
             ->setHtmlAttribute('placeholder', 'Datum');
 
         $form->addText('num')
-            ->setMaxLength(5)
             ->setRequired(false)
+            ->addRule($form::MaxLength, 'Číslo dokladu může mít nejvýše %d znaků.', ChitNumber::MAX_LENGTH)
             ->addRule($form::PATTERN, self::INVALID_CHIT_NUMBER_MESSAGE, ChitNumber::PATTERN)
             ->setHtmlAttribute('placeholder', 'Číslo dokladu')
             ->setHtmlAttribute('class', 'form-control input-sm');
