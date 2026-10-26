@@ -28,6 +28,8 @@ final class MassAddFormTest extends Unit
 {
     private const GROUP_ID = 7;
 
+    private ?Session $session = null;
+
     /** @return array<string, array{string, bool}> */
     public function getAmounts(): array
     {
@@ -90,6 +92,12 @@ final class MassAddFormTest extends Unit
         );
     }
 
+    protected function _after(): void
+    {
+        // Další testy si nastavují vlastní session.save_path, to jde jen u zavřené session.
+        $this->session?->close();
+    }
+
     private function buildComponent(): MassAddForm
     {
         $group = new Group(
@@ -118,10 +126,10 @@ final class MassAddFormTest extends Unit
         $response = new Response();
         $sessionSavePath = sys_get_temp_dir().'/hskauting-mass-add-form-test-sessions';
         FileSystem::createDir($sessionSavePath);
-        $session = (new Session($request, $response))->setSavePath($sessionSavePath);
+        $this->session = (new Session($request, $response))->setSavePath($sessionSavePath);
         $presenter = new class extends BasePresenter {
         };
-        $presenter->injectPrimary($request, $response, session: $session);
+        $presenter->injectPrimary($request, $response, session: $this->session);
         $presenter->addComponent($component, 'massAdd');
 
         return $component;

@@ -17,9 +17,6 @@ final class EventAddParticipantsPresenter extends BasePresenter
 {
     private int $groupId;
 
-    /** @var Participant[] */
-    private array $participants;
-
     public function __construct(private PaymentService $model, private IMassAddFormFactory $formFactory)
     {
         parent::__construct();
@@ -36,19 +33,14 @@ final class EventAddParticipantsPresenter extends BasePresenter
         }
 
         $this->groupId = $id;
-        $this->participants = $this->queryBus->handle(new EventParticipantsWithoutPaymentQuery($id));
+        $participants = $this->queryBus->handle(new EventParticipantsWithoutPaymentQuery($id));
 
-        $this->template->setParameters([
-            'group' => $group,
-            'showForm' => $this->participants !== [],
-        ]);
-    }
+        $form = $this['massAddForm'];
+        if (! $form instanceof MassAddForm) {
+            throw new LogicException('Assertion failed.');
+        }
 
-    protected function createComponentMassAddForm(): MassAddForm
-    {
-        $form = $this->formFactory->create($this->groupId);
-
-        foreach ($this->participants as $participant) {
+        foreach ($participants as $participant) {
             if (! $participant instanceof Participant) {
                 throw new LogicException('Assertion failed.');
             }
@@ -61,6 +53,14 @@ final class EventAddParticipantsPresenter extends BasePresenter
             );
         }
 
-        return $form;
+        $this->template->setParameters([
+            'group' => $group,
+            'showForm' => $participants !== [],
+        ]);
+    }
+
+    protected function createComponentMassAddForm(): MassAddForm
+    {
+        return $this->formFactory->create($this->groupId);
     }
 }

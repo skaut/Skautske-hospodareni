@@ -11,6 +11,7 @@ use App\Model\Payment\Group\SkautisEntity;
 use App\Model\Payment\ReadModel\Queries\CampsWithoutGroupQuery;
 use App\Presentation\Payments\PaymentsBasePresenter as BasePresenter;
 use Cake\Chronos\ChronosDate;
+use LogicException;
 
 final class CampCreateGroupPresenter extends BasePresenter
 {
@@ -32,14 +33,16 @@ final class CampCreateGroupPresenter extends BasePresenter
 
         $this->camp = $camps[$campId];
         $this->template->setParameters(['camp' => $this->camp]);
+
+        $form = $this['form'];
+        if (! $form instanceof GroupForm) {
+            throw new LogicException('Assertion failed.');
+        }
+        $form->fillName($this->camp->getDisplayName());
     }
 
     protected function createComponentForm(): GroupForm
     {
-        $form = $this->formFactory->create($this->getCurrentUnitId(), SkautisEntity::fromCampId($this->camp->getId()));
-
-        $form->fillName($this->camp->getDisplayName());
-
-        return $form;
+        return $this->formFactory->create($this->getCurrentUnitId(), SkautisEntity::fromCampId($this->camp->getId()));
     }
 }

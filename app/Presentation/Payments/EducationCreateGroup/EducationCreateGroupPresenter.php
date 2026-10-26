@@ -12,6 +12,7 @@ use App\Model\Payment\Group\SkautisEntity;
 use App\Presentation\Payments\PaymentsBasePresenter as BasePresenter;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
+use LogicException;
 
 use function array_key_exists;
 
@@ -35,19 +36,21 @@ final class EducationCreateGroupPresenter extends BasePresenter
 
         $this->education = $educations[$educationId];
         $this->template->setParameters(['education' => $this->education]);
+
+        $form = $this['form'];
+        if (! $form instanceof GroupForm) {
+            throw new LogicException('Assertion failed.');
+        }
+        $form->fillName($this->education->getDisplayName());
     }
 
     protected function createComponentForm(): GroupForm
     {
         Assertion::notNull($this->education);
 
-        $form = $this->formFactory->create(
+        return $this->formFactory->create(
             $this->getCurrentUnitId(),
             SkautisEntity::fromEducationId($this->education->getId()),
         );
-
-        $form->fillName($this->education->getDisplayName());
-
-        return $form;
     }
 }

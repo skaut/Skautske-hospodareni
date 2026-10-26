@@ -8,7 +8,6 @@ use App\Components\Factories\Payment\IMassAddFormFactory;
 use App\Components\Payment\MassAddForm;
 use App\Model\Cashbook\ReadModel\Queries\CampParticipantListQuery;
 use App\Model\DTO\Participant\Participant;
-use App\Model\DTO\Participant\PaymentDetails;
 use App\Model\DTO\Payment\Group;
 use App\Model\Event\Exception\CampInvitationNotFound;
 use App\Model\Event\SkautisCampId;
@@ -17,18 +16,14 @@ use App\Model\Payment\ReadModel\Queries\MemberEmailsQuery;
 use App\Model\Unit\ReadModel\Queries\UnitQuery;
 use App\Model\Utils\MoneyFactory;
 use App\Presentation\Payments\PaymentsBasePresenter as BasePresenter;
+use LogicException;
 
 use function array_filter;
 use function in_array;
 
 final class CampAddParticipantsPresenter extends BasePresenter
 {
-    /** @var PaymentDetails[] */
-    private array $participantPaymentDetails;
     private Group $group;
-
-    /** @var Participant[] */
-    private array $participants;
 
     public function __construct(private PaymentService $model, private IMassAddFormFactory $formFactory)
     {
@@ -50,36 +45,31 @@ final class CampAddParticipantsPresenter extends BasePresenter
         }
 
         $this->group = $group;
-        $this->participants = $this->queryBus->handle(
+        $participants = $this->queryBus->handle(
             new CampParticipantListQuery(new SkautisCampId($group->getSkautisId())),
         );
 
+        $participantPaymentDetails = [];
         try {
-            $this->participantPaymentDetails = $this->model->getParticipantPaymentDetails(new SkautisCampId((int) $this->group->getSkautisId()));
+            $participantPaymentDetails = $this->model->getParticipantPaymentDetails(new SkautisCampId((int) $this->group->getSkautisId()));
         } catch (CampInvitationNotFound) {
             $this->flashMessage('Nelze načíst data z e-přihlášek. E-přihláška není aktivní, nebo nemáte oprávnění.', 'warning');
         }
 
-        $this->template->setParameters([
-            'unit' => $this->queryBus->handle(new UnitQuery($this->getCurrentUnitId()->toInt())),
-            'group' => $group,
-            'showForm' => $this->participants !== [],
-        ]);
-    }
-
-    protected function createComponentMassAddForm(): MassAddForm
-    {
-        $form = $this->formFactory->create($this->group->getId());
+        $form = $this['massAddForm'];
+        if (! $form instanceof MassAddForm) {
+            throw new LogicException('Assertion failed.');
+        }
 
         $personsWithPayment = $this->model->getPersonsWithActivePayment($this->group->getId());
 
-        $participants = array_filter(
-            $this->participants,
+        $participantsWithoutPayment = array_filter(
+            $participants,
             fn (Participant $p) => ! in_array($p->getPersonId(), $personsWithPayment, true),
         );
 
-        foreach ($participants as $p) {
-            $participantPaymentDetail = $this->participantPaymentDetails[$p->getPersonId()] ?? null;
+        foreach ($participantsWithoutPayment as $p) {
+            $participantPaymentDetail = $participantPaymentDetails[$p->getPersonId()] ?? null;
             if ($participantPaymentDetail) {
                 $paymentNote = $participantPaymentDetail->getPaymentNote();
                 $variableSymbol = $participantPaymentDetail->getVariableSymbol();
@@ -103,6 +93,15 @@ final class CampAddParticipantsPresenter extends BasePresenter
             );
         }
 
-        return $form;
+        $this->template->setParameters([
+            'unit' => $this->queryBus->handle(new UnitQuery($this->getCurrentUnitId()->toInt())),
+            'group' => $group,
+            'showForm' => $participants !== [],
+        ]);
+    }
+
+    protected function createComponentMassAddForm(): MassAddForm
+    {
+        return $this->formFactory->create($this->group->getId());
     }
 }
