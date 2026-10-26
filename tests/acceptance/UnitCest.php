@@ -58,6 +58,23 @@ final class UnitCest extends BaseAcceptanceCest
     }
 
     /** @group unit */
+    public function offerEquipmentExpenseCategoryInUnitCashbook(): void
+    {
+        $I = $this->I;
+
+        $I->wantTo('choose the common "Vybavení" expense category in the unit cashbook chit form');
+
+        $this->openPageAndWaitForElementWithSkautisRetry(
+            $I,
+            '/jednotka/'.AcceptanceTester::UNIT_ID.'/kniha',
+            '[data-test="unit-cashbook-page"]',
+        );
+
+        // The chit form is rendered collapsed, so check the server-side options in the DOM.
+        $I->seeElementInDOM('//select[@name="items[0][expenseCategories]"]/option[normalize-space()="Vybavení"]');
+    }
+
+    /** @group unit */
     public function openChitsFromUnitSectionViaCanonicalUrl(): void
     {
         $I = $this->I;
