@@ -14,6 +14,7 @@ use App\Model\Payment\ReadModel\Queries\RegistrationWithoutGroupQuery;
 use App\Presentation\Payments\PaymentsBasePresenter as BasePresenter;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
+use LogicException;
 
 final class RegistrationCreateGroupPresenter extends BasePresenter
 {
@@ -37,6 +38,13 @@ final class RegistrationCreateGroupPresenter extends BasePresenter
 
         $this->registration = $registration;
         $this->template->setParameters(['registration' => $registration]);
+
+        $form = $this['form'];
+        if (! $form instanceof GroupForm) {
+            throw new LogicException('Assertion failed.');
+        }
+        $form->fillName('Registrace '.$registration->getYear());
+        $form->fillDueDate(ChronosDate::create($registration->getYear(), 1, 15));
     }
 
     protected function createComponentForm(): GroupForm
@@ -46,14 +54,9 @@ final class RegistrationCreateGroupPresenter extends BasePresenter
         Assertion::notNull($registration);
         $unitId = $this->getCurrentUnitId();
 
-        $form = $this->groupFormFactory->create(
+        return $this->groupFormFactory->create(
             $unitId,
             new SkautisEntity($registration->getId(), Type::get(Type::REGISTRATION)),
         );
-
-        $form->fillName('Registrace '.$registration->getYear());
-        $form->fillDueDate(ChronosDate::create($registration->getYear(), 1, 15));
-
-        return $form;
     }
 }

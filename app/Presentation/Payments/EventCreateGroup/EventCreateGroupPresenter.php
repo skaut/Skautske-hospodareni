@@ -11,6 +11,7 @@ use App\Model\Payment\Group\SkautisEntity;
 use App\Model\Payment\ReadModel\Queries\EventsWithoutGroupQuery;
 use App\Presentation\Payments\PaymentsBasePresenter as BasePresenter;
 use Cake\Chronos\ChronosDate;
+use LogicException;
 
 final class EventCreateGroupPresenter extends BasePresenter
 {
@@ -32,17 +33,19 @@ final class EventCreateGroupPresenter extends BasePresenter
 
         $this->event = $eventsWithoutGroup[$eventId];
         $this->template->setParameters(['event' => $this->event]);
+
+        $form = $this['form'];
+        if (! $form instanceof GroupForm) {
+            throw new LogicException('Assertion failed.');
+        }
+        $form->fillName($this->event->getDisplayName());
     }
 
     protected function createComponentForm(): GroupForm
     {
-        $form = $this->formFactory->create(
+        return $this->formFactory->create(
             $this->getCurrentUnitId(),
             SkautisEntity::fromEventId($this->event->getId()),
         );
-
-        $form->fillName($this->event->getDisplayName());
-
-        return $form;
     }
 }
