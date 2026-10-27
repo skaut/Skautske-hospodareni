@@ -10,6 +10,7 @@ use App\Model\DTO\Participant\PaymentDetails;
 use App\Model\Event\SkautisCampId;
 use App\Model\Event\SkautisEducationId;
 use App\Model\Event\SkautisEventId;
+use App\Model\Participant\PersonAddressChangeNotAllowed;
 
 interface IParticipantRepository
 {
@@ -38,6 +39,7 @@ interface IParticipantRepository
 
     public function getNonMemberParticipant(int $personId): NonMemberParticipant;
 
+    /** @throws PersonAddressChangeNotAllowed */
     public function updateNonMemberParticipant(int $personId, NonMemberParticipant $participant): void;
 
     public function removeCampParticipant(int $participantId): void;

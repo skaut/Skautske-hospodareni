@@ -59,4 +59,16 @@ class NonMemberParticipant
     {
         return $this->postcode;
     }
+
+    public function equals(self $other): bool
+    {
+        return $this->firstName === $other->firstName
+            && $this->lastName === $other->lastName
+            && $this->nickName === $other->nickName
+            && $this->sex === $other->sex
+            && $this->birthday?->format('Y-m-d') === $other->birthday?->format('Y-m-d')
+            && $this->street === $other->street
+            && $this->city === $other->city
+            && $this->postcode === $other->postcode;
+    }
 }

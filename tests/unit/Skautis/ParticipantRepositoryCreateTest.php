@@ -7,12 +7,14 @@ namespace App\Model\Skautis;
 use App\Model\DTO\Participant\NonMemberParticipant;
 use App\Model\Event\SkautisCampId;
 use App\Model\Event\SkautisEventId;
+use App\Model\Participant\PersonAddressChangeNotAllowed;
 use App\Model\Participant\Repositories\IPaymentRepository;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Mockery;
 use Skautis\Skautis;
 use Skautis\Wsdl\WebServiceInterface;
+use Skautis\Wsdl\WsdlException;
 
 final class ParticipantRepositoryCreateTest extends Unit
 {
@@ -170,5 +172,44 @@ final class ParticipantRepositoryCreateTest extends Unit
                 60200,
             ),
         );
+    }
+
+    public function testUpdatingPersonWithFullSkautisRecordReportsRejectedAddressChange(): void
+    {
+        $repository = $this->createRepositoryFailingPersonUpdate(
+            'System.Web.Services.Protocols.SoapException: Chyba validace (Person_OnlySimplePersonAddressChange)',
+        );
+
+        $this->expectException(PersonAddressChangeNotAllowed::class);
+
+        $repository->updateNonMemberParticipant(105, $this->createNonMember());
+    }
+
+    public function testUpdatingNonMemberKeepsOtherSkautisErrors(): void
+    {
+        $repository = $this->createRepositoryFailingPersonUpdate('System.Web.Services.Protocols.SoapException: Chyba validace (Person_Other)');
+
+        $this->expectException(WsdlException::class);
+        $this->expectExceptionMessage('Person_Other');
+
+        $repository->updateNonMemberParticipant(105, $this->createNonMember());
+    }
+
+    private function createRepositoryFailingPersonUpdate(string $skautisError): ParticipantRepository
+    {
+        $orgWebService = Mockery::mock(WebServiceInterface::class);
+        $orgWebService->shouldReceive('PersonUpdateBasic')
+            ->once()
+            ->andThrow(new WsdlException($skautisError));
+
+        $skautis = Mockery::mock(Skautis::class);
+        $skautis->shouldReceive('getWebService')->with('org')->andReturn($orgWebService);
+
+        return new ParticipantRepository($skautis, Mockery::mock(IPaymentRepository::class));
+    }
+
+    private function createNonMember(): NonMemberParticipant
+    {
+        return new NonMemberParticipant('Justýna', 'Navrátilová', null, 'female', new ChronosDate('2019-10-14'), 'Bukovinka 105', 'Bukovinka', 67905);
     }
 }

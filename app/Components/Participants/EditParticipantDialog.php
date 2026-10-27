@@ -10,6 +10,7 @@ use App\Model\DTO\Participant\NonMemberParticipant;
 use App\Model\DTO\Participant\Participant;
 use App\Model\DTO\Participant\UpdateParticipant;
 use App\Model\Participant\NonMemberParticipantService;
+use App\Model\Participant\PersonAddressChangeNotAllowed;
 use App\Model\Utils\MoneyFactory;
 use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
@@ -20,6 +21,9 @@ use Nette\Application\Attributes\Persistent;
 
 final class EditParticipantDialog extends Dialog
 {
+    public const ADDRESS_CHANGE_NOT_ALLOWED_MESSAGE = 'SkautIS nedovoluje změnit adresu tohoto účastníka, protože tam má plný osobní záznam '
+        .'(například z dřívějšího členství). Adresu změň přímo ve skautISu a tady ulož ostatní údaje s původní adresou.';
+
     #[Persistent]
     public ?int $participantId = null;
 
@@ -108,7 +112,7 @@ final class EditParticipantDialog extends Dialog
         $form->addSubmit('save', 'Upravit')
             ->setHtmlAttribute('class', 'btn btn-primary');
 
-        $form->onSuccess[] = function ($_x, array $values) use ($participant, $nonMember): void {
+        $form->onSuccess[] = function (BaseForm $form, array $values) use ($participant, $nonMember): void {
             if (! $this->isAllowedUpdate) {
                 $this->reload('Nemáte právo upravovat účastníky.', 'danger');
             }
@@ -139,19 +143,27 @@ final class EditParticipantDialog extends Dialog
             }
 
             if ($nonMember !== null) {
-                $this->nonMemberParticipants->update(
-                    $participant->getPersonId(),
-                    new NonMemberParticipant(
-                        $values['firstName'],
-                        $values['lastName'],
-                        $values['nick'] === '' ? null : $values['nick'],
-                        $values['sex'],
-                        $values['birthday'] === null ? null : new ChronosDate($values['birthday']),
-                        $values['street'],
-                        $values['city'],
-                        (int) $values['postcode'],
-                    ),
+                $updatedNonMember = new NonMemberParticipant(
+                    $values['firstName'],
+                    $values['lastName'],
+                    $values['nick'] === '' ? null : $values['nick'],
+                    $values['sex'],
+                    $values['birthday'] === null ? null : new ChronosDate($values['birthday']),
+                    $values['street'],
+                    $values['city'],
+                    (int) $values['postcode'],
                 );
+
+                try {
+                    if (! $updatedNonMember->equals($nonMember)) {
+                        $this->nonMemberParticipants->update($participant->getPersonId(), $updatedNonMember);
+                    }
+                } catch (PersonAddressChangeNotAllowed) {
+                    $form->addError(self::ADDRESS_CHANGE_NOT_ALLOWED_MESSAGE);
+                    $this->redrawControl();
+
+                    return;
+                }
             }
 
             $this->onUpdate($this->participantId, $changes, $participant->isAccepted());
