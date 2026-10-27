@@ -116,8 +116,10 @@
                 <div class="nadpis">Vyúčtování pracovní cesty</div>
                 {if $vehicle !== NULL}
                     <div class="sazby">
-                        <span>Cena paliva: <b>{$command->fuelPrice|price}</b> Kč/l</span>
-                        <span>Spotřeba dle t.p.: <b>{$vehicle->getConsumption()|number:2, ',', ' '}</b> l/100km</span>
+                        {var $fuelType = $vehicle->getFuelType()}
+                        <span>Cena paliva: <b>{$command->fuelPrice|price}</b> Kč/{$fuelType->fuelPriceUnit()}</span>
+                        {* The print has always used units without a space, e.g. l/100km. *}
+                        <span>Spotřeba dle t.p.: <b>{$vehicle->getConsumption()|number:2, ',', ' '}</b> {$fuelType->consumptionUnit()|replace:' ', ''}</span>
                         <span>Cena PHM 1 km: {$command->fuelPricePerKm|price} Kč/km</span>
                         <span>Opotřebení: {$command->amortizationPerKm|price} Kč/km</span>
                         <span>Sazba náhrady: <b>{$command->pricePerKm|price}</b> Kč/km</span>
