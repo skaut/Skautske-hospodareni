@@ -17,6 +17,7 @@ use App\Model\Participant\Participant;
 use App\Model\Participant\Payment\Event;
 use App\Model\Participant\Payment\EventType;
 use App\Model\Participant\PaymentFactory;
+use App\Model\Participant\PersonAddressChangeNotAllowed;
 use App\Model\Participant\Repositories\IPaymentRepository;
 use App\Model\Skautis\Factory\ParticipantFactory;
 use App\Utils\CzechStringComparator;
@@ -214,7 +215,15 @@ final class ParticipantRepository implements IParticipantRepository
 
     public function updateNonMemberParticipant(int $personId, NonMemberParticipant $participant): void
     {
-        $this->fillParticipantInfo($personId, $participant);
+        try {
+            $this->fillParticipantInfo($personId, $participant);
+        } catch (WsdlException $ex) {
+            if (! preg_match('/Chyba validace \(Person_OnlySimplePersonAddressChange\)/', $ex->getMessage())) {
+                throw $ex;
+            }
+
+            throw new PersonAddressChangeNotAllowed($personId, $ex);
+        }
     }
 
     public function removeEventParticipant(int $participantId): void
