@@ -85,7 +85,8 @@ class VehiclePresenter extends TravelBasePresenter
             throw new LogicException('Assertion failed.');
         }
 
-        $this->template->consumptionUnit = FuelType::from((string) $fuelType->getValue())->consumptionUnit();
+        // A tampered fuel type makes getValue() null; the required rule reports it, the page must still render.
+        $this->template->consumptionUnit = (FuelType::tryFrom((string) $fuelType->getValue()) ?? FuelType::COMBUSTION)->consumptionUnit();
     }
 
     public function renderDetail(int $id): void
