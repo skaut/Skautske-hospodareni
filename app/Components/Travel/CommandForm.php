@@ -35,9 +35,6 @@ class CommandForm extends Control
     /** @var callable[] */
     public array $onSuccess = [];
 
-    /** @var array<int|string, string> fuel price unit by vehicle id, '' stands for no vehicle selected */
-    private array $fuelPriceUnits = [];
-
     public function __construct(private int $unitId, private ?int $commandId, private TravelService $model, private QueryBus $queryBus)
     {
     }
@@ -52,12 +49,17 @@ class CommandForm extends Control
             throw new LogicException('Assertion failed.');
         }
 
-        // Set at render time, so the saved or submitted vehicle and a vehicle added by loadDefaultValues() are included.
-        $vehicles->setOptionAttribute('data-fuel-price-unit:', $this->fuelPriceUnits);
+        // Built at render time from the final items, so a saved vehicle added by loadDefaultValues() is included.
+        $fuelPriceUnits = ['' => FuelType::COMBUSTION->fuelPriceUnit()];
+        foreach ($this->model->findVehiclesByIds(array_keys($vehicles->getItems())) as $id => $vehicle) {
+            $fuelPriceUnits[$id] = $vehicle->getFuelType()->fuelPriceUnit();
+        }
+
+        $vehicles->setOptionAttribute('data-fuel-price-unit:', $fuelPriceUnits);
         $fuelPrice->setCaption(
             Html::el()
                 ->addText('Cena paliva za 1')
-                ->addHtml(Html::el('span', ['id' => 'fuel-price-unit'])->setText($this->fuelPriceUnits[$vehicles->getValue() ?? '']))
+                ->addHtml(Html::el('span', ['id' => 'fuel-price-unit'])->setText($fuelPriceUnits[$vehicles->getValue() ?? '']))
                 ->addText('*'),
         );
 
@@ -67,11 +69,6 @@ class CommandForm extends Control
     protected function createComponentForm(): BaseForm
     {
         $vehicles = $this->model->getVehiclesPairs($this->unitId);
-
-        $this->fuelPriceUnits = ['' => FuelType::COMBUSTION->fuelPriceUnit()];
-        foreach ($this->model->findVehiclesByIds(array_keys($vehicles)) as $id => $vehicle) {
-            $this->fuelPriceUnits[$id] = $vehicle->getFuelType()->fuelPriceUnit();
-        }
 
         $vehiclesWithFuel = array_map(
             fn (TransportType $t) => $t->toString(),
@@ -135,7 +132,7 @@ class CommandForm extends Control
             ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit typ vozidla.');
 
-        $form->addText('fuel_price', 'Cena paliva za 1l*')
+        $form->addText('fuel_price')
             ->setOption('id', 'fuel_price')
             ->setHtmlAttribute('class', 'form-control')
             ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
@@ -255,7 +252,6 @@ class CommandForm extends Control
         }
 
         $vehicles->setItems([$vehicle->getId() => $vehicle->getLabel()] + $vehicles->getItems());
-        $this->fuelPriceUnits[$vehicle->getId()] = $vehicle->getFuelType()->fuelPriceUnit();
         $vehicles->setDefaultValue($vehicleId);
     }
 
