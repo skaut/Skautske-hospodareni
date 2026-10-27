@@ -9,6 +9,7 @@ use App\Model\Services\PdfRenderer;
 use App\Model\Services\TemplateFactory;
 use App\Model\Travel\Travel\TransportType;
 use App\Model\Travel\Vehicle;
+use App\Model\Travel\Vehicle\FuelType;
 use App\Model\Travel\Vehicle\Metadata;
 use App\Model\Unit\Unit;
 use Cake\Chronos\ChronosDate;
@@ -153,6 +154,7 @@ final class PdfOutputsGenerationTest extends IntegrationTest
             null,
             '1AB 2345',
             6.5,
+            FuelType::COMBUSTION,
             new Metadata(new DateTimeImmutable('2026-10-01'), 'Adrian de Azevedo Camacho'),
         );
         $travel = static fn (string $from, string $to): object => (object) [

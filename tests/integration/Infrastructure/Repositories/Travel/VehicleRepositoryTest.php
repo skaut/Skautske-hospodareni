@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Infrastructure\Repositories\Travel;
 
 use App\Model\Travel\Vehicle;
+use App\Model\Travel\Vehicle\FuelType;
 use App\Model\Travel\VehicleNotFound;
 use App\Model\Unit\Unit;
 use DateTimeImmutable;
@@ -210,12 +211,40 @@ class VehicleRepositoryTest extends IntegrationTest
             $subunit,
             $row['registration'],
             $row['consumption'],
+            FuelType::COMBUSTION,
             new Vehicle\Metadata(new DateTimeImmutable($row['metadata_created_at']), $row['metadata_author_name']),
         );
 
         $this->repository->save($vehicle);
 
         $this->tester->seeInDatabase(self::TABLE, ['id' => 1] + $row);
+    }
+
+    public function testFuelTypeSurvivesSaveAndReload(): void
+    {
+        $vehicle = new Vehicle(
+            'Car',
+            m::mock(Unit::class, ['getId' => 4]),
+            null,
+            '6666',
+            15.2,
+            FuelType::ELECTRIC,
+            new Vehicle\Metadata(new DateTimeImmutable(), 'Frantisek Hana'),
+        );
+
+        $this->repository->save($vehicle);
+        $this->entityManager->clear();
+
+        $this->assertSame(FuelType::ELECTRIC, $this->repository->find($vehicle->getId())->getFuelType());
+    }
+
+    public function testExistingVehicleIsCombustion(): void
+    {
+        $row = $this->getVehicleRow();
+        unset($row['fuel_type']);
+        $this->tester->haveInDatabase(self::TABLE, $row);
+
+        $this->assertSame(FuelType::COMBUSTION, $this->repository->find(1)->getFuelType());
     }
 
     /** @return mixed[] */
@@ -227,6 +256,7 @@ class VehicleRepositoryTest extends IntegrationTest
             'unit_id' => 4,
             'subunit_id' => 11,
             'consumption' => 4.5,
+            'fuel_type' => 'combustion',
             'note' => '',
             'archived' => 0,
             'metadata_created_at' => '2000-10-12 00:00:00',
