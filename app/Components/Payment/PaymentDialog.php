@@ -142,7 +142,7 @@ final class PaymentDialog extends Dialog
         $payment = $this->payment();
 
         if ($payment === null) {
-            $this->presenter->flashMessage('Zadaná platba neexistuje', 'danger');
+            $this->getPresenter()->flashMessage('Zadaná platba neexistuje', 'danger');
             $this->hide();
 
             return;

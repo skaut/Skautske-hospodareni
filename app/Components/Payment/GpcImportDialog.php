@@ -61,7 +61,7 @@ final class GpcImportDialog extends Dialog
             $this->show();
         } catch (InvalidArgumentException $e) {
             $this->flashMessage($e->getMessage(), 'danger');
-            $this->presenter->redrawControl('flash');
+            $this->getPresenter()->redrawControl('flash');
             $this->hide();
         }
     }
@@ -137,7 +137,7 @@ final class GpcImportDialog extends Dialog
                 ),
                 'success',
             );
-            $this->presenter->redrawControl('flash');
+            $this->getPresenter()->redrawControl('flash');
             $this->hide();
 
             foreach ($this->onSuccess as $callback) {
@@ -158,7 +158,7 @@ final class GpcImportDialog extends Dialog
             $this->flashMessage($error, 'danger');
         }
 
-        $this->presenter->redrawControl('flash');
+        $this->getPresenter()->redrawControl('flash');
         $this->hide();
     }
 
