@@ -53,8 +53,12 @@
                             <div>{$vehicle->registration}</div>
                         </li>
                         <li class="list-group-item d-flex">
+                            <div class="fw-bold me-auto">Pohon</div>
+                            <div>{$vehicle->fuelType->label()}</div>
+                        </li>
+                        <li class="list-group-item d-flex">
                             <div class="fw-bold me-auto">Průměrná spotřeba</div>
-                            <div>{$vehicle->consumption|number:2} l/100 km</div>
+                            <div>{$vehicle->consumption|number:2} {$vehicle->fuelType->consumptionUnit()}</div>
                         </li>
                         <li class="list-group-item d-flex" n:if="$subunitName !== null">
                             <div class="fw-bold me-auto">Oddíl</div>

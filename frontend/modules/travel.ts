@@ -10,7 +10,24 @@ export class TravelModule implements Extension {
             if (control instanceof HTMLInputElement && control.id === 'scan-upload-control' && control.form !== null) {
                 naja.uiHandler.submitForm(control.form);
             }
+
+            if (control instanceof HTMLSelectElement && control.dataset.consumptionUnitTarget !== undefined) {
+                showConsumptionUnit(control);
+            }
         });
+
+        // Browsers may restore a previously chosen option without firing a change event.
+        document.querySelectorAll<HTMLSelectElement>('select[data-consumption-unit-target]').forEach(showConsumptionUnit);
+    }
+}
+
+// The unit text comes from the server-rendered option, so no fuel type mapping lives here.
+function showConsumptionUnit(select: HTMLSelectElement): void {
+    const target = document.getElementById(select.dataset.consumptionUnitTarget ?? '');
+    const unit = select.selectedOptions[0]?.dataset.consumptionUnit;
+
+    if (target !== null && unit !== undefined) {
+        target.textContent = unit;
     }
 }
 

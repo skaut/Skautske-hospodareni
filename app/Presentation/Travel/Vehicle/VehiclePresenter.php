@@ -10,6 +10,7 @@ use App\Model\DTO\Travel\Vehicle as VehicleDTO;
 use App\Model\Travel\Commands\Vehicle\CreateVehicle;
 use App\Model\Travel\ReadModel\Queries\Vehicle\RoadworthyScansQuery;
 use App\Model\Travel\TravelService;
+use App\Model\Travel\Vehicle\FuelType;
 use App\Model\Travel\VehicleLinkedRecord;
 use App\Model\Travel\VehicleNotFound;
 use App\Model\Unit\ReadModel\Queries\UnitQuery;
@@ -74,6 +75,11 @@ class VehiclePresenter extends TravelBasePresenter
         }
 
         throw new BadRequestException('Scan not found', IResponse::S404_NotFound);
+    }
+
+    public function renderNew(): void
+    {
+        $this->template->consumptionUnit = FuelType::from($this['formCreateVehicle']['fuelType']->getValue())->consumptionUnit();
     }
 
     public function renderDetail(int $id): void
@@ -161,9 +167,20 @@ class VehiclePresenter extends TravelBasePresenter
     {
         $form = new BaseForm();
 
+        $consumptionUnits = [];
+        foreach (FuelType::cases() as $fuelType) {
+            $consumptionUnits[$fuelType->value] = $fuelType->consumptionUnit();
+        }
+
         $form->addText('type', 'Typ')
             ->setHtmlAttribute('class', 'form-control')
             ->addRule(Form::FILLED, 'Musíte vyplnit typ.');
+        $form->addSelect('fuelType', 'Pohon*', FuelType::toSelect())
+            ->setHtmlAttribute('class', 'form-select')
+            ->setHtmlAttribute('data-consumption-unit-target', 'consumption-unit')
+            ->setOptionAttribute('data-consumption-unit:', $consumptionUnits)
+            ->setDefaultValue(FuelType::COMBUSTION->value)
+            ->setRequired('Musíte vybrat pohon.');
         $form->addText('registration', 'SPZ*')
             ->setHtmlAttribute('class', 'form-control')
             ->addRule(Form::FILLED, 'Musíte vyplnit SPZ.');
@@ -202,6 +219,7 @@ class VehiclePresenter extends TravelBasePresenter
                 $values->subunitId,
                 $values->registration,
                 $values->consumption,
+                FuelType::from($values->fuelType),
                 $this->getLoggedInUserId(),
             ),
         );

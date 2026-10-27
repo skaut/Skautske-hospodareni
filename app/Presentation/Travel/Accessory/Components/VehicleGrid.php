@@ -38,7 +38,7 @@ class VehicleGrid extends BaseGridControl
 
         $grid->addColumnLink('registration', 'SPZ', ':Travel:Vehicle:detail')
             ->setFilterText();
-        $grid->addColumnText('consumption', 'Ø spotřeba (l/100 km)');
+        $grid->addColumnText('consumption', 'Ø spotřeba');
 
         $grid->addColumnText('subunit', 'Oddíl')
             ->setFilterSelect($units, 'subunitId')->setPrompt('Všechny');

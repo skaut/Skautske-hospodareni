@@ -162,12 +162,42 @@ class TravelCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/cestaky/vozidla');
     }
 
-    protected function newVehicle(AcceptanceTester $I, string $licensePlate): void
+    public function createElectricVehicle(AcceptanceTester $I): void
     {
+        $licensePlate = 'RZE-'.time();
+        $I->wantTo('Create an electric vehicle and see its consumption in kWh/100 km');
+        $this->navigateToVehicle($I);
+        $this->newVehicle($I, $licensePlate, 'Elektrický pohon', 'kWh/100 km');
+
+        $I->amOnPage('/cestaky/vozidla?grid-grid-filter%5Bsearch%5D='.rawurlencode($licensePlate));
+        $I->waitForText($licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
+        $I->see('kWh/100 km', '#snippet-grid-grid-table');
+
+        $this->openVehicleDetail($I, $licensePlate);
+        $I->see('Pohon', '[data-test="travel-vehicle-detail-page"]');
+        $I->see('Elektrický pohon', '[data-test="travel-vehicle-detail-page"]');
+        $I->see('kWh/100 km', '[data-test="travel-vehicle-detail-page"]');
+
+        $this->navigateToVehicle($I);
+        $this->deleteVehicle($I, $licensePlate);
+    }
+
+    protected function newVehicle(
+        AcceptanceTester $I,
+        string $licensePlate,
+        string $fuelType = 'Spalovací pohon',
+        string $consumptionUnit = 'l/100 km',
+    ): void {
         $I->waitForElementVisible('[data-test="travel-vehicle-create-link"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->clickStable('[data-test="travel-vehicle-create-link"]');
         $I->see('Nové vozidlo');
         $I->seeInCurrentUrl('/cestaky/vozidla/new');
+
+        // Combustion is preselected and the consumption help lives in the page help, not in a modal.
+        $I->see('l/100 km', '[data-test="travel-vehicle-consumption-unit"]');
+        $I->dontSeeElement('[data-bs-target="#consumptionModal"]');
+        $I->selectOption(['id' => 'frm-formCreateVehicle-fuelType'], $fuelType);
+        $I->waitForText($consumptionUnit, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '[data-test="travel-vehicle-consumption-unit"]');
 
         $I->fillField(['id' => 'frm-formCreateVehicle-type'], $this->vehicleType);
         $I->fillField(['id' => 'frm-formCreateVehicle-registration'], $licensePlate);

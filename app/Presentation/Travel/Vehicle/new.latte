@@ -19,6 +19,10 @@
                                 {input type}
                             </div>
                             <div class="mb-3">
+                                {label fuelType /}
+                                {input fuelType}
+                            </div>
+                            <div class="mb-3">
                                 {label registration /}
                                 {input registration}
                             </div>
@@ -26,8 +30,7 @@
                                 {label consumption /}
                                 <div class="input-group mb-2">
                                     {input consumption}
-                                    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#consumptionModal"
-                                            title="Jak zjistit spotřebu" aria-label="Jak zjistit spotřebu"><i class="fi fi-rr-interrogation" aria-hidden="true"></i></button>
+                                    <span class="input-group-text" id="consumption-unit" data-test="travel-vehicle-consumption-unit">{$consumptionUnit}</span>
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -40,26 +43,6 @@
                         </form>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" tabindex="-1" role="dialog" id="consumptionModal">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Harmonizovaná spotřeba</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
-            </div>
-            <div class="modal-body">
-                <p>
-                    Při určení spotřeby pohonných hmot se použije údaj o spotřebě pro kombinovaný provoz podle norem EU. U automobilů vyrobených od r. 1999 se jedná
-                    o třetí údaj spotřeby. V ostatních případech se spotřeba vypočte jako aritmetický průměr z údajů uvedených v technickém průkazu.
-                </p>
-            </div>
-            <div class="modal-footer">
-                <div class="text-end small">Zdroj: <a href="https://krizovatka.skaut.cz/hospodareni/cestovni-nahrady">Metodický list - Cestovní náhrady a vše kolem</a></div>
             </div>
         </div>
     </div>
