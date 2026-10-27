@@ -25,6 +25,7 @@ use Nette\Application\AbortException;
 use Nette\Application\Attributes\Persistent;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
+use Nette\Forms\Controls\SelectBox;
 use Nette\Http\IResponse;
 use Nette\Utils\ArrayHash;
 
@@ -79,7 +80,12 @@ class VehiclePresenter extends TravelBasePresenter
 
     public function renderNew(): void
     {
-        $this->template->consumptionUnit = FuelType::from($this['formCreateVehicle']['fuelType']->getValue())->consumptionUnit();
+        $fuelType = $this['formCreateVehicle']['fuelType'];
+        if (! $fuelType instanceof SelectBox) {
+            throw new LogicException('Assertion failed.');
+        }
+
+        $this->template->consumptionUnit = FuelType::from((string) $fuelType->getValue())->consumptionUnit();
     }
 
     public function renderDetail(int $id): void
