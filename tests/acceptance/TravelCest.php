@@ -99,26 +99,6 @@ class TravelCest extends BaseAcceptanceCest
         $this->deleteContract($I, $unitRepresentative);
     }
 
-    public function createElectricTravelOrder(AcceptanceTester $I): void
-    {
-        $name = 'Porada elektromobilem';
-        $unitRepresentative = 'Eva Zástupkyně';
-        $licensePlate = 'RZEA-'.time();
-        $I->wantTo('Create travel order with an electric vehicle and see the fuel price in Kč/kWh');
-        $this->navigateToVehicle($I);
-        $this->newVehicle($I, $licensePlate, 'Elektrický pohon', 'kWh/100 km');
-        $this->navigationToContract($I);
-        $this->newContract($I, $unitRepresentative);
-        $this->navigateToTravelOrder($I);
-        $this->newTravelOrder($I, $name, $licensePlate, 'kWh');
-        $this->navigateToTravelOrder($I);
-        $this->deleteTravelOrder($I, $name, 'Kč/kWh', 'kWh/100 km');
-        $this->navigateToVehicle($I);
-        $this->deleteVehicle($I, $licensePlate);
-        $this->navigationToContract($I);
-        $this->deleteContract($I, $unitRepresentative);
-    }
-
     public function travelHubHasNoSelfReferencingBreadcrumb(AcceptanceTester $I): void
     {
         $I->wantTo('see breadcrumbs only outside the travel hub');
