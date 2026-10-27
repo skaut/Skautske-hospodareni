@@ -7,6 +7,7 @@ namespace Tests\Integration\BankAccountDetail;
 use App\Components\Grids\GridFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountDetailViewFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingService;
+use App\Model\Bank\BankTransactionPairingNotAllowed;
 use App\Model\Bank\Entity\BankAccount;
 use App\Model\Bank\Entity\BankTransaction;
 use App\Model\Bank\Entity\BankTransactionPairing;
@@ -171,6 +172,35 @@ final class BankAccountManualPairingServiceTest extends IntegrationTest
         self::assertNotNull($payment->getTransaction());
         self::assertTrue($invoice->isPaid());
         self::assertNotNull($invoice->getTransaction());
+    }
+
+    public function testRepeatedManualPairingIsRejectedWithoutClosingEntityManager(): void
+    {
+        $bankAccount = $this->createBankAccount();
+        $group = $this->createGroup(11, $bankAccount, 'Oddil');
+        $payment = $this->createPayment($group, 200.00, '200001');
+        $transaction = $this->createTransaction($bankAccount, 200.00, 200001);
+        $pair = fn () => $this->service->pairTransactionToPayment(
+            $bankAccount->getId(),
+            $transaction->getTransactionKey(),
+            $payment->getId(),
+            [(int) $group->getId()],
+            'Tester',
+        );
+
+        $pair();
+
+        try {
+            $pair();
+            self::fail('Repeated pairing of the same transaction should be rejected.');
+        } catch (BankTransactionPairingNotAllowed $exception) {
+            self::assertSame('Bankovní transakce už je spárovaná.', $exception->getMessage());
+        }
+
+        self::assertTrue($this->entityManager->isOpen());
+        self::assertCount(1, $this->entityManager->getRepository(BankTransactionPairing::class)->findBy([
+            'transactionKey' => $transaction->getTransactionKey(),
+        ]));
     }
 
     public function testDetailDoesNotOfferManualCandidatesForPairedTransactionAndAllowsNoVariableSymbolByAmount(): void

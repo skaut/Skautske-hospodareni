@@ -584,7 +584,9 @@ final class PaymentPresenter extends PaymentsBasePresenter
             $this->redirect('default', ['id' => $group->getId()]);
         }
 
-        $this->setView('default');
+        // Překreslené snippety musí odkazovat na výchozí akci. S akcí párování by filtr a další
+        // ajaxové požadavky gridů mířily na /parovat a párování by se při každém z nich opakovalo.
+        $this->changeAction('default');
         $this->redrawPaymentAndBankAccountGrids();
     }
 
