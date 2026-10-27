@@ -9,6 +9,7 @@ use App\Model\Common\Services\QueryBus;
 use App\Model\Travel\Passenger;
 use App\Model\Travel\Travel\TransportType;
 use App\Model\Travel\TravelService;
+use App\Model\Travel\Vehicle\FuelType;
 use App\Model\Travel\VehicleIsArchived;
 use App\Model\Unit\ReadModel\Queries\UnitQuery;
 use App\Model\Unit\Unit;
@@ -19,6 +20,7 @@ use LogicException;
 use Nette\Application\UI\Control;
 use Nette\Forms\Controls\MultiSelectBox;
 use Nette\Forms\Controls\SelectBox;
+use Nette\Forms\Controls\TextInput;
 use Nette\InvalidStateException;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Html;
@@ -33,18 +35,43 @@ class CommandForm extends Control
     /** @var callable[] */
     public array $onSuccess = [];
 
+    /** @var array<int|string, string> fuel price unit by vehicle id, '' stands for no vehicle selected */
+    private array $fuelPriceUnits = [];
+
     public function __construct(private int $unitId, private ?int $commandId, private TravelService $model, private QueryBus $queryBus)
     {
     }
 
     public function render(): void
     {
-        $this['form']->render();
+        $form = $this['form'];
+        $vehicles = $form['vehicle_id'];
+        $fuelPrice = $form['fuel_price'];
+
+        if (! $vehicles instanceof SelectBox || ! $fuelPrice instanceof TextInput) {
+            throw new LogicException('Assertion failed.');
+        }
+
+        // Set at render time, so the saved or submitted vehicle and a vehicle added by loadDefaultValues() are included.
+        $vehicles->setOptionAttribute('data-fuel-price-unit:', $this->fuelPriceUnits);
+        $fuelPrice->setCaption(
+            Html::el()
+                ->addText('Cena paliva za 1')
+                ->addHtml(Html::el('span', ['id' => 'fuel-price-unit'])->setText($this->fuelPriceUnits[$vehicles->getValue() ?? '']))
+                ->addText('*'),
+        );
+
+        $form->render();
     }
 
     protected function createComponentForm(): BaseForm
     {
         $vehicles = $this->model->getVehiclesPairs($this->unitId);
+
+        $this->fuelPriceUnits = ['' => FuelType::COMBUSTION->fuelPriceUnit()];
+        foreach ($this->model->findVehiclesByIds(array_keys($vehicles)) as $id => $vehicle) {
+            $this->fuelPriceUnits[$id] = $vehicle->getFuelType()->fuelPriceUnit();
+        }
 
         $vehiclesWithFuel = array_map(
             fn (TransportType $t) => $t->toString(),
@@ -104,6 +131,7 @@ class CommandForm extends Control
             ->setOption('id', 'vehicle_id')
             ->setPrompt('Vyberte vozidlo')
             ->setHtmlAttribute('class', 'form-control')
+            ->setHtmlAttribute('data-fuel-price-unit-target', 'fuel-price-unit')
             ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit typ vozidla.');
 
@@ -227,6 +255,7 @@ class CommandForm extends Control
         }
 
         $vehicles->setItems([$vehicle->getId() => $vehicle->getLabel()] + $vehicles->getItems());
+        $this->fuelPriceUnits[$vehicle->getId()] = $vehicle->getFuelType()->fuelPriceUnit();
         $vehicles->setDefaultValue($vehicleId);
     }
 

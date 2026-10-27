@@ -16,6 +16,8 @@ use function time;
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 class TravelCest extends BaseAcceptanceCest
 {
+    private const FUEL_PRICE_LABEL = 'label[for="frm-form-form-fuel_price"]';
+
     protected AcceptanceTester $I;
 
     // Test data
@@ -54,6 +56,49 @@ class TravelCest extends BaseAcceptanceCest
         $this->deleteContract($I, $unitRepresentative);
     }
 
+    public function fuelPriceLabelFollowsSelectedVehicle(AcceptanceTester $I): void
+    {
+        $name = 'Výjezd elektromobilem';
+        $unitRepresentative = 'Eva Zástupkyně';
+        $electricPlate = 'RZE-'.time();
+        $combustionPlate = 'RZC-'.time();
+        $I->wantTo('See the fuel price label follow the selected vehicle in the travel order form');
+        $this->navigateToVehicle($I);
+        $this->newVehicle($I, $electricPlate, 'Elektrický pohon', 'kWh/100 km');
+        $this->navigateToVehicle($I);
+        $this->newVehicle($I, $combustionPlate);
+        $this->navigationToContract($I);
+        $this->newContract($I, $unitRepresentative);
+
+        $this->openNewTravelOrderForm($I);
+        $I->selectOption('#frm-form-form-type', ['car']);
+        $I->waitForElementVisible('#frm-form-form-vehicle_id', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see('Cena paliva za 1l*', self::FUEL_PRICE_LABEL);
+        $I->selectOption('#frm-form-form-vehicle_id', ['text' => 'Osobní ('.$electricPlate.')']);
+        $I->waitForText('Cena paliva za 1kWh*', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, self::FUEL_PRICE_LABEL);
+        $I->selectOption('#frm-form-form-vehicle_id', ['text' => 'Osobní ('.$combustionPlate.')']);
+        $I->waitForText('Cena paliva za 1l*', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, self::FUEL_PRICE_LABEL);
+
+        $this->navigateToTravelOrder($I);
+        $this->newTravelOrder($I, $name, $electricPlate, 'kWh');
+
+        // The edit form opens with the label of the saved vehicle.
+        $I->click($name);
+        $I->waitForText('Cestovní příkaz', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->clickStable('a[href$="/edit"]');
+        $I->waitForElementVisible('#frm-form-form-purpose', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see('Cena paliva za 1kWh*', self::FUEL_PRICE_LABEL);
+
+        $this->navigateToTravelOrder($I);
+        $this->deleteTravelOrder($I, $name);
+        $this->navigateToVehicle($I);
+        $this->deleteVehicle($I, $electricPlate);
+        $this->navigateToVehicle($I);
+        $this->deleteVehicle($I, $combustionPlate);
+        $this->navigationToContract($I);
+        $this->deleteContract($I, $unitRepresentative);
+    }
+
     public function travelHubHasNoSelfReferencingBreadcrumb(AcceptanceTester $I): void
     {
         $I->wantTo('see breadcrumbs only outside the travel hub');
@@ -77,7 +122,7 @@ class TravelCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/cestaky');
     }
 
-    protected function newTravelOrder(AcceptanceTester $I, string $name, string $licensePlate): void
+    protected function newTravelOrder(AcceptanceTester $I, string $name, string $licensePlate, string $fuelPriceUnit = 'l'): void
     {
         $I->clickStable('[data-test="travel-command-create-link"]');
         $I->waitForText('Založit cestovní příkaz', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -110,6 +155,7 @@ class TravelCest extends BaseAcceptanceCest
         // 5) Vozidlo – po výběru "car" jsou pole povinná
         $I->waitForElementVisible('#frm-form-form-vehicle_id', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->selectOption('#frm-form-form-vehicle_id', ['text' => 'Osobní ('.$licensePlate.')']);
+        $I->waitForText('Cena paliva za 1'.$fuelPriceUnit.'*', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, self::FUEL_PRICE_LABEL);
         $I->fillField('#frm-form-form-fuel_price', '38.50');
         $I->fillField('#frm-form-form-amortization', '1.20');
 
@@ -241,6 +287,8 @@ class TravelCest extends BaseAcceptanceCest
 
     protected function deleteVehicle(AcceptanceTester $I, string $licensePlate): void
     {
+        // Filter first, so the delete button belongs to this vehicle and not to whichever is listed first.
+        $I->amOnPage('/cestaky/vozidla?grid-grid-filter%5Bsearch%5D='.rawurlencode($licensePlate));
         $I->waitForText($licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
         $I->clickStable('#snippet-grid-grid-table [title="Smazat vozidlo"]');
         try {

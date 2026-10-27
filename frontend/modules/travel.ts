@@ -11,20 +11,29 @@ export class TravelModule implements Extension {
                 naja.uiHandler.submitForm(control.form);
             }
 
-            if (control instanceof HTMLSelectElement && control.dataset.consumptionUnitTarget !== undefined) {
-                showConsumptionUnit(control);
+            if (control instanceof HTMLSelectElement) {
+                UNITS.forEach(unit => showUnit(control, unit));
             }
         });
 
         // Browsers may restore a previously chosen option without firing a change event.
-        document.querySelectorAll<HTMLSelectElement>('select[data-consumption-unit-target]').forEach(showConsumptionUnit);
+        document.querySelectorAll<HTMLSelectElement>('select').forEach(select => UNITS.forEach(unit => showUnit(select, unit)));
     }
 }
 
+// A select with data-<unit>-target="<id>" copies data-<unit> of its selected option into that element.
+const UNITS = ['consumptionUnit', 'fuelPriceUnit'] as const;
+
 // The unit text comes from the server-rendered option, so no fuel type mapping lives here.
-function showConsumptionUnit(select: HTMLSelectElement): void {
-    const target = document.getElementById(select.dataset.consumptionUnitTarget ?? '');
-    const unit = select.selectedOptions[0]?.dataset.consumptionUnit;
+function showUnit(select: HTMLSelectElement, key: typeof UNITS[number]): void {
+    const targetId = select.dataset[`${key}Target`];
+
+    if (targetId === undefined) {
+        return;
+    }
+
+    const target = document.getElementById(targetId);
+    const unit = select.selectedOptions[0]?.dataset[key];
 
     if (target !== null && unit !== undefined) {
         target.textContent = unit;
