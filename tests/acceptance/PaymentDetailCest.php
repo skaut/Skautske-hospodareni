@@ -704,6 +704,21 @@ JS);
         ]);
         $I->seeInDatabase('pa_payment', ['id' => $manualPaymentId, 'state' => 'completed']);
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/platby(?:\?.*)?$~');
+
+        // Filtr překresleného gridu nesmí mířit na akci párování, jinak by ji každé hledání zopakovalo.
+        $searchField = '[data-test="payment-group-bank-account-transactions"] #frm-bankAccountTransactionsGrid-filter-filter-search';
+        Assert::assertStringNotContainsString(
+            '/parovat',
+            (string) $I->executeJS('return document.querySelector(arguments[0]).form.getAttribute("action");', [$searchField]),
+        );
+        $I->fillFieldStable($searchField, 'skupinu');
+        $I->waitForJS(
+            'return !document.querySelector(\'[data-test="payment-group-bank-account-transactions"]\').textContent.includes("Příjem pro ruční párování");',
+            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
+        );
+        $I->see('Příjem pro skupinu', '[data-test="payment-group-bank-account-transactions"]');
+        $I->dontSee('Bankovní transakce už je spárovaná.');
+        $I->seeNumRecords(1, 'bank_transaction_pairing', ['transaction_key' => $manualTransactionKey]);
     }
 
     /** @group payment */

@@ -57,13 +57,21 @@ class BankTransactionPairingService
         $this->assertAmountsMatch($payment->getAmount(), $transaction->getAmount());
         $warnings = $this->collectPaymentWarnings($transaction, $payment);
 
-        $this->entityManager->wrapInTransaction(function () use ($transaction, $payment, $pairedAt, $pairedBy): void {
-            if (! $this->pairings->pairPaymentWithoutFlush($transaction, $payment, $pairedAt, BankTransactionPairingMode::MANUAL, $pairedBy)) {
-                throw $this->createConflictException($transaction, $payment, null);
+        // Konflikt se hlásí až po transakci: výjimka uvnitř wrapInTransaction() zavře EntityManager
+        // a zbytek požadavku (překreslení gridů, import transakcí) by pak spadl.
+        $paired = $this->entityManager->wrapInTransaction(function () use ($transaction, $payment, $pairedAt, $pairedBy): bool {
+            $paired = $this->pairings->pairPaymentWithoutFlush($transaction, $payment, $pairedAt, BankTransactionPairingMode::MANUAL, $pairedBy);
+
+            if ($paired) {
+                $this->entityManager->flush();
             }
 
-            $this->entityManager->flush();
+            return $paired;
         });
+
+        if (! $paired) {
+            throw $this->createConflictException($transaction, $payment, null);
+        }
 
         return new ManualBankTransactionPairingResult($warnings);
     }
@@ -77,13 +85,19 @@ class BankTransactionPairingService
         $this->assertAmountsMatch(MoneyFactory::fromDecimal((string) $invoice->getTotalAmount()), $transaction->getAmount());
         $warnings = $this->collectInvoiceWarnings($transaction, $invoice);
 
-        $this->entityManager->wrapInTransaction(function () use ($transaction, $invoice, $pairedAt, $pairedBy): void {
-            if (! $this->pairings->pairInvoiceWithoutFlush($transaction, $invoice, $pairedAt, BankTransactionPairingMode::MANUAL, $pairedBy)) {
-                throw $this->createConflictException($transaction, null, $invoice);
+        $paired = $this->entityManager->wrapInTransaction(function () use ($transaction, $invoice, $pairedAt, $pairedBy): bool {
+            $paired = $this->pairings->pairInvoiceWithoutFlush($transaction, $invoice, $pairedAt, BankTransactionPairingMode::MANUAL, $pairedBy);
+
+            if ($paired) {
+                $this->entityManager->flush();
             }
 
-            $this->entityManager->flush();
+            return $paired;
         });
+
+        if (! $paired) {
+            throw $this->createConflictException($transaction, null, $invoice);
+        }
 
         return new ManualBankTransactionPairingResult($warnings);
     }
