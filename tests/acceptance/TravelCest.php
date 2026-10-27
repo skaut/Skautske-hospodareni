@@ -54,6 +54,26 @@ class TravelCest extends BaseAcceptanceCest
         $this->deleteContract($I, $unitRepresentative);
     }
 
+    public function createElectricTravelOrder(AcceptanceTester $I): void
+    {
+        $name = 'Porada elektromobilem';
+        $unitRepresentative = 'Eva Zástupkyně';
+        $licensePlate = 'RZEA-'.time();
+        $I->wantTo('Create travel order with an electric vehicle and see the fuel price in Kč/kWh');
+        $this->navigateToVehicle($I);
+        $this->newVehicle($I, $licensePlate, 'Elektrický pohon', 'kWh/100 km');
+        $this->navigationToContract($I);
+        $this->newContract($I, $unitRepresentative);
+        $this->navigateToTravelOrder($I);
+        $this->newTravelOrder($I, $name, $licensePlate);
+        $this->navigateToTravelOrder($I);
+        $this->deleteTravelOrder($I, $name, 'Kč/kWh', 'kWh/100 km');
+        $this->navigateToVehicle($I);
+        $this->deleteVehicle($I, $licensePlate);
+        $this->navigationToContract($I);
+        $this->deleteContract($I, $unitRepresentative);
+    }
+
     public function travelHubHasNoSelfReferencingBreadcrumb(AcceptanceTester $I): void
     {
         $I->wantTo('see breadcrumbs only outside the travel hub');
@@ -123,11 +143,17 @@ class TravelCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/cestaky');
     }
 
-    protected function deleteTravelOrder(AcceptanceTester $I, string $name): void
-    {
+    protected function deleteTravelOrder(
+        AcceptanceTester $I,
+        string $name,
+        string $fuelPriceUnit = 'Kč/l',
+        string $consumptionUnit = 'l/100 km',
+    ): void {
         $I->click($name);
         $I->waitForText('Cestovní příkaz', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/cestaky/prikazy/');
+        $I->see('38,50 '.$fuelPriceUnit, '[data-test="travel-command-detail-page"]');
+        $I->see($consumptionUnit, '[data-test="travel-command-detail-page"]');
 
         // --- PDF: stažení je hlavní akce, otevření běží v nové kartě ---
         $I->seePdfFileAction('command-pdf');

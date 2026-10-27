@@ -85,11 +85,11 @@
                         </li>
                         <li class="list-group-item d-flex">
                             <div class="fw-bold me-auto">&#0216; spotřeba dle t.p.</div>
-                            <div class="text-end">{$vehicle->consumption|number:2} l/100 km</div>
+                            <div class="text-end">{$vehicle->consumption|number:2} {$vehicle->fuelType->consumptionUnit()}</div>
                         </li>
                         <li class="list-group-item d-flex">
                             <div class="fw-bold me-auto">Cena paliva</div>
-                            <div class="text-end">{$command->fuelPrice|price} Kč/l</div>
+                            <div class="text-end">{$command->fuelPrice|price} Kč/{$vehicle->fuelType->fuelPriceUnit()}</div>
                         </li>
                         <li class="list-group-item d-flex">
                             <div class="fw-bold me-auto">Opotřebení</div>
