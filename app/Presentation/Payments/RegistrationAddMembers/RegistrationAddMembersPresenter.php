@@ -66,7 +66,7 @@ final class RegistrationAddMembersPresenter extends BasePresenter
         $list = array_slice($list, 0, 50);
 
         foreach ($list as $p) {
-            $totalAmount = MoneyFactory::fromDecimal((string) $p['AmountTotal']);
+            $totalAmount = MoneyFactory::fromFloat((float) $p['AmountTotal']);
             if ($totalAmount->isZero()) {
                 continue;
             }
