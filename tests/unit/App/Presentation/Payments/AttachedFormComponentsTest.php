@@ -29,6 +29,7 @@ use App\Model\Payment\ReadModel\Queries\RegistrationWithoutGroupQuery;
 use App\Model\Unit\UnitService;
 use App\Model\Utils\MoneyFactory;
 use App\Presentation\Payments\EventAddParticipants\EventAddParticipantsPresenter;
+use App\Presentation\Payments\RegistrationAddMembers\RegistrationAddMembersPresenter;
 use App\Presentation\Payments\RegistrationCreateGroup\RegistrationCreateGroupPresenter;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
@@ -93,6 +94,46 @@ final class AttachedFormComponentsTest extends Unit
         $name = $person['name'];
         self::assertInstanceOf(TextInput::class, $name);
         self::assertSame('Pražák Jan', $name->getValue());
+    }
+
+    /** SkautIS vrací částky z PersonRegistrationAll se čtyřmi desetinnými místy, např. "800.0000". */
+    public function testRegistrationMembersWithSkautisAmountsAreAddedToAttachedMassAddForm(): void
+    {
+        $payments = Mockery::mock(PaymentService::class);
+        $payments->shouldReceive('getGroup')->with(self::GROUP_ID)->andReturn($this->group());
+        $payments->shouldReceive('getPersonsFromRegistrationWithoutPayment')
+            ->with([self::UNIT_ID], self::GROUP_ID)
+            ->andReturn([
+                self::PERSON_ID => $this->registrationPerson(self::PERSON_ID, 'Pražák Jan', '800.0000', '200.0000'),
+                self::PERSON_ID + 1 => $this->registrationPerson(self::PERSON_ID + 1, 'Novák Petr', '0.0000', '0.0000'),
+            ]);
+
+        $formFactory = Mockery::mock(IMassAddFormFactory::class);
+        $formFactory->shouldReceive('create')
+            ->with(self::GROUP_ID)
+            ->andReturn(new MassAddForm(self::GROUP_ID, $payments, Mockery::mock(CommandBus::class)));
+
+        $presenter = new RegistrationAddMembersPresenter($formFactory, $payments);
+        $this->preparePresenter($presenter, Mockery::mock(QueryBus::class));
+        (new ReflectionProperty(RegistrationAddMembersPresenter::class, 'readUnits'))->setValue($presenter, [self::UNIT_ID => 'Oddíl']);
+
+        $presenter->actionDefault(self::GROUP_ID);
+
+        $massAddForm = $presenter['form'];
+        self::assertInstanceOf(MassAddForm::class, $massAddForm);
+        $form = $massAddForm['form'];
+        self::assertInstanceOf(BaseForm::class, $form);
+        $persons = $form['persons'];
+        self::assertInstanceOf(BaseContainer::class, $persons);
+        self::assertNull($persons->getComponent('person'.(self::PERSON_ID + 1), false));
+        $person = $persons['person'.self::PERSON_ID];
+        self::assertInstanceOf(BaseContainer::class, $person);
+        $amount = $person['amount'];
+        self::assertInstanceOf(TextInput::class, $amount);
+        self::assertSame('800.00', $amount->getValue());
+        $note = $person['note'];
+        self::assertInstanceOf(TextInput::class, $note);
+        self::assertSame('1x STS', $note->getValue());
     }
 
     public function testRegistrationGroupFormIsPrefilledAfterAttaching(): void
@@ -178,6 +219,18 @@ final class AttachedFormComponentsTest extends Unit
             '',
             null,
         );
+    }
+
+    /** @return array{ID_Person: int, Person: string, AmountTotal: string, AmountServices: string, emails: list<never>} */
+    private function registrationPerson(int $personId, string $name, string $amountTotal, string $amountServices): array
+    {
+        return [
+            'ID_Person' => $personId,
+            'Person' => $name,
+            'AmountTotal' => $amountTotal,
+            'AmountServices' => $amountServices,
+            'emails' => [],
+        ];
     }
 
     private function participant(): Participant
