@@ -24,7 +24,7 @@
     "devDependencies": {
         "autoprefixer": "^10.5.2",
         "lint-staged": "^17.1.1",
-        "postcss": "^8.5.10",
+        "postcss": "^8.5.31",
         "sass": "^1.101.0",
         "typescript": "^6.0.3",
         "uglify-js": "^3.19.3",
