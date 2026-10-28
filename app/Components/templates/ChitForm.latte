@@ -46,9 +46,12 @@
                             </div>
                         </div>
                     </div>
-                    <input type="button" name="items[addItem]" value="Přidat další položku" class="btn btn-outline-secondary" data-form-item-add><br /><br />
-                    {input send} {input sendStay}
-                    {ifset $edit}{input cancle}{/ifset}
+                    <input type="button" name="items[addItem]" value="Přidat další položku" class="btn btn-outline-secondary mb-3" data-form-item-add>
+                    <div class="d-flex flex-wrap gap-2">
+                        {input send}
+                        {input sendStay}
+                        {ifset $edit}{input cancle}{/ifset}
+                    </div>
                 </form>
             </div>
         </div>

@@ -246,7 +246,7 @@ class EventCashbookCest extends BaseAcceptanceCest
 
         $this->I->clickStable('input[name="items[1][remove]"]');
         $this->I->dontSeeElement('input[name="items[1][purpose]"]');
-        $this->seeFocusOn('items[addItem]');
+        $this->I->seeFocusOn('input[name="items[addItem]"]');
 
         $this->I->scrollTo('input[name="send"]');
         $this->I->clickStable('input[name="send"]');
@@ -263,7 +263,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->waitForElementVisible(sprintf('input[name="items[%d][purpose]"]', $index), AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->I->seeInField(sprintf('input[name="items[%d][purpose]"]', $index), '');
         $this->I->seeInField(sprintf('input[name="items[%d][price]"]', $index), '');
-        $this->seeFocusOn(sprintf('items[%d][purpose]', $index));
+        $this->I->seeFocusOn(sprintf('input[name="items[%d][purpose]"]', $index));
     }
 
     private function fillChitItem(int $index, string $purpose, string $expenseCategory, string $amount): void
@@ -271,14 +271,6 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->fillFieldStable(sprintf('input[name="items[%d][purpose]"]', $index), $purpose);
         $this->I->selectOption(sprintf('items[%d][expenseCategories]', $index), $expenseCategory);
         $this->I->fillFieldStable(sprintf('input[name="items[%d][price]"]', $index), $amount);
-    }
-
-    private function seeFocusOn(string $name): void
-    {
-        $this->I->waitForJS(
-            'return document.activeElement?.getAttribute("name") === '.json_encode($name).';',
-            AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
-        );
     }
 
     private function removeChits(): void
@@ -388,10 +380,13 @@ class EventCashbookCest extends BaseAcceptanceCest
 
     private function seeOnlyCategorySelectOf(Operation $type): void
     {
-        $shown = $type->equals(Operation::EXPENSE()) ? 'expense' : 'income';
-        $hidden = $type->equals(Operation::EXPENSE()) ? 'income' : 'expense';
-        $this->I->waitForElementVisible(sprintf('select[name="items[0][%sCategories]"]', $shown), AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $this->I->waitForElementNotVisible(sprintf('select[name="items[0][%sCategories]"]', $hidden), AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->I->waitForElementVisible(sprintf('select[name="%s"]', $this->categorySelectName(0, $type)), AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->I->waitForElementNotVisible(sprintf('select[name="%s"]', $this->categorySelectName(0, $type->getInverseOperation())), AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+    }
+
+    private function categorySelectName(int $index, Operation $type): string
+    {
+        return sprintf('items[%d][%sCategories]', $index, $type->equals(Operation::EXPENSE()) ? 'expense' : 'income');
     }
 
     private function cleanupEvent(AcceptanceTester $I): void
@@ -439,7 +434,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->fillFieldStable('input[name="items[0][purpose]"]', $purpose);
         $this->I->selectOption('#chit-type', $type->equals(Operation::EXPENSE()) ? 'Výdaje' : 'Příjmy');
         $this->seeOnlyCategorySelectOf($type);
-        $this->I->selectOption(sprintf('items[0][%sCategories]', $type->equals(Operation::EXPENSE()) ? 'expense' : 'income'), $category);
+        $this->I->selectOption($this->categorySelectName(0, $type), $category);
         $this->I->fillFieldStable('input[name="recipient"]', $recipient);
         $this->I->fillFieldStable('input[name="items[0][price]"]', $amount);
     }
@@ -448,7 +443,7 @@ class EventCashbookCest extends BaseAcceptanceCest
     {
         $this->I->wantToTest('Uložit');
         $this->I->fillFieldStable('input[name="items[1][purpose]"]', $purpose);
-        $this->I->selectOption(sprintf('items[1][%sCategories]', $type->equals(Operation::EXPENSE()) ? 'expense' : 'income'), $category);
+        $this->I->selectOption($this->categorySelectName(1, $type), $category);
         $this->I->fillFieldStable('input[name="recipient"]', $recipient);
         $this->I->fillFieldStable('input[name="items[1][price]"]', $amount);
     }

@@ -179,7 +179,7 @@ final class ChitForm extends BaseControl
 
         $form->addDate('date')
             ->setRequired('Zadejte datum')
-            ->setHtmlAttribute('class', 'form-control input-sm required')
+            ->setHtmlAttribute('class', 'form-control form-control-sm required')
             ->setHtmlAttribute('placeholder', 'Datum');
 
         $form->addText('num')
@@ -187,7 +187,7 @@ final class ChitForm extends BaseControl
             ->addRule($form::MaxLength, 'Číslo dokladu může mít nejvýše %d znaků.', ChitNumber::MAX_LENGTH)
             ->addRule($form::PATTERN, self::INVALID_CHIT_NUMBER_MESSAGE, ChitNumber::PATTERN)
             ->setHtmlAttribute('placeholder', 'Číslo dokladu')
-            ->setHtmlAttribute('class', 'form-control input-sm');
+            ->setHtmlAttribute('class', 'form-control form-control-sm');
 
         $paymentMethods = [
             PaymentMethod::CASH => 'Pokladna',
@@ -207,22 +207,22 @@ final class ChitForm extends BaseControl
             ->setHtmlId('form-recipient')
             ->setHtmlAttribute('list', 'list-recipient')
             ->setHtmlAttribute('placeholder', 'Komu/Od')
-            ->setHtmlAttribute('class', 'form-control input-sm');
+            ->setHtmlAttribute('class', 'form-control form-control-sm');
 
         $form->addDynamic('items', function (Container $container): void {
             $container->addText('purpose')
                 ->setMaxLength(120)
                 ->setRequired('Zadejte účel výplaty')
                 ->setHtmlAttribute('placeholder', 'Účel')
-                ->setHtmlAttribute('class', 'form-control input-sm required');
+                ->setHtmlAttribute('class', 'form-control form-control-sm required');
 
             $container->addSelect('incomeCategories', null, $this->getCategoryPairsByType(Operation::get(Operation::INCOME)))
-                ->setHtmlAttribute('class', 'form-control input-sm')
+                ->setHtmlAttribute('class', 'form-select form-select-sm')
                 // CSS shows only the select matching the checked chit type.
                 ->setHtmlAttribute('data-category-type', Operation::INCOME);
 
             $container->addSelect('expenseCategories', null, $this->getCategoryPairsByType(Operation::get(Operation::EXPENSE)))
-                ->setHtmlAttribute('class', 'form-control input-sm')
+                ->setHtmlAttribute('class', 'form-select form-select-sm')
                 ->setHtmlAttribute('data-category-type', Operation::EXPENSE);
 
             $container->addText('price')
@@ -230,7 +230,7 @@ final class ChitForm extends BaseControl
                 ->addRule([$this, 'isAmountValid'], 'Částka musí být větší než 0')
                 ->setMaxLength(100)
                 ->setHtmlAttribute('placeholder', 'Částka: 2+3*15')
-                ->setHtmlAttribute('class', 'form-control input-sm');
+                ->setHtmlAttribute('class', 'form-control form-control-sm');
             $container->addHidden('id');
         }, 1);
 
