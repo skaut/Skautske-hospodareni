@@ -38,13 +38,11 @@ use App\Model\DTO\Cashbook\ChitItem;
 use App\Model\Skautis\Exception\AmountMustBeGreaterThanZero;
 use Cake\Chronos\ChronosDate;
 use Component\Forms\BaseForm;
-use Contributte\FormMultiplier\Multiplier;
 use InvalidArgumentException;
 use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Forms\Container;
 use Nette\Forms\Control;
-use Nette\Forms\Controls\SubmitButton;
 use Nette\Http\IResponse;
 use Nette\Utils\ArrayHash;
 use Psr\Log\LoggerInterface;
@@ -211,7 +209,7 @@ final class ChitForm extends BaseControl
             ->setHtmlAttribute('placeholder', 'Komu/Od')
             ->setHtmlAttribute('class', 'form-control input-sm');
 
-        $items = $form->addDynamic('items', function (Container $container): void {
+        $form->addDynamic('items', function (Container $container): void {
             $container->addText('purpose')
                 ->setMaxLength(120)
                 ->setRequired('Zadejte účel výplaty')
@@ -231,26 +229,10 @@ final class ChitForm extends BaseControl
                 ->setRequired('Musíte vyplnit částku')
                 ->addRule([$this, 'isAmountValid'], 'Částka musí být větší než 0')
                 ->setMaxLength(100)
-                ->setHtmlId('form-out-price')
                 ->setHtmlAttribute('placeholder', 'Částka: 2+3*15')
                 ->setHtmlAttribute('class', 'form-control input-sm');
             $container->addHidden('id');
-
-            $container->addSubmit('remove', 'Odebrat položku')
-                ->setValidationScope([])
-                ->onClick[] = function (SubmitButton $button): void {
-                    $this->removeItem($button);
-                    $this->setDisplayChitForm(true);
-                };
         }, 1);
-
-        $items->addSubmit('addItem', 'Přidat další položku')
-            ->setValidationScope([])
-            ->onClick[] = function () use ($items): void {
-                $items->addCopy();
-                $this->reload();
-                $this->setDisplayChitForm(true);
-            };
 
         // ID of edited chit
         $form->addHidden('pid')
@@ -291,21 +273,6 @@ final class ChitForm extends BaseControl
             };
 
         return $form;
-    }
-
-    private function removeItem(SubmitButton $button): void
-    {
-        $container = $button->getParent();
-        if (! $container instanceof Container) {
-            throw new LogicException('Assertion failed.');
-        }
-
-        $replicator = $container->getParent();
-        if (! $replicator instanceof Multiplier) {
-            throw new LogicException('Assertion failed.');
-        }
-        $replicator->removeComponent($container);
-        $this->reload();
     }
 
     private function formSubmitted(BaseForm $form, ArrayHash $values): bool

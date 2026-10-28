@@ -1031,3 +1031,8 @@ fieldset:disabled label {
 .chit-form:has(input[name="type"][value="out"]:checked) [data-category-type="in"] {
   display: none;
 }
+
+// The last remaining row of a repeated form list cannot be removed.
+[data-form-item]:only-child [data-form-item-remove] {
+  display: none;
+}
