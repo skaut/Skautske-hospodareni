@@ -335,13 +335,14 @@ if (dueDate instanceof HTMLInputElement) {
 JS);
         $I->clickStable('[data-test="mass-add-form-sticky-submit"]');
         $I->waitForElementVisible('[data-test="mass-add-form-errors"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeFocusOn('[data-test="mass-add-form-errors"]');
+        // Focus is set with preventScroll; the scroll into view follows, so wait for it separately.
         $I->waitForJS(
             <<<'JS'
-const error = document.querySelector('[data-test="mass-add-form-errors"]');
-const rect = error?.getBoundingClientRect();
+const rect = document.querySelector('[data-test="mass-add-form-errors"]')?.getBoundingClientRect();
 const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
 
-return document.activeElement === error && rect !== undefined && rect !== null && rect.top >= 0 && rect.bottom <= viewportHeight;
+return rect !== undefined && rect.top >= 0 && rect.bottom <= viewportHeight;
 JS,
             AcceptanceTester::ELEMENT_LOAD_TIMEOUT,
         );

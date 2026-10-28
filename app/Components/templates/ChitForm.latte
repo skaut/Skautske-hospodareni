@@ -27,9 +27,8 @@
                         </datalist>
                     </div>
                     <h5 class="card-title mt-2">Položky</h5>
-                    {var $itemsCount = iterator_count($form['items']->getContainers())}
-                    {foreach $form['items']->getContainers() as $id => $item}
-                        <div class="card mb-2">
+                    <div data-form-items>
+                        <div n:foreach="$form['items']->getContainers() as $id => $item" class="card mb-2" data-form-item="{$id}">
                             <div class="card-body">
                                 <div class="row mb-1">
                                     <div class="col">{input "items-$id-purpose"}</div>
@@ -41,17 +40,18 @@
                                     </div>
                                     <div class="col">{input "items-$id-price"}</div>
                                 </div>
-                                {if $itemsCount > 1}
-                                    {input "items-$id-remove" class=>"btn btn-light btn-sm ajax"}
-                                {/if}
+                                {* Inside the row, so removing the row in the browser drops its id from the post. *}
+                                {input "items-$id-id"}
+                                <input type="button" name="items[{$id}][remove]" value="Odebrat položku" class="btn btn-outline-secondary btn-sm" data-form-item-remove>
                             </div>
                         </div>
-                    {/foreach}
-                    {input items-addItem class=>"btn btn-light ajax"}<br /><br />
-                    {if $itemsCount > 0}
-                        {input send} {input sendStay}
-                    {/if}
-                    {ifset $edit}{input cancle}{/ifset}
+                    </div>
+                    <input type="button" name="items[addItem]" value="Přidat další položku" class="btn btn-outline-secondary mb-3" data-form-item-add>
+                    <div class="d-flex flex-wrap gap-2">
+                        {input send}
+                        {input sendStay}
+                        {ifset $edit}{input cancle}{/ifset}
+                    </div>
                 </form>
             </div>
         </div>

@@ -1025,3 +1025,14 @@ fieldset:disabled label {
   // Zero stays visible as a faint cell rather than disappearing into the card.
   background: color-mix(in srgb, var(--tblr-primary) calc(var(--usage-intensity, 0) * 100%), var(--tblr-border-color));
 }
+
+// Chit item rows render both category selects; show only the one matching the checked chit type.
+.chit-form:has(input[name="type"][value="in"]:checked) [data-category-type="out"],
+.chit-form:has(input[name="type"][value="out"]:checked) [data-category-type="in"] {
+  display: none;
+}
+
+// The last remaining row of a repeated form list cannot be removed.
+[data-form-item]:only-child [data-form-item-remove] {
+  display: none;
+}
