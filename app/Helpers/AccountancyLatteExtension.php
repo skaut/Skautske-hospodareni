@@ -24,6 +24,7 @@ final class AccountancyLatteExtension extends Extension
             'paymentStateLabel' => AccountancyHelpers::paymentStateLabel(...),
             'price' => AccountancyHelpers::price(...),
             'num' => AccountancyHelpers::num(...),
+            'decimal' => AccountancyHelpers::decimal(...),
             'postCode' => AccountancyHelpers::postCode(...),
             'priceToString' => AccountancyHelpers::priceToString(...),
             'groupState' => AccountancyHelpers::groupState(...),

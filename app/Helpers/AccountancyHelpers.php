@@ -246,6 +246,15 @@ abstract class AccountancyHelpers
 
     /**
      * @filter
+     * formátuje desetinné číslo na nejvýše 2 desetinná místa bez koncových nul, např. "12,5" nebo "120"
+     */
+    public static function decimal(float $number): string
+    {
+        return rtrim(rtrim(number_format($number, 2, ',', ' '), '0'), ','); // nedělitelná mezera
+    }
+
+    /**
+     * @filter
      *
      * délka sezení v lidsky čitelném tvaru, např. "1 h 24 min"
      */
