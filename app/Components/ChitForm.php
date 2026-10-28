@@ -45,7 +45,6 @@ use Nette\Application\BadRequestException;
 use Nette\Forms\Container;
 use Nette\Forms\Control;
 use Nette\Forms\Controls\SubmitButton;
-use Nette\Forms\Form;
 use Nette\Http\IResponse;
 use Nette\Utils\ArrayHash;
 use Psr\Log\LoggerInterface;
@@ -71,8 +70,6 @@ final class ChitForm extends BaseControl
      * Can current user add/edit chits?
      */
     private bool $isEditable;
-
-    private int $itemsCount = 0;
 
     /** @var array<string, array<int, string>> */
     private array $storedCategoryOptions = [];
@@ -203,7 +200,7 @@ final class ChitForm extends BaseControl
             ->setDefaultValue(PaymentMethod::CASH)
             ->setRequired(true);
 
-        $typePicker = $form->addRadioList('type', null, self::CATEGORY_TYPES)
+        $form->addRadioList('type', null, self::CATEGORY_TYPES)
             ->setDefaultValue(Operation::EXPENSE)
             ->setRequired('Vyberte typ');
 
@@ -214,8 +211,7 @@ final class ChitForm extends BaseControl
             ->setHtmlAttribute('placeholder', 'Komu/Od')
             ->setHtmlAttribute('class', 'form-control input-sm');
 
-        $items = $form->addDynamic('items', function (Container $container) use ($typePicker): void {
-            ++$this->itemsCount;
+        $items = $form->addDynamic('items', function (Container $container): void {
             $container->addText('purpose')
                 ->setMaxLength(120)
                 ->setRequired('Zadejte účel výplaty')
@@ -224,15 +220,12 @@ final class ChitForm extends BaseControl
 
             $container->addSelect('incomeCategories', null, $this->getCategoryPairsByType(Operation::get(Operation::INCOME)))
                 ->setHtmlAttribute('class', 'form-control input-sm')
-                ->setHtmlId('incomeCategories'.$this->itemsCount)
-                ->addConditionOn($typePicker, Form::EQUAL, Operation::INCOME)
-                ->toggle('incomeCategories'.$this->itemsCount);
+                // CSS shows only the select matching the checked chit type.
+                ->setHtmlAttribute('data-category-type', Operation::INCOME);
 
             $container->addSelect('expenseCategories', null, $this->getCategoryPairsByType(Operation::get(Operation::EXPENSE)))
                 ->setHtmlAttribute('class', 'form-control input-sm')
-                ->setHtmlId('expenseCategories'.$this->itemsCount)
-                ->addConditionOn($typePicker, Form::EQUAL, Operation::EXPENSE)
-                ->toggle('expenseCategories'.$this->itemsCount);
+                ->setHtmlAttribute('data-category-type', Operation::EXPENSE);
 
             $container->addText('price')
                 ->setRequired('Musíte vyplnit částku')

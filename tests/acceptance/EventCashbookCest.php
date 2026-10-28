@@ -330,6 +330,16 @@ class EventCashbookCest extends BaseAcceptanceCest
         if ($selectedCategory !== (string) ICategory::CATEGORY_HPD_ID) {
             throw new RuntimeException('Imported participant income chit does not retain the HPD category in the edit form.');
         }
+
+        $this->seeOnlyCategorySelectOf(Operation::INCOME());
+    }
+
+    private function seeOnlyCategorySelectOf(Operation $type): void
+    {
+        $shown = $type->equals(Operation::EXPENSE()) ? 'expense' : 'income';
+        $hidden = $type->equals(Operation::EXPENSE()) ? 'income' : 'expense';
+        $this->I->waitForElementVisible(sprintf('select[name="items[0][%sCategories]"]', $shown), AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->I->waitForElementNotVisible(sprintf('select[name="items[0][%sCategories]"]', $hidden), AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
     private function cleanupEvent(AcceptanceTester $I): void
@@ -376,6 +386,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->pressKey('body', [WebDriverKeys::ESCAPE]); // close datepicker
         $this->I->fillFieldStable('input[name="items[0][purpose]"]', $purpose);
         $this->I->selectOption('#chit-type', $type->equals(Operation::EXPENSE()) ? 'Výdaje' : 'Příjmy');
+        $this->seeOnlyCategorySelectOf($type);
         $this->I->selectOption(sprintf('items[0][%sCategories]', $type->equals(Operation::EXPENSE()) ? 'expense' : 'income'), $category);
         $this->I->fillFieldStable('input[name="recipient"]', $recipient);
         $this->I->fillFieldStable('input[name="items[0][price]"]', $amount);
