@@ -49,7 +49,7 @@ final class RoadworthyControl extends BaseControl
 
         try {
             $this->commandBus->handle(new RemoveRoadworthyScan($this->vehicleId, FilePath::fromString($path)));
-            $this->presenter->flashMessage('Sken byl odebrán', 'success');
+            $this->getPresenter()->flashMessage('Sken byl odebrán', 'success');
         } catch (ScanNotFound) {
         }
 
@@ -99,7 +99,7 @@ final class RoadworthyControl extends BaseControl
             new AddRoadworthyScan($this->vehicleId, $upload->getSanitizedName(), (string) $upload->getContents()),
         );
 
-        $this->presenter->flashMessage('Sken byl nahrán', 'success');
+        $this->getPresenter()->flashMessage('Sken byl nahrán', 'success');
     }
 
     private function assertIsEditable(): void

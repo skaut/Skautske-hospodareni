@@ -68,13 +68,13 @@ final class PaymentInfoEmailDialog extends Dialog
             $this->paymentService->generateVs($this->groupId);
         } catch (MissingVariableSymbol) {
             $this->flashMessage('VS nelze dogenerovat. Vyplňte nejdříve VS alespoň jedné platbě.', 'warning');
-            $this->presenter->redrawControl('flash');
+            $this->getPresenter()->redrawControl('flash');
             $this->redrawControl();
 
             return;
         } catch (InvalidVariableSymbol $exception) {
             $this->flashMessage('Nelze vygenerovat následující VS: \''.$exception->getInvalidValue().'\'', 'danger');
-            $this->presenter->redrawControl('flash');
+            $this->getPresenter()->redrawControl('flash');
             $this->redrawControl();
 
             return;
@@ -153,6 +153,6 @@ final class PaymentInfoEmailDialog extends Dialog
 
         $this->onSuccess();
         $this->hide();
-        $this->presenter->redirect('this');
+        $this->getPresenter()->redirect('this');
     }
 }

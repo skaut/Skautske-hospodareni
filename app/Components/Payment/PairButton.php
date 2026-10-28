@@ -151,25 +151,25 @@ class PairButton extends BaseControl
     {
         try {
             foreach ($this->scope->pair($daysBack) as $message) {
-                $this->presenter->flashMessage($message->message, $message->type);
+                $this->getPresenter()->flashMessage($message->message, $message->type);
             }
         } catch (BankTimeout) {
-            $this->presenter->flashMessage(BankPairingUiMessages::TIMEOUT_MESSAGE, 'danger');
+            $this->getPresenter()->flashMessage(BankPairingUiMessages::TIMEOUT_MESSAGE, 'danger');
         } catch (BankTimeLimit) {
-            $this->presenter->flashMessage(BankPairingUiMessages::TIME_LIMIT_MESSAGE, 'danger');
+            $this->getPresenter()->flashMessage(BankPairingUiMessages::TIME_LIMIT_MESSAGE, 'danger');
         } catch (BankWrongTokenAccount $e) {
-            $this->presenter->flashMessage(BankPairingUiMessages::wrongTokenAccountMessage($e), 'danger');
+            $this->getPresenter()->flashMessage(BankPairingUiMessages::wrongTokenAccountMessage($e), 'danger');
         } catch (InvalidOAuth $exc) {
-            $this->presenter->flashMessage($exc->getExplainedMessage(), 'danger');
+            $this->getPresenter()->flashMessage($exc->getExplainedMessage(), 'danger');
         }
 
-        if ($this->ajaxEnabled && $this->presenter->isAjax()) {
+        if ($this->ajaxEnabled && $this->getPresenter()->isAjax()) {
             $this->onSuccess();
 
             return;
         }
 
-        $this->presenter->redirect('this');
+        $this->getPresenter()->redirect('this');
     }
 
     public static function wrongTokenAccountMessage(BankWrongTokenAccount $exception): string

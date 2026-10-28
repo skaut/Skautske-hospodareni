@@ -78,19 +78,19 @@ class EmailButton extends BaseControl
     public function handleSendTest(): void
     {
         if (! $this->isEditable) {
-            $this->presenter->flashMessage('Neplatný požadavek na odeslání testovacího e-mailu!', 'danger');
-            $this->presenter->redirect('this');
+            $this->getPresenter()->flashMessage('Neplatný požadavek na odeslání testovacího e-mailu!', 'danger');
+            $this->getPresenter()->redirect('this');
         }
 
         try {
             $email = $this->mailing->sendTestMail($this->group->id);
-            $this->presenter->flashMessage('Testovací e-mail byl odeslán na '.$email.'.');
+            $this->getPresenter()->flashMessage('Testovací e-mail byl odeslán na '.$email.'.');
         } catch (OAuthNotSet) {
-            $this->presenter->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
+            $this->getPresenter()->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
         } catch (InvalidOAuth $e) {
             $this->oauthError($e);
         } catch (InvalidBankAccount) {
-            $this->presenter->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
+            $this->getPresenter()->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
         } catch (EmailNotSet) {
             $this->flashMessage('Nemáte nastavený e-mail ve skautisu, na který by se odeslal testovací e-mail!', 'danger');
         }
@@ -109,21 +109,21 @@ class EmailButton extends BaseControl
                 ++$sentCount;
             }
         } catch (OAuthNotSet) {
-            $this->presenter->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
-            $this->presenter->redirect('this');
+            $this->getPresenter()->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
+            $this->getPresenter()->redirect('this');
         } catch (InvalidBankAccount) {
-            $this->presenter->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-            $this->presenter->redirect('this');
+            $this->getPresenter()->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
+            $this->getPresenter()->redirect('this');
         } catch (InvalidOAuth $e) {
             $this->oauthError($e);
-            $this->presenter->redirect('this');
+            $this->getPresenter()->redirect('this');
         } catch (EmailTemplateNotSet) {
-            $this->presenter->flashMessage(self::NO_TEMPLATE_ASSIGNED, 'warning');
-            $this->presenter->redirect('this');
+            $this->getPresenter()->flashMessage(self::NO_TEMPLATE_ASSIGNED, 'warning');
+            $this->getPresenter()->redirect('this');
         }
 
         if ($sentCount > 0) {
-            $this->presenter->flashMessage(
+            $this->getPresenter()->flashMessage(
                 $sentCount === 1
                     ? 'E-mail s upomínkou byl odeslán'
                     : 'E-maily s upomínkou  byly odeslány (celkem: '.$sentCount.')',
@@ -131,7 +131,7 @@ class EmailButton extends BaseControl
             );
         }
 
-        $this->presenter->redirect('this');
+        $this->getPresenter()->redirect('this');
     }
 
     /**
@@ -166,6 +166,6 @@ class EmailButton extends BaseControl
 
     private function oauthError(InvalidOAuth $e): void
     {
-        $this->presenter->flashMessage($e->getExplainedMessage(), 'danger');
+        $this->getPresenter()->flashMessage($e->getExplainedMessage(), 'danger');
     }
 }

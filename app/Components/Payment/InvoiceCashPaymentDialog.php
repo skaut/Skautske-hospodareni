@@ -79,7 +79,7 @@ final class InvoiceCashPaymentDialog extends Dialog
     {
         $invoice = $this->invoice();
         if ($invoice === null) {
-            $this->presenter->flashMessage('Zadaná faktura neexistuje.', 'danger');
+            $this->getPresenter()->flashMessage('Zadaná faktura neexistuje.', 'danger');
             $this->hide();
 
             return;
@@ -88,13 +88,13 @@ final class InvoiceCashPaymentDialog extends Dialog
         try {
             $marked = $this->invoiceManager->markAsPaidInCash($invoice, $values->cashReceiptNumber);
         } catch (InvalidArgumentException $e) {
-            $this->presenter->flashMessage($e->getMessage(), 'danger');
+            $this->getPresenter()->flashMessage($e->getMessage(), 'danger');
             $this->redrawControl();
 
             return;
         }
 
-        $this->presenter->flashMessage(
+        $this->getPresenter()->flashMessage(
             $marked ? 'Faktura byla označena jako proplacená v hotovosti.' : 'Faktura už je označena jako proplacená.',
             $marked ? 'success' : 'info',
         );

@@ -339,19 +339,19 @@ class InvoiceForm extends BaseControl
                 $this->createInvoice($values);
             }
         } catch (VariableSymbolCollision $exception) {
-            $this->presenter->flashMessage($exception->getMessage(), 'danger');
+            $this->getPresenter()->flashMessage($exception->getMessage(), 'danger');
 
             return;
         }
 
         $message = $this->isEditMode() ? 'Faktura byla upravena' : 'Faktura byla vytvořena';
-        $this->presenter->flashMessage($message);
+        $this->getPresenter()->flashMessage($message);
         if ($this->isEditMode()) {
             if ($this->invoice === null) {
                 throw new LogicException('Upravovaná faktura nebyla nalezena.');
             }
 
-            $this->presenter->redirect(':Payments:InvoiceList:default', [
+            $this->getPresenter()->redirect(':Payments:InvoiceList:default', [
                 'invoiceSequenceId' => $this->invoiceSequence->getId(),
                 'unitId' => $this->invoiceSequence->getUnit(),
             ]);
@@ -359,16 +359,16 @@ class InvoiceForm extends BaseControl
             return;
         }
 
-        if ($this->presenter->isAjax()) {
+        if ($this->getPresenter()->isAjax()) {
             $formComponent = $this->getComponent('form');
             if (! $formComponent instanceof BaseForm) {
                 throw new LogicException('Formulář faktury nebyl nalezen.');
             }
 
             $formComponent->setValues([], true);
-            $this->presenter->redrawControl('form');
+            $this->getPresenter()->redrawControl('form');
         } else {
-            $this->presenter->redirect(':Payments:InvoiceList:default', [
+            $this->getPresenter()->redirect(':Payments:InvoiceList:default', [
                 'invoiceSequenceId' => $this->invoiceSequence->getId(),
                 'unitId' => $this->invoiceSequence->getUnit(),
             ]);

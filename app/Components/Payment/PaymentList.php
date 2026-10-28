@@ -170,14 +170,14 @@ final class PaymentList extends BaseControl
         $payment = $this->model->findPayment($pid);
 
         if ($payment === null) {
-            $this->presenter->flashMessage('Zadaná platba neexistuje', 'danger');
+            $this->getPresenter()->flashMessage('Zadaná platba neexistuje', 'danger');
             $this->finishMutation();
 
             return;
         }
 
         if (empty($payment->getEmailRecipients())) {
-            $this->presenter->flashMessage('email nejde odeslat, osoba nemá vyplněný žádný email pro doručení', 'warning');
+            $this->getPresenter()->flashMessage('email nejde odeslat, osoba nemá vyplněný žádný email pro doručení', 'warning');
             $this->finishMutation();
 
             return;
@@ -191,21 +191,21 @@ final class PaymentList extends BaseControl
         $payment = $this->model->findPayment($pid);
 
         if ($payment === null) {
-            $this->presenter->flashMessage('Zadaná platba neexistuje', 'danger');
+            $this->getPresenter()->flashMessage('Zadaná platba neexistuje', 'danger');
             $this->finishMutation();
 
             return;
         }
 
         if (empty($payment->getEmailRecipients())) {
-            $this->presenter->flashMessage('Platba nemá vyplněný e-mail', 'danger');
+            $this->getPresenter()->flashMessage('Platba nemá vyplněný e-mail', 'danger');
             $this->finishMutation();
 
             return;
         }
 
         if (! $payment->canSendReminder()) {
-            $this->presenter->flashMessage(PaymentReminderNotAllowed::withName($payment->getName())->getMessage(), 'warning');
+            $this->getPresenter()->flashMessage(PaymentReminderNotAllowed::withName($payment->getName())->getMessage(), 'warning');
             $this->finishMutation();
 
             return;
@@ -266,9 +266,9 @@ final class PaymentList extends BaseControl
             }
 
             if ($count === 1) {
-                $this->presenter->flashMessage($count.' upomínkový e-mailů odeslán', 'info');
+                $this->getPresenter()->flashMessage($count.' upomínkový e-mailů odeslán', 'info');
             } else {
-                $this->presenter->flashMessage($count.' upomínkových e-mailů odesláno', 'info');
+                $this->getPresenter()->flashMessage($count.' upomínkových e-mailů odesláno', 'info');
             }
         } catch (EmailTemplateNotSet) {
             $this->flashMessage('Platební skupina nemá povolené upomínky', 'warning');
@@ -320,12 +320,12 @@ final class PaymentList extends BaseControl
 
     private function finishMutation(): void
     {
-        if ($this->presenter->isAjax()) {
+        if ($this->getPresenter()->isAjax()) {
             $this->onChange();
 
             return;
         }
 
-        $this->presenter->redirect('this');
+        $this->getPresenter()->redirect('this');
     }
 }
