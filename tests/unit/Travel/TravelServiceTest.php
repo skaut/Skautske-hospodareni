@@ -8,6 +8,7 @@ use App\Model\Common\Services\QueryBus;
 use App\Model\Travel\Repositories\ICommandRepository;
 use App\Model\Travel\Repositories\IContractRepository;
 use App\Model\Travel\Repositories\IVehicleRepository;
+use App\Model\Travel\Vehicle\FuelType;
 use App\Model\Travel\Vehicle\Metadata;
 use App\Model\Unit\Repositories\IUnitRepository;
 use App\Model\Unit\Unit;
@@ -167,7 +168,7 @@ class TravelServiceTest extends UnitTest
     private function createVehicle(bool $archived): Vehicle
     {
         $unit = m::mock(Unit::class, ['getId' => self::UNIT_ID]);
-        $vehicle = new Vehicle('Osobní', $unit, null, '1A2 3456', 6.0, new Metadata(new DateTimeImmutable(), 'FM'));
+        $vehicle = new Vehicle('Osobní', $unit, null, '1A2 3456', 6.0, FuelType::COMBUSTION, new Metadata(new DateTimeImmutable(), 'FM'));
 
         if ($archived) {
             $vehicle->archive();

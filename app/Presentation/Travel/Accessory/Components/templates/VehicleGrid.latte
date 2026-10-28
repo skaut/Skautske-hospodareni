@@ -21,6 +21,10 @@
     {/if}
 {/block}
 
+{define col-consumption}
+    {$item->getConsumption()} {$item->getFuelType()->consumptionUnit()}
+{/define}
+
 {define col-subunit}
     {$units[$item->getSubunitId()] ?? '-'}
 {/define}

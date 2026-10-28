@@ -9,6 +9,7 @@ use App\Model\Services\PdfRenderer;
 use App\Model\Services\TemplateFactory;
 use App\Model\Travel\Travel\TransportType;
 use App\Model\Travel\Vehicle;
+use App\Model\Travel\Vehicle\FuelType;
 use App\Model\Travel\Vehicle\Metadata;
 use App\Model\Unit\Unit;
 use Cake\Chronos\ChronosDate;
@@ -143,9 +144,11 @@ final class PdfOutputsGenerationTest extends IntegrationTest
     /**
      * Cestovní příkaz s vozidlem a cestami – tak, jak ho skládá CommandPresenter::actionPrint()
      * (vozidlo je entita, ne DTO). Spotřeba i vozidlo se dřív četly přes magické vlastnosti,
-     * které entita nemá, a v PDF zůstávaly prázdné.
+     * které entita nemá, a v PDF zůstávaly prázdné. Jednotky paliva a spotřeby odpovídají pohonu vozidla.
+     *
+     * @dataProvider provideFuelTypeUnits
      */
-    public function testTravelCommandWithVehicleAndTravels(): void
+    public function testTravelCommandWithVehicleAndTravels(FuelType $fuelType, string $fuelPrice, string $consumption): void
     {
         $vehicle = new Vehicle(
             'Osobní',
@@ -153,6 +156,7 @@ final class PdfOutputsGenerationTest extends IntegrationTest
             null,
             '1AB 2345',
             6.5,
+            $fuelType,
             new Metadata(new DateTimeImmutable('2026-10-01'), 'Adrian de Azevedo Camacho'),
         );
         $travel = static fn (string $from, string $to): object => (object) [
@@ -192,9 +196,19 @@ final class PdfOutputsGenerationTest extends IntegrationTest
         // a tabulky by nepřevzaly velikost písma.
         self::assertStringStartsWith('<!DOCTYPE html>', $html);
         self::assertStringContainsString('auto vlastní – Osobní (1AB 2345)', $html);
-        self::assertStringContainsString('Spotřeba dle t.p.: <b>6,50</b> l/100km', $html);
+        self::assertStringContainsString($fuelPrice, $html);
+        self::assertStringContainsString($consumption, $html);
         self::assertStringContainsString('Cena PHM 1 km: 2,57 Kč/km', $html);
         self::assertStringStartsWith('%PDF-', $this->pdf->renderToString($html));
+    }
+
+    /** @return array<string, array{FuelType, string, string}> */
+    public static function provideFuelTypeUnits(): array
+    {
+        return [
+            'combustion' => [FuelType::COMBUSTION, 'Cena paliva: <b>39,50</b> Kč/l', 'Spotřeba dle t.p.: <b>6,50</b> l/100km'],
+            'electric' => [FuelType::ELECTRIC, 'Cena paliva: <b>39,50</b> Kč/kWh', 'Spotřeba dle t.p.: <b>6,50</b> kWh/100km'],
+        ];
     }
 
     public function testTravelContractOld(): void
