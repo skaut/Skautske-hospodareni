@@ -89,6 +89,24 @@ class AccountancyHelpersTest extends Unit
         $this->assertSame($expected, AccountancyHelpers::num($number));
     }
 
+    /** @return mixed[] */
+    public function getDecimals(): array
+    {
+        return [
+            [12.5, '12,5'],
+            [120.0, '120'],
+            [0.01, '0,01'],
+            [1234.5, '1 234,5'],
+            [10.0, '10'],
+        ];
+    }
+
+    /** @dataProvider getDecimals */
+    public function testDecimal(float $number, string $expected): void
+    {
+        $this->assertSame($expected, AccountancyHelpers::decimal($number));
+    }
+
     public function testPostCode(): void
     {
         $this->assertSame('110 00', AccountancyHelpers::postCode('A1 10FJV0 0'));

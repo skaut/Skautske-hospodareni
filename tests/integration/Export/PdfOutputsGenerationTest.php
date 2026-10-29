@@ -192,7 +192,7 @@ final class PdfOutputsGenerationTest extends IntegrationTest
         // a tabulky by nepřevzaly velikost písma.
         self::assertStringStartsWith('<!DOCTYPE html>', $html);
         self::assertStringContainsString('auto vlastní – Osobní (1AB 2345)', $html);
-        self::assertStringContainsString('Spotřeba dle t.p.: <b>6,50</b> l/100km', $html);
+        self::assertStringContainsString('Spotřeba dle t.p.: <b>6,5</b> l/100km', $html);
         self::assertStringContainsString('Cena PHM 1 km: 2,57 Kč/km', $html);
         self::assertStringStartsWith('%PDF-', $this->pdf->renderToString($html));
     }
