@@ -271,11 +271,7 @@ class Command
      */
     public function getPricePerKm(): Money
     {
-        $distance = $this->getDistance();
-
-        return $distance !== 0.0
-            ? $this->getVehiclePrice()->divide((string) $this->getDistance())
-            : MoneyFactory::zero();
+        return MoneyFactory::fromFloat($this->getPricePerKmMultiplier());
     }
 
     private function getVehiclePrice(): Money
