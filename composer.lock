@@ -9031,16 +9031,16 @@
         },
         {
             "name": "webwingscz/bank-statements",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webwingscz/bank-statements.git",
-                "reference": "d1c4a02b02e66113211c1a523aa9022b99a10c56"
+                "reference": "b8952921550207979fca4b427af4b35e79074a5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webwingscz/bank-statements/zipball/d1c4a02b02e66113211c1a523aa9022b99a10c56",
-                "reference": "d1c4a02b02e66113211c1a523aa9022b99a10c56",
+                "url": "https://api.github.com/repos/webwingscz/bank-statements/zipball/b8952921550207979fca4b427af4b35e79074a5e",
+                "reference": "b8952921550207979fca4b427af4b35e79074a5e",
                 "shasum": ""
             },
             "require": {
@@ -9054,6 +9054,7 @@
                 "phpunit/phpunit": "^11.5"
             },
             "suggest": {
+                "ext-dom": "Required for camt.053 and camt.052 statements only; ships with PHP and is enabled by default. The other formats need no extension",
                 "ext-iconv": "Fastest and most faithful conversion of Windows-1250 statements; the library falls back to built-in tables without it",
                 "ext-mbstring": "Alternative converter for ISO-8859-2 statements"
             },
@@ -9075,26 +9076,33 @@
                     "role": "Developer"
                 }
             ],
-            "description": "Parser of bank account statements: the Czech and Slovak ABO/GPC format and Wise CSV exports. No runtime dependencies.",
+            "description": "Parser of bank account statements: the Czech and Slovak ABO/GPC format, ISO 20022 camt.053, SWIFT MT940 and Wise CSV exports. No runtime dependencies.",
             "homepage": "https://github.com/webwingscz/bank-statements",
             "keywords": [
                 "Bank",
                 "Banking",
+                "ISO20022",
                 "Wise",
                 "abo",
+                "camt",
+                "camt053",
                 "csv",
                 "czech",
                 "gpc",
+                "mt940",
+                "multicash",
                 "parser",
+                "sepa",
                 "slovak",
                 "statement",
+                "swift",
                 "transferwise"
             ],
             "support": {
                 "issues": "https://github.com/webwingscz/bank-statements/issues",
-                "source": "https://github.com/webwingscz/bank-statements/tree/1.1.0"
+                "source": "https://github.com/webwingscz/bank-statements/tree/1.2.0"
             },
-            "time": "2026-07-28T18:02:51+00:00"
+            "time": "2026-07-30T13:07:59+00:00"
         },
         {
             "name": "webwingscz/fio-api-php",
