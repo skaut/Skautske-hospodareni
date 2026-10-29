@@ -17,6 +17,7 @@ use App\Model\Participant\Participant;
 use App\Model\Participant\Payment\Event;
 use App\Model\Participant\Payment\EventType;
 use App\Model\Participant\PaymentFactory;
+use App\Model\Participant\PersonAccessNotAllowed;
 use App\Model\Participant\PersonAddressChangeNotAllowed;
 use App\Model\Participant\Repositories\IPaymentRepository;
 use App\Model\Skautis\Factory\ParticipantFactory;
@@ -199,17 +200,22 @@ final class ParticipantRepository implements IParticipantRepository
 
     public function getNonMemberParticipant(int $personId): NonMemberParticipant
     {
-        $person = $this->skautis->org->PersonDetail(['ID' => $personId]);
+        try {
+            $person = $this->skautis->org->PersonDetail(['ID' => $personId]);
+        } catch (PermissionException $ex) {
+            throw new PersonAccessNotAllowed($personId, $ex);
+        }
 
+        // Neúplné údaje se musí dát načíst, aby je šlo v aplikaci doplnit.
         return new NonMemberParticipant(
             $person->FirstName,
             $person->LastName,
-            $person->NickName === '' ? null : $person->NickName,
+            ($person->NickName ?? '') === '' ? null : $person->NickName,
             $person->ID_Sex ?? '',
-            $person->Birthday === null ? null : new ChronosDate($person->Birthday),
-            $person->Street,
-            $person->City,
-            (int) $person->Postcode,
+            ($person->Birthday ?? null) === null ? null : new ChronosDate($person->Birthday),
+            $person->Street ?? '',
+            $person->City ?? '',
+            (string) ($person->Postcode ?? ''),
         );
     }
 
@@ -217,6 +223,8 @@ final class ParticipantRepository implements IParticipantRepository
     {
         try {
             $this->fillParticipantInfo($personId, $participant);
+        } catch (PermissionException $ex) {
+            throw new PersonAccessNotAllowed($personId, $ex);
         } catch (WsdlException $ex) {
             if (! preg_match('/Chyba validace \(Person_OnlySimplePersonAddressChange\)/', $ex->getMessage())) {
                 throw $ex;

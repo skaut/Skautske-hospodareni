@@ -106,19 +106,19 @@ final class PersonPicker extends BaseControl
         $form = new BaseForm();
 
         $form->addText('firstName', 'Jméno')
-            ->setRequired('Musíš vyplnit křestní jméno.');
+            ->setRequired('Musíte vyplnit křestní jméno.');
 
         $form->addText('lastName', 'Příjmení')
-            ->setRequired('Musíš vyplnit příjmení.');
+            ->setRequired('Musíte vyplnit příjmení.');
 
         $form->addText('street', 'Ulice')
-            ->setRequired('Musíš vyplnit ulici.');
+            ->setRequired('Musíte vyplnit ulici.');
 
         $form->addText('city', 'Město')
-            ->setRequired('Musíš vyplnit město.');
+            ->setRequired('Musíte vyplnit město.');
 
         $form->addText('postcode', 'PSČ')
-            ->setRequired('Musíš vyplnit PSČ.');
+            ->setRequired('Musíte vyplnit PSČ.');
 
         $form->addText('nick', 'Přezdívka');
 
@@ -126,7 +126,7 @@ final class PersonPicker extends BaseControl
             'male' => 'Muž',
             'female' => 'Žena',
         ])
-            ->setRequired('Musíš vybrat pohlaví.');
+            ->setRequired('Musíte vybrat pohlaví.');
 
         $form->addDate('birthday', 'Dat. nar.');
 
@@ -146,7 +146,7 @@ final class PersonPicker extends BaseControl
                     $values['birthday'] === null ? null : new ChronosDate($values['birthday']),
                     $values['street'],
                     $values['city'],
-                    (int) $values['postcode'],
+                    (string) $values['postcode'],
                 ),
             );
 

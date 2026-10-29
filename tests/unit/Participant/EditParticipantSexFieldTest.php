@@ -27,7 +27,7 @@ final class EditParticipantSexFieldTest extends Unit
             $repository->shouldReceive('getNonMemberParticipant')
                 ->once()
                 ->with(123)
-                ->andReturn(new NonMemberParticipant('Jana', 'Nováková', null, $sex, null, '', '', 0));
+                ->andReturn(new NonMemberParticipant('Jana', 'Nováková', null, $sex, null, '', '', ''));
 
             $dialog = new EditParticipantDialog(
                 [1 => $participant],
