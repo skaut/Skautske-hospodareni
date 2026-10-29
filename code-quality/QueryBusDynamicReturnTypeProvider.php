@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CodeQuality;
 
-use Model\Common\Services\QueryBus;
+use App\Model\Common\Services\QueryBus;
 use Nette\Loaders\RobotLoader;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;

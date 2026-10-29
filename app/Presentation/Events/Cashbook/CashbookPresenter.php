@@ -81,8 +81,13 @@ final class CashbookPresenter extends BasePresenter
 
         $totalPayment = $this->queryBus->handle(new EventParticipantIncomeQuery(new SkautisEventId((int) $this->aid)));
 
-        if (! $totalPayment instanceof Money || $totalPayment->isZero()) {
-            $this->flashMessage('Nemáte žádné příjmy od účastníků');
+        if (! $totalPayment instanceof Money) {
+            throw new LogicException('Assertion failed.');
+        }
+
+        // Doklad musí mít kladnou částku; záporný součet vznikne ze záporných plateb zadaných hromadnou úpravou.
+        if (! $totalPayment->isPositive()) {
+            $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
             $this->redirect('this');
         }
 

@@ -136,8 +136,6 @@ final class ChitForm extends BaseControl
     {
         $chit = $this->queryBus->handle(new ChitQuery($this->cashbookId, $chitId));
 
-        $this->template->setParameters(['edit' => true, 'pid' => $chit->getId(), 'num' => (string) $chit->getBody()->getNumber()]);
-
         if ($chit === null) {
             throw new BadRequestException(sprintf('Chit %d not found', $chitId), IResponse::S404_NotFound);
         }
@@ -145,6 +143,9 @@ final class ChitForm extends BaseControl
         if (! $chit instanceof Chit) {
             throw new LogicException('Assertion failed.');
         }
+
+        $this->template->setParameters(['edit' => true, 'pid' => $chit->getId(), 'num' => (string) $chit->getBody()->getNumber()]);
+
         if ($chit->isLocked()) {
             throw new BadRequestException('Can\'t edit locked chit', IResponse::S403_Forbidden);
         }

@@ -117,7 +117,8 @@ final class CashbookPresenter extends BasePresenter
             throw new LogicException('Assertion failed.');
         }
 
-        if ($amount->isZero()) {
+        // Doklad musí mít kladnou částku; záporný součet vznikne ze záporných plateb zadaných hromadnou úpravou.
+        if (! $amount->isPositive()) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
             $this->redirect('default', ['aid' => $this->aid]);
         }

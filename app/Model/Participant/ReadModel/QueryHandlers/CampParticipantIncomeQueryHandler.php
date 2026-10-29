@@ -40,7 +40,8 @@ class CampParticipantIncomeQueryHandler
             $res = $res->add($p->getPayment());
         }
 
-        if ($res->isZero()) {
+        // Doklad musí mít kladnou částku; záporný součet vznikne ze záporných plateb zadaných hromadnou úpravou.
+        if (! $res->isPositive()) {
             throw new ZeroParticipantIncome();
         }
 

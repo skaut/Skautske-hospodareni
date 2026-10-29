@@ -15,6 +15,7 @@ use App\Model\DTO\Cashbook\UnitCashbook;
 use Component\Forms\BaseForm;
 use LogicException;
 use Nette\Application\Attributes\Persistent;
+use Nette\Application\BadRequestException;
 use Nette\Utils\ArrayHash;
 
 use function sprintf;
@@ -102,6 +103,8 @@ class ActivateCashbookDialog extends Dialog
 
     private function getActiveCashbook(): UnitCashbook
     {
-        return $this->queryBus->handle(new ActiveUnitCashbookQuery($this->unitId));
+        // Dialog se vykresluje jen u jednotky s pokladní knihou, bez ní sem vede jen podvržený nebo zastaralý požadavek.
+        return $this->queryBus->handle(new ActiveUnitCashbookQuery($this->unitId))
+            ?? throw new BadRequestException('Jednotka nemá žádnou pokladní knihu.');
     }
 }
