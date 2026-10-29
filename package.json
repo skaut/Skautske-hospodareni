@@ -19,7 +19,7 @@
         "nette-forms": "3.3.0",
         "nprogress": "^0.2.0",
         "pikaday": "^1.8.2",
-        "postcss-cli": "^11.0.0"
+        "postcss-cli": "^12.0.0"
     },
     "devDependencies": {
         "autoprefixer": "^10.5.2",
