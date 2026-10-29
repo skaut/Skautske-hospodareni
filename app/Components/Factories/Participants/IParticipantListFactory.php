@@ -19,6 +19,6 @@ interface IParticipantListFactory
         bool $isAllowParticipantUpdate,
         bool $isAllowParticipantDelete,
         bool $isOnlineLogin,
-        bool $checkNonMemberSex,
+        bool $checkNonMemberPersonalData,
     ): ParticipantList;
 }

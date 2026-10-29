@@ -7,12 +7,14 @@ namespace App\Model\Skautis;
 use App\Model\DTO\Participant\NonMemberParticipant;
 use App\Model\Event\SkautisCampId;
 use App\Model\Event\SkautisEventId;
+use App\Model\Participant\PersonAccessNotAllowed;
 use App\Model\Participant\PersonAddressChangeNotAllowed;
 use App\Model\Participant\Repositories\IPaymentRepository;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Mockery;
 use Skautis\Skautis;
+use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
 use Skautis\Wsdl\WsdlException;
 
@@ -49,7 +51,7 @@ final class ParticipantRepositoryCreateTest extends Unit
                 'Birthday' => '2012-05-10T00:00:00',
                 'Street' => 'Skautská 1',
                 'City' => 'Praha',
-                'Postcode' => 10000,
+                'Postcode' => '10000',
             ]);
 
         $skautis = Mockery::mock(Skautis::class);
@@ -67,7 +69,7 @@ final class ParticipantRepositoryCreateTest extends Unit
                 new ChronosDate('2012-05-10'),
                 'Skautská 1',
                 'Praha',
-                10000,
+                '10000',
             ),
         );
     }
@@ -99,7 +101,7 @@ final class ParticipantRepositoryCreateTest extends Unit
                 null,
                 'Skautská 2',
                 'Brno',
-                60200,
+                '60200',
             ),
         );
     }
@@ -118,7 +120,7 @@ final class ParticipantRepositoryCreateTest extends Unit
                 'Birthday' => '2012-05-10T00:00:00',
                 'Street' => 'Skautská 1',
                 'City' => 'Praha',
-                'Postcode' => 10000,
+                'Postcode' => '100 00',
             ]);
 
         $skautis = Mockery::mock(Skautis::class);
@@ -134,7 +136,54 @@ final class ParticipantRepositoryCreateTest extends Unit
         $this->assertSame('2012-05-10', $participant->getBirthday()?->format('Y-m-d'));
         $this->assertSame('Skautská 1', $participant->getStreet());
         $this->assertSame('Praha', $participant->getCity());
-        $this->assertSame(10000, $participant->getPostcode());
+        $this->assertSame('100 00', $participant->getPostcode());
+    }
+
+    /** Neúplné údaje se musí načíst, aby je šlo v aplikaci doplnit. */
+    public function testGettingNonMemberLoadsIncompletePersonDetails(): void
+    {
+        $orgWebService = Mockery::mock(WebServiceInterface::class);
+        $orgWebService->shouldReceive('PersonDetail')
+            ->once()
+            ->with(['ID' => 103])
+            ->andReturn((object) [
+                'FirstName' => 'Jana',
+                'LastName' => 'Nováková',
+                'NickName' => null,
+                'Birthday' => null,
+                'Street' => null,
+                'City' => null,
+                'Postcode' => null,
+            ]);
+
+        $skautis = Mockery::mock(Skautis::class);
+        $skautis->shouldReceive('getWebService')->with('org')->andReturn($orgWebService);
+
+        $repository = new ParticipantRepository($skautis, Mockery::mock(IPaymentRepository::class));
+        $participant = $repository->getNonMemberParticipant(103);
+
+        $this->assertSame('', $participant->getSex());
+        $this->assertSame('', $participant->getStreet());
+        $this->assertSame('', $participant->getCity());
+        $this->assertSame('', $participant->getPostcode());
+        $this->assertSame([NonMemberParticipant::MISSING_SEX, NonMemberParticipant::MISSING_ADDRESS], $participant->getMissingData());
+    }
+
+    public function testGettingNonMemberWithoutPermissionReportsInaccessiblePersonalData(): void
+    {
+        $orgWebService = Mockery::mock(WebServiceInterface::class);
+        $orgWebService->shouldReceive('PersonDetail')
+            ->once()
+            ->andThrow(new PermissionException('Nemáte oprávnění k akci OU_Person_DETAIL nad záznamem ID=103!'));
+
+        $skautis = Mockery::mock(Skautis::class);
+        $skautis->shouldReceive('getWebService')->with('org')->andReturn($orgWebService);
+
+        $repository = new ParticipantRepository($skautis, Mockery::mock(IPaymentRepository::class));
+
+        $this->expectException(PersonAccessNotAllowed::class);
+
+        $repository->getNonMemberParticipant(103);
     }
 
     public function testUpdatingNonMemberSendsAllEditablePersonData(): void
@@ -152,7 +201,7 @@ final class ParticipantRepositoryCreateTest extends Unit
                 'Birthday' => '2010-06-15T00:00:00',
                 'Street' => 'Skautská 2',
                 'City' => 'Brno',
-                'Postcode' => 60200,
+                'Postcode' => '60200',
             ]);
 
         $skautis = Mockery::mock(Skautis::class);
@@ -169,16 +218,16 @@ final class ParticipantRepositoryCreateTest extends Unit
                 new ChronosDate('2010-06-15'),
                 'Skautská 2',
                 'Brno',
-                60200,
+                '60200',
             ),
         );
     }
 
     public function testUpdatingPersonWithFullSkautisRecordReportsRejectedAddressChange(): void
     {
-        $repository = $this->createRepositoryFailingPersonUpdate(
+        $repository = $this->createRepositoryFailingPersonUpdate(new WsdlException(
             'System.Web.Services.Protocols.SoapException: Chyba validace (Person_OnlySimplePersonAddressChange)',
-        );
+        ));
 
         $this->expectException(PersonAddressChangeNotAllowed::class);
 
@@ -187,7 +236,7 @@ final class ParticipantRepositoryCreateTest extends Unit
 
     public function testUpdatingNonMemberKeepsOtherSkautisErrors(): void
     {
-        $repository = $this->createRepositoryFailingPersonUpdate('System.Web.Services.Protocols.SoapException: Chyba validace (Person_Other)');
+        $repository = $this->createRepositoryFailingPersonUpdate(new WsdlException('System.Web.Services.Protocols.SoapException: Chyba validace (Person_Other)'));
 
         $this->expectException(WsdlException::class);
         $this->expectExceptionMessage('Person_Other');
@@ -195,12 +244,21 @@ final class ParticipantRepositoryCreateTest extends Unit
         $repository->updateNonMemberParticipant(105, $this->createNonMember());
     }
 
-    private function createRepositoryFailingPersonUpdate(string $skautisError): ParticipantRepository
+    public function testUpdatingNonMemberWithoutPermissionReportsInaccessiblePersonalData(): void
+    {
+        $repository = $this->createRepositoryFailingPersonUpdate(new PermissionException('Nemáte oprávnění k akci OU_Person_UPDATE nad záznamem ID=105!'));
+
+        $this->expectException(PersonAccessNotAllowed::class);
+
+        $repository->updateNonMemberParticipant(105, $this->createNonMember());
+    }
+
+    private function createRepositoryFailingPersonUpdate(WsdlException $skautisError): ParticipantRepository
     {
         $orgWebService = Mockery::mock(WebServiceInterface::class);
         $orgWebService->shouldReceive('PersonUpdateBasic')
             ->once()
-            ->andThrow(new WsdlException($skautisError));
+            ->andThrow($skautisError);
 
         $skautis = Mockery::mock(Skautis::class);
         $skautis->shouldReceive('getWebService')->with('org')->andReturn($orgWebService);
@@ -210,6 +268,6 @@ final class ParticipantRepositoryCreateTest extends Unit
 
     private function createNonMember(): NonMemberParticipant
     {
-        return new NonMemberParticipant('Justýna', 'Navrátilová', null, 'female', new ChronosDate('2019-10-14'), 'Bukovinka 105', 'Bukovinka', 67905);
+        return new NonMemberParticipant('Justýna', 'Navrátilová', null, 'female', new ChronosDate('2019-10-14'), 'Bukovinka 105', 'Bukovinka', '67905');
     }
 }

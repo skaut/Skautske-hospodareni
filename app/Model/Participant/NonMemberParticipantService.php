@@ -14,34 +14,43 @@ final class NonMemberParticipantService
     {
     }
 
+    /** @throws PersonAccessNotAllowed */
     public function get(int $personId): NonMemberParticipant
     {
         return $this->participants->getNonMemberParticipant($personId);
     }
 
+    /**
+     * @throws PersonAccessNotAllowed
+     * @throws PersonAddressChangeNotAllowed
+     */
     public function update(int $personId, NonMemberParticipant $participant): void
     {
         $this->participants->updateNonMemberParticipant($personId, $participant);
     }
 
     /**
-     * @param  Participant[]    $participants
-     * @return array<int, true>
+     * Osobní údaje nečlenů ze seznamu účastníků.
+     *
+     * @param  Participant[]                         $participants
+     * @return array<int, NonMemberParticipant|null> ID účastníka => osobní údaje, null když k nim uživatel nemá ve skautISu přístup
      */
-    public function findParticipantsWithMissingSex(array $participants): array
+    public function findNonMembers(array $participants): array
     {
-        $participantsWithMissingSex = [];
+        $nonMembers = [];
 
         foreach ($participants as $participant) {
             if (! $participant->isNonMember()) {
                 continue;
             }
 
-            if ($this->get($participant->getPersonId())->getSex() === '') {
-                $participantsWithMissingSex[$participant->getId()] = true;
+            try {
+                $nonMembers[$participant->getId()] = $this->get($participant->getPersonId());
+            } catch (PersonAccessNotAllowed) {
+                $nonMembers[$participant->getId()] = null;
             }
         }
 
-        return $participantsWithMissingSex;
+        return $nonMembers;
     }
 }
