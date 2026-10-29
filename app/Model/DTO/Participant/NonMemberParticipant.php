@@ -8,6 +8,9 @@ use Cake\Chronos\ChronosDate;
 
 class NonMemberParticipant
 {
+    public const MISSING_SEX = 'sex';
+    public const MISSING_ADDRESS = 'address';
+
     public function __construct(
         private string $firstName,
         private string $lastName,
@@ -16,7 +19,7 @@ class NonMemberParticipant
         private ?ChronosDate $birthday,
         private string $street,
         private string $city,
-        private int $postcode,
+        private string $postcode,
     ) {
     }
 
@@ -55,9 +58,29 @@ class NonMemberParticipant
         return $this->city;
     }
 
-    public function getPostcode(): int
+    public function getPostcode(): string
     {
         return $this->postcode;
+    }
+
+    /**
+     * Údaje povinné pro úpravu nečlena, které ve skautISu chybí.
+     *
+     * @return list<self::MISSING_*>
+     */
+    public function getMissingData(): array
+    {
+        $missing = [];
+
+        if ($this->sex === '') {
+            $missing[] = self::MISSING_SEX;
+        }
+
+        if ($this->street === '' || $this->city === '' || $this->postcode === '') {
+            $missing[] = self::MISSING_ADDRESS;
+        }
+
+        return $missing;
     }
 
     public function equals(self $other): bool
