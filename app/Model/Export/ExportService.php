@@ -87,7 +87,7 @@ class ExportService
 
     public function getNewPage(): string
     {
-        return '<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />';
+        return '<div style="break-after: page"></div>';
     }
 
     public function getParticipants(int $aid, string $type = EventType::GENERAL): string

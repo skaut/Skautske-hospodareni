@@ -30,29 +30,36 @@ table {
     padding-top:10px;
 }
 
+.income-chit {
+    break-inside: avoid;
+}
+
+.income-chit + .income-chit {
+    margin-top: 20px;
+}
+
+.chit-page {
+    break-before: page;
+    break-after: page;
+}
+
 </style>
-{var $incomeCnt = 0}
+{* Příjmové doklady jdou za sebou, kolik se jich vejde na stránku, a žádný se nerozdělí mezi dvě stránky.
+   Hromadný příjmový a každý výdajový doklad mají vlastní stránku. *}
 {foreach $income as $chit}
     {if $chit->isHpd()}
-        {if !$iterator->isFirst()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
-        {include chits.hpd.latte "chit"=>$chit, "list"=>$list, "pokladnik"=>$pokladnik, "totalPayment"=>$totalPayment}
-        {if !$iterator->isLast()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
-        {do $incomeCnt = 0}
+        <div class="chit-page">
+            {include chits.hpd.latte "chit"=>$chit, "list"=>$list, "pokladnik"=>$pokladnik, "totalPayment"=>$totalPayment}
+        </div>
     {else}
-        {include chits.in.latte "chit"=>$chit}
-        {do $incomeCnt++}
-        {if $incomeCnt % 3 == 0}
-            <pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />
-        {else}
-            {if !$iterator->isLast()}<br />{/if}
-        {/if}
+        <div class="income-chit">
+            {include chits.in.latte "chit"=>$chit}
+        </div>
     {/if}
 {/foreach}
 
-
-{if count($outcome) > 0 && count($income) > 0}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
-
 {foreach $outcome as $chit}
-    {include chits.out.latte "chit"=>$chit}
-    {if !$iterator->isLast()}<pagebreak type="NEXT-ODD" resetpagenum="1" pagenumstyle="i" suppress="off" />{/if}
+    <div class="chit-page">
+        {include chits.out.latte "chit"=>$chit}
+    </div>
 {/foreach}
