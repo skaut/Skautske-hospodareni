@@ -65,6 +65,10 @@ nebo `chits.hpd.latte` (hospodářský doklad).
 - Chromium je na CSS přísnější než mpdf: `font: 16px bold` vyloží doslova („bold“ bere jako název písma), neplatné
   `padding: 0 auto` zahodí a plovoucí bloky (`float`) nezvětšují výšku rodiče. Rozvržení PDF šablon proto stavět
   na flexboxu, ne na `float`.
+- Zlomy stránek se dělají v CSS: `break-before: page` / `break-after: page`, a `break-inside: avoid` pro blok, který se
+  nesmí rozdělit. Značky mpdf jako `<pagebreak>` Chromium ignoruje a obsah pak teče za sebou. V dokladech má hromadný
+  příjmový a každý výdajový doklad vlastní stránku a příjmové doklady jdou za sebou, aniž by se některý rozdělil;
+  části „Všech dokladů akce“ odděluje `ExportService::getNewPage()`.
 - Uživatelská data v obrázcích (loga a razítka faktur) se vkládají **inline jako base64** – nikdy nejdou přes veřejnou URL.
 - Horní kontejnery mají vynucené `max-width:100%` + `box-sizing:border-box`, aby se přeširoké šablony (fixní `800px`)
   vešly na tiskovou plochu A4 (emulace mpdf `shrink_tables_to_fit`).

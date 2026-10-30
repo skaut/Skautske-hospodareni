@@ -5,16 +5,29 @@ declare(strict_types=1);
 namespace App\Model\Export;
 
 use App\Model\Cashbook\Cashbook\PaymentMethod;
+use App\Model\Common\Services\QueryBus;
+use App\Model\Event\Repositories\IEventRepository;
+use App\Model\Invoice\InvoiceImageStorage;
+use App\Model\Invoice\Repository\InvoiceUnitSettingRepository;
 use App\Model\Services\PdfRenderer;
 use App\Model\Services\TemplateFactory;
 use App\Model\Travel\Travel\TransportType;
 use App\Model\Travel\Vehicle;
 use App\Model\Travel\Vehicle\Metadata;
 use App\Model\Unit\Unit;
+use App\Model\Unit\UnitService;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use IntegrationTest;
+use League\Flysystem\Filesystem;
+use League\Flysystem\InMemory\InMemoryFilesystemAdapter;
+use Mockery;
 use Money\Money;
+
+use function array_map;
+use function implode;
+use function preg_match_all;
+use function range;
 
 /**
  * Ověřuje, že se **každý** PDF výstup aplikace skutečně vygeneruje – šablona se přes produkční Latte
@@ -64,15 +77,7 @@ final class PdfOutputsGenerationTest extends IntegrationTest
 
     public function testCashbook(): void
     {
-        $this->assertGeneratesPdf(self::ExportTemplatesDir.'/cashbook.latte', [
-            'header' => 'Pokladní kniha - 1. oddíl',
-            'prefix' => 'P',
-            'chits' => [
-                $this->cashbookChit(true, 'P1', 'Startovné', 700.0),
-                $this->cashbookChit(false, 'V1', 'Materiál', 120.0),
-            ],
-            'unit' => $this->officialUnit(),
-        ]);
+        $this->assertGeneratesPdf(self::ExportTemplatesDir.'/cashbook.latte', $this->cashbookParams());
     }
 
     public function testChitList(): void
@@ -102,23 +107,65 @@ final class PdfOutputsGenerationTest extends IntegrationTest
 
     public function testChits(): void
     {
-        $this->assertGeneratesPdf(self::ChitTemplatesDir.'/chits.latte', [
-            'officialName' => 'Junák – český skaut, 1. oddíl Kopřivnice',
-            'cashbook' => $this->cashbook(),
-            'pokladnik' => 'Jan Novák',
-            'totalPayment' => 500.0,
-            'list' => [
-                $this->recipient('Petr Svoboda', 100.0),
-                $this->recipient('Marie Nováková', 400.0),
-            ],
-            'income' => [
+        $this->assertGeneratesPdf(self::ChitTemplatesDir.'/chits.latte', $this->chitsParams(
+            [
                 $this->chit(false, 'P1', 300.0),
                 $this->chit(true, 'P2', 500.0),
             ],
-            'outcome' => [
+            [
                 $this->chit(false, 'V1', 120.0),
             ],
+        ));
+    }
+
+    /**
+     * Každý doklad jde vytisknout zvlášť: hromadný příjmový a každý výdajový doklad mají vlastní stránku
+     * a příjmové doklady se skládají za sebe tak, aby se žádný nerozdělil mezi dvě stránky (s rozpisem
+     * položek se vejdou dva na stránku). Chromium ignoruje mpdf značku `<pagebreak>`, takže se doklady
+     * skládaly za sebe; zlomy se zároveň nesmí zdvojit do prázdné stránky.
+     */
+    public function testChitsStartOnNewPages(): void
+    {
+        $income = array_map(fn (int $number): object => $this->chit(false, 'P'.$number, 300.0), range(1, 7));
+        $income[] = $this->chit(true, 'P8', 500.0);
+        $income[] = $this->chit(false, 'P9', 300.0);
+
+        $html = $this->templates->create(self::ChitTemplatesDir.'/chits.latte', $this->chitsParams(
+            $income,
+            [
+                $this->chit(false, 'V1', 120.0),
+                $this->chit(false, 'V2', 80.0),
+            ],
+        ));
+
+        // P1–P2 | P3–P4 | P5–P6 | P7 | P8 (hromadný) | P9 | V1 | V2
+        self::assertSame(8, $this->pageCount($this->pdf->renderToString($html)));
+    }
+
+    /**
+     * Všechny doklady akce (Events:Event:printAll): report, seznam účastníků, pokladní kniha a doklady
+     * začínají každý na nové stránce.
+     */
+    public function testEventPrintAllStartsEachPartOnNewPage(): void
+    {
+        $newPage = $this->exportService()->getNewPage();
+        $html = implode($newPage, [
+            $this->templates->create(self::ExportTemplatesDir.'/eventReport.latte', $this->eventReportParams()),
+            $this->templates->create(self::ExportTemplatesDir.'/participant.latte', $this->participantParams()),
+            $this->templates->create(self::ExportTemplatesDir.'/cashbook.latte', $this->cashbookParams()),
+            $this->templates->create(self::ChitTemplatesDir.'/chits.latte', $this->chitsParams(
+                [
+                    $this->chit(false, 'P1', 300.0),
+                    $this->chit(true, 'P2', 500.0),
+                ],
+                [
+                    $this->chit(false, 'V1', 120.0),
+                ],
+            )),
         ]);
+
+        // report | účastníci | pokladní kniha | P1 | P2 (hromadný) | V1
+        self::assertSame(6, $this->pageCount($this->pdf->renderToString($html)));
     }
 
     public function testTravelCommand(): void
@@ -214,6 +261,59 @@ final class PdfOutputsGenerationTest extends IntegrationTest
 
         self::assertNotSame('', $html);
         self::assertStringStartsWith('%PDF-', $this->pdf->renderToString($html));
+    }
+
+    private function pageCount(string $pdf): int
+    {
+        return (int) preg_match_all('~/Type\s*/Page\b~', $pdf);
+    }
+
+    private function exportService(): ExportService
+    {
+        return new ExportService(
+            Mockery::mock(UnitService::class),
+            $this->templates,
+            Mockery::mock(IEventRepository::class),
+            Mockery::mock(QueryBus::class),
+            Mockery::mock(InvoiceUnitSettingRepository::class),
+            new InvoiceImageStorage(new Filesystem(new InMemoryFilesystemAdapter()), '/tmp'),
+        );
+    }
+
+    /** @return mixed[] */
+    private function cashbookParams(): array
+    {
+        return [
+            'header' => 'Pokladní kniha - 1. oddíl',
+            'prefix' => 'P',
+            'chits' => [
+                $this->cashbookChit(true, 'P1', 'Startovné', 700.0),
+                $this->cashbookChit(false, 'V1', 'Materiál', 120.0),
+            ],
+            'unit' => $this->officialUnit(),
+        ];
+    }
+
+    /**
+     * @param object[] $income
+     * @param object[] $outcome
+     *
+     * @return mixed[]
+     */
+    private function chitsParams(array $income, array $outcome): array
+    {
+        return [
+            'officialName' => 'Junák – český skaut, 1. oddíl Kopřivnice',
+            'cashbook' => $this->cashbook(),
+            'pokladnik' => 'Jan Novák',
+            'totalPayment' => 500.0,
+            'list' => [
+                $this->recipient('Petr Svoboda', 100.0),
+                $this->recipient('Marie Nováková', 400.0),
+            ],
+            'income' => $income,
+            'outcome' => $outcome,
+        ];
     }
 
     /** @return mixed[] */
