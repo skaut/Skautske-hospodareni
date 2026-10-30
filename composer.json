@@ -13,7 +13,7 @@
         "doctrine/orm": "^3.6",
         "contributte/application": "^0.5",
         "contributte/console": "^0.11",
-        "contributte/console-extra": "^0.8",
+        "contributte/console-extra": "^0.9",
         "contributte/forms-multiplier": "^4.0",
         "contributte/menu-control": "^3.2",
         "contributte/scheduler": "^0.9",
