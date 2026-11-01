@@ -4,7 +4,7 @@ These instructions apply to the entire repository. When making changes, respect 
 
 ## Project Overview
 
-Skautske hospodareni is a web application for accounting and financial administration of Czech Scout units. Authentication and organizational data come from SkautIS. Human documentation in `.docs` and UI texts are Czech, plain-language, and free of unnecessary jargon; retain technical identifiers and commands only when needed to perform a task. Agent instructions belong in `.agents` and are concise English. Keep technical identifiers, commit messages, and branch names in English according to the established practice.
+Skautske hospodareni is a web application for accounting and financial administration of Czech Scout units. Authentication and organizational data come from SkautIS. Human documentation in `.docs` and UI texts are Czech, plain-language, and free of unnecessary jargon; retain technical identifiers and commands only when needed to perform a task. UI texts, including flash messages, form errors, and emails, always address the user formally with vykání („Musíte vyplnit…“, „Nemáte oprávnění…“), never with tykání. Agent instructions belong in `.agents` and are concise English. Keep technical identifiers, commit messages, and branch names in English according to the established practice.
 
 ## Target Environment
 

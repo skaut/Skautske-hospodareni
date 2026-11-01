@@ -82,6 +82,9 @@ final class ParticipantPresenter extends BasePresenter
             $this->redirect('Default:');
         }
 
+        // Osobní údaje nečlenů se načítají ze skautISu ještě před výstupem, aby chyba neusekla stránku.
+        $this['participantList']->loadPersonalDataWarnings();
+
         $this->template->setParameters([
             'isAllowParticipantUpdateLocal' => $this->isAllowParticipantDelete,
             'missingAvailableAutoComputed' => ! $this->event->isRealAutoComputed() && $authorizator->isAllowed(Camp::SET_AUTOMATIC_PARTICIPANTS_CALCULATION, $aid),
