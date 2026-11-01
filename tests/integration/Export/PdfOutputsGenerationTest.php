@@ -95,6 +95,17 @@ final class PdfOutputsGenerationTest extends IntegrationTest
         $this->assertGeneratesPdf(self::ExportTemplatesDir.'/eventReport.latte', $this->eventReportParams());
     }
 
+    /**
+     * Report akce se vejde na jednu stránku i s plným seznamem kategorií, všemi funkcemi a dvouřádkovým
+     * názvem. Dřív na druhý list přetekl jen řádek s podpisem „Schválil“.
+     */
+    public function testEventReportFitsOnOnePage(): void
+    {
+        $html = $this->templates->create(self::ExportTemplatesDir.'/eventReport.latte', $this->fullEventReportParams());
+
+        self::assertSame(1, $this->pageCount($this->pdf->renderToString($html)));
+    }
+
     public function testCampReport(): void
     {
         $this->assertGeneratesPdf(self::ExportTemplatesDir.'/campReport.latte', $this->campReportParams());
@@ -150,7 +161,7 @@ final class PdfOutputsGenerationTest extends IntegrationTest
     {
         $newPage = $this->exportService()->getNewPage();
         $html = implode($newPage, [
-            $this->templates->create(self::ExportTemplatesDir.'/eventReport.latte', $this->eventReportParams()),
+            $this->templates->create(self::ExportTemplatesDir.'/eventReport.latte', $this->fullEventReportParams()),
             $this->templates->create(self::ExportTemplatesDir.'/participant.latte', $this->participantParams()),
             $this->templates->create(self::ExportTemplatesDir.'/cashbook.latte', $this->cashbookParams()),
             $this->templates->create(self::ChitTemplatesDir.'/chits.latte', $this->chitsParams(
@@ -522,6 +533,48 @@ final class PdfOutputsGenerationTest extends IntegrationTest
             'virtualTotalExpense' => 150.0,
             'finalRealBalance' => 580.0,
         ];
+    }
+
+    /**
+     * Report akce v plném rozsahu, jak ho skládá ExportService::getEventReport(): všechny reálné kategorie
+     * (nulové se vypisují také), převody mezi pokladnami, všechny funkce a název na dva řádky.
+     *
+     * @return mixed[]
+     */
+    private function fullEventReportParams(): array
+    {
+        $row = static fn (string $label, float $amount = 0.0): array => ['label' => $label, 'amount' => $amount];
+        $params = $this->eventReportParams();
+        $params['event']->displayName = '1. skautský oddíl Kopřivnice - 10/2026 - Roverská výprava na laser game';
+        $params['event']->location = 'Tron aréna Brno';
+        $params['functions'] = (object) [
+            'leader' => $this->person('Novák Jan (Goofy)'),
+            'assistant' => $this->person('Svoboda Petr'),
+            'accountant' => $this->person('Novák Jan (Goofy)'),
+            'medic' => $this->person('Nováková Marie'),
+        ];
+        $params['incomes'] = [
+            $row('Od dětí a roverů', 960.0),
+            $row('Od dospělých'),
+            $row('Ostatní příjmy'),
+            $row('Příspěvky samosprávy'),
+            $row('Vlastní finanční prostředky'),
+        ];
+        $params['expenses'] = [
+            $row('Doprava osob a materiálu'),
+            $row('Ostatní služby', 1920.0),
+            $row('Nájem'),
+            $row('Potraviny, stravné'),
+            $row('Cestovné'),
+            $row('Materiál'),
+            $row('Vybavení'),
+            $row('Ostatní výdaje'),
+            $row('Rezerva'),
+        ];
+        $params['virtualIncomes'] = [$row('Převod z pokladny jednotky', 960.0), $row('Převod z jiné pokladny', 100.0)];
+        $params['virtualExpenses'] = [$row('Převod do pokladny jednotky', 100.0), $row('Převod do jiné pokladny', 50.0)];
+
+        return $params;
     }
 
     /** @return mixed[] */
