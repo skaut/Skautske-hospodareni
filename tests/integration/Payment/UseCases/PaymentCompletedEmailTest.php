@@ -8,17 +8,21 @@ use App\Model\Common\EmailAddress;
 use App\Model\Common\Services\CommandBus;
 use App\Model\Common\User;
 use App\Model\Google\Entity\GoogleOAuth;
+use App\Model\Google\InvalidOAuth;
 use App\Model\Google\OAuthId;
 use App\Model\Payment\Commands\Payment\CreatePayment;
 use App\Model\Payment\EmailTemplate;
 use App\Model\Payment\EmailType;
 use App\Model\Payment\Group;
+use App\Model\Payment\MailerFactoryStub;
 use App\Model\Payment\Payment;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\UserRepositoryStub;
 use App\Model\Utils\MoneyFactory;
 use Helpers;
 use IntegrationTest;
+use Mockery as m;
+use Nette\Mail\Mailer;
 
 class PaymentCompletedEmailTest extends IntegrationTest
 {
@@ -100,6 +104,26 @@ class PaymentCompletedEmailTest extends IntegrationTest
         $this->users->setUser(new User(1, 'František Maša', self::EMAIL));
 
         $this->paymentService->completePayment(1);
+    }
+
+    public function testPaymentIsCompletedWhenGroupOAuthIsInvalid(): void
+    {
+        $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
+        $this->initEntities(
+            [
+                EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
+                EmailType::PAYMENT_COMPLETED => new EmailTemplate('subject', 'body'),
+            ],
+            self::EMAIL,
+            $this->createOAuth(),
+        );
+        $mailer = m::mock(Mailer::class);
+        $mailer->shouldReceive('send')->andThrow(new InvalidOAuth('invalid_grant => Token has been expired or revoked.'));
+        $this->tester->grabService(MailerFactoryStub::class)->setMailer($mailer);
+
+        $this->paymentService->completePayment(1);
+
+        $this->assertPaymentWasCompleted();
     }
 
     /** @param EmailTemplate[]|null $emails */
