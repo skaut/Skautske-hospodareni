@@ -19,7 +19,10 @@ services:
     - Stubs\GoogleRepositoryStub
     - App\Model\Google\GoogleService('', '')
 
-    - App\Model\Mail\MailerFactory(App\Model\Payment\NullMailer(), false)
+    - factory: App\Model\Payment\MailerFactoryStub
+      setup:
+          - setMailer(App\Model\Payment\NullMailer())
+    - Psr\Log\NullLogger
     - App\Model\Services\TemplateFactory
     - App\Model\Payment\MailingService
 
