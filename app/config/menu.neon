@@ -253,6 +253,15 @@ menu:
                     test: admin-nav-help
                     icon: fi fi-rr-lightbulb-on
                     requiresAdmin: true
+            cron:
+                title: Cron
+                action: 'Admin:Cron:default'
+                include:
+                    - '^Admin:Cron:.*$'
+                data:
+                    test: admin-nav-cron
+                    icon: fi fi-rr-time-check
+                    requiresAdmin: true
             invoiceAccess:
                 title: Fakturace
                 action: 'Admin:InvoiceAccess:default'

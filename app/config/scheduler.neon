@@ -15,4 +15,4 @@ scheduler:
         paymentPairing: { cron: '0 */2 * * *', callback: [ @App\Model\Bank\BankService, pairAutomaticGroups ] }
 
 services:
-    - App\Model\Infrastructure\Scheduler\CronRunner(lockDir: %tempDir%/scheduler)
+    - App\Model\Cron\CronRunner(lockDir: %tempDir%/scheduler)

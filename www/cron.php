@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use App\CronToken;
 use App\Environment;
-use App\Model\Infrastructure\Scheduler\CronJobResult;
-use App\Model\Infrastructure\Scheduler\CronRunner;
+use App\Model\Cron\CronJobResult;
+use App\Model\Cron\CronRunner;
 use Nette\DI\Container;
 
 require_once __DIR__.'/../vendor/autoload.php';

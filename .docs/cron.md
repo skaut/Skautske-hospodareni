@@ -10,7 +10,18 @@ Hosting aplikace neumí spouštět cron ani příkazy v konzoli. Pravidelné úl
 
 Když se nepodaří načíst transakce jednoho účtu (např. kvůli neplatnému tokenu FIO nebo výpadku banky), ostatní účty se spárují normálně a chyba se zapíše do logu. E-mail „platba přijata“ se odešle i z cronu, za odesílatele se do něj doplní „AUTOMAT“.
 
-Seznam úloh je v `app/config/scheduler.neon`. Uživatelům ho ukazuje stránka Nastavení → Automatizace (`AutomationPresenter`), proto při změně upravte obě místa.
+Úloha se přidává do `app/config/scheduler.neon` (co se má spustit a výchozí interval). Název a popis pro lidi jí doplňte v `CronJobRegistry`. Uživatelům úlohy ukazuje stránka Nastavení → Automatizace.
+
+## Správa v administraci
+
+Administrátor vidí úlohy v Admin → Cron (`/admin/cron`):
+
+- kdy úloha poběží příště a kdy a s jakým výsledkem proběhla naposledy, včetně textu chyby,
+- upozornění, když plánované spuštění neproběhlo, typicky proto, že externí server přestal volat `/cron.php`,
+- **Pozastavit / Obnovit**: pozastavená úloha se nespouští, dokud ji někdo neobnoví,
+- **Změnit interval**: výběr z pevných intervalů (od 15 minut po jednou denně). Volba výchozího intervalu vrátí úlohu k nastavení ze `scheduler.neon`.
+
+Změny se ukládají do tabulky `cron_job` a projeví se při nejbližším volání cronu, bez nasazení.
 
 ## Nastavení
 

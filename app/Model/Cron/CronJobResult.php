@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Model\Infrastructure\Scheduler;
+namespace App\Model\Cron;
 
 enum CronJobResult: string
 {

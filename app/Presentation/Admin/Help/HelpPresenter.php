@@ -22,7 +22,6 @@ use Nette\Http\IResponse;
 use function count;
 use function explode;
 use function implode;
-use function is_string;
 use function preg_split;
 use function trim;
 use function usort;
@@ -281,21 +280,5 @@ final class HelpPresenter extends AdminBasePresenter
         }
 
         $this->redirect('default');
-    }
-
-    /** Comes from the session-cached SkautIS user detail, so saving costs no extra call. */
-    private function getEditorName(): ?string
-    {
-        $detail = (array) $this->userService->getUserDetail();
-
-        foreach (['Person', 'DisplayName', 'Name'] as $key) {
-            $value = $detail[$key] ?? null;
-
-            if (is_string($value) && trim($value) !== '') {
-                return trim($value);
-            }
-        }
-
-        return null;
     }
 }
