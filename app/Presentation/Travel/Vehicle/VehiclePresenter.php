@@ -167,10 +167,9 @@ class VehiclePresenter extends TravelBasePresenter
         $form->addText('registration', 'SPZ*')
             ->setHtmlAttribute('class', 'form-control')
             ->addRule(Form::FILLED, 'Musíte vyplnit SPZ.');
-        $form->addText('consumption', 'Harmonizovaná spotřeba*')
+        $form->addDecimal('consumption', 'Harmonizovaná spotřeba*', 'Průměrná spotřeba musí být číslo!')
             ->setHtmlAttribute('class', 'form-control')
-            ->addRule(Form::FILLED, 'Musíte vyplnit průměrnou spotřebu.')
-            ->addRule(Form::FLOAT, 'Průměrná spotřeba musí být číslo!');
+            ->setRequired('Musíte vyplnit průměrnou spotřebu.');
         $form->addSelect('subunitId', 'Oddíl', $this->unitService->getSubunitPairs($this->getUnitId()))
             ->setHtmlAttribute('class', 'form-control')
             ->setPrompt('Žádný')

@@ -85,7 +85,7 @@
                         </li>
                         <li class="list-group-item d-flex">
                             <div class="fw-bold me-auto">&#0216; spotřeba dle t.p.</div>
-                            <div class="text-end">{$vehicle->consumption|number:2} l/100 km</div>
+                            <div class="text-end">{$vehicle->consumption|decimal} l/100 km</div>
                         </li>
                         <li class="list-group-item d-flex">
                             <div class="fw-bold me-auto">Cena paliva</div>
@@ -164,7 +164,7 @@
                                     <td class="text-end">{$t->details->date?->toNative()|date:"j. n. Y"}</td>
                                     <td>{$t->details->startPlace}</td>
                                     <td>{$t->details->endPlace}</td>
-                                    <td class="text-end">{if $t->distance !== NULL}{$t->distance}{else}{$t->price|price}{/if}</td>
+                                    <td class="text-end">{if $t->distance !== NULL}{$t->distance|decimal}{else}{$t->price|price}{/if}</td>
                                     <td class="text-end">
                                         {$t->price|price}
                                     </td>

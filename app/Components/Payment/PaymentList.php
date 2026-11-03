@@ -93,15 +93,21 @@ final class PaymentList extends BaseControl
         $grid->setRememberState(false, true);
         $grid->setColumnsHideable();
 
-        $grid->addGroupButtonAction('Odeslat email')->onClick[] = [$this, 'requestPaymentInfoEmail'];
+        $grid->addGroupButtonAction('Odeslat email')
+            ->setAttribute('data-busy-text', 'Odesílám e-maily…')
+            ->onClick[] = [$this, 'requestPaymentInfoEmail'];
         if ($this->isEditable) {
             $grid->addGroupButtonAction('Úprava e-mailů', 'btn btn-sm btn-light')->onClick[] = [$this, 'openBulkEmailRecipientsDialog'];
         }
         if ($email !== null && $email->isEnabled()) {
-            $grid->addGroupButtonAction('Odeslat upomínku')->onClick[] = [$this, 'sendReminder'];
+            $grid->addGroupButtonAction('Odeslat upomínku')
+                ->setAttribute('data-busy-text', 'Odesílám upomínky…')
+                ->onClick[] = [$this, 'sendReminder'];
         }
 
-        $grid->addGroupButtonAction('Zaplaceno')->onClick[] = [$this, 'setPay'];
+        $grid->addGroupButtonAction('Zaplaceno')
+            ->setAttribute('data-busy-text', 'Ukládám platby…')
+            ->onClick[] = [$this, 'setPay'];
         $grid->addGroupButtonAction('Zrušit')->onClick[] = [$this, 'setCancel'];
 
         $grid->addColumnText('name', 'Název/účel')

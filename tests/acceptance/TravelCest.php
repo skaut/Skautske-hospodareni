@@ -21,7 +21,7 @@ class TravelCest extends BaseAcceptanceCest
     // Test data
     protected string $vehicleType = 'Osobní';
     protected string $licensePlate;
-    protected string $harmonizedConsumption = '5.8';
+    protected string $harmonizedConsumption = '5,8';
     protected string $division = '621.66.014 - Frantův oddíl';
     protected string $unitRepresentative = 'Karel Vedoucí';
 
@@ -171,7 +171,8 @@ class TravelCest extends BaseAcceptanceCest
 
         $I->fillField(['id' => 'frm-formCreateVehicle-type'], $this->vehicleType);
         $I->fillField(['id' => 'frm-formCreateVehicle-registration'], $licensePlate);
-        $I->fillField(['id' => 'frm-formCreateVehicle-consumption'], $this->harmonizedConsumption);
+        $I->fillField(['id' => 'frm-formCreateVehicle-consumption'], $this->harmonizedConsumption.'abc');
+        $I->seeInField(['id' => 'frm-formCreateVehicle-consumption'], $this->harmonizedConsumption);
         $I->selectOption(['id' => 'frm-formCreateVehicle-subunitId'], $this->division);
         $I->click('Založit');
         $I->waitForText('Vozidlo bylo vytvořeno', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -192,8 +193,10 @@ class TravelCest extends BaseAcceptanceCest
         $I->waitForText($licensePlate, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '#snippet-grid-grid-table');
         $this->sortVehiclesBy($I, 'metadata.createdAt', $licensePlate);
         $this->sortVehiclesBy($I, 'metadata.authorName', $licensePlate);
+        $I->see('5,8', '#snippet-grid-grid-table');
         $I->click($licensePlate, '#snippet-grid-grid-table');
         $I->waitForText('Údaje o vozidle', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see('5,8 l/100 km');
         $I->seeInCurrentUrl('/cestaky/vozidla/detail/');
     }
 

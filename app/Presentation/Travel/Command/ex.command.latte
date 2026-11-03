@@ -117,7 +117,7 @@
                 {if $vehicle !== NULL}
                     <div class="sazby">
                         <span>Cena paliva: <b>{$command->fuelPrice|price}</b> Kč/l</span>
-                        <span>Spotřeba dle t.p.: <b>{$vehicle->getConsumption()|number:2, ',', ' '}</b> l/100km</span>
+                        <span>Spotřeba dle t.p.: <b>{$vehicle->getConsumption()|decimal}</b> l/100km</span>
                         <span>Cena PHM 1 km: {$command->fuelPricePerKm|price} Kč/km</span>
                         <span>Opotřebení: {$command->amortizationPerKm|price} Kč/km</span>
                         <span>Sazba náhrady: <b>{$command->pricePerKm|price}</b> Kč/km</span>
@@ -143,7 +143,7 @@
                     <td>{$t->details->transportType->getLabel()}</td>
                     {if $t->distance !== NULL}
                     <td>{$command->pricePerKm|price}</td>
-                    <td>{$t->distance}</td>
+                    <td>{$t->distance|decimal}</td>
                     {else}
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>

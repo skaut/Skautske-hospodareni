@@ -37,6 +37,8 @@ use LogicException;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 
+use function sprintf;
+
 final class EventPresenter extends BasePresenter
 {
     public function __construct(
@@ -159,7 +161,8 @@ final class EventPresenter extends BasePresenter
         $template .= $this->exportService->getCashbook($cashbookId, PaymentMethod::CASH()).$this->exportService->getNewPage();
         $template .= $this->queryBus->handle(ExportChits::all($cashbookId));
 
-        $this->sendResponse($this->pdf->createResponse($template, 'all.pdf', false, $download));
+        $filename = sprintf('Export_vše_%s.pdf', $this->event->getDisplayName());
+        $this->sendResponse($this->pdf->createResponse($template, $filename, false, $download));
     }
 
     public function renderReport(int $aid, bool $download = false): void

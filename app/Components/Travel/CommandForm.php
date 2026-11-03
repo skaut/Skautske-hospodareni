@@ -107,19 +107,17 @@ class CommandForm extends Control
             ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit typ vozidla.');
 
-        $form->addText('fuel_price', 'Cena paliva za 1l*')
+        $form->addDecimal('fuel_price', 'Cena paliva za 1l*', 'Musíte zadat desetinné číslo.')
             ->setOption('id', 'fuel_price')
             ->setHtmlAttribute('class', 'form-control')
             ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
-            ->setRequired('Musíte vyplnit cenu paliva.')
-            ->addRule($form::FLOAT, 'Musíte zadat desetinné číslo.');
+            ->setRequired('Musíte vyplnit cenu paliva.');
 
-        $form->addText('amortization', 'Opotřebení*')
+        $form->addDecimal('amortization', 'Opotřebení*', 'Musíte zadat desetinné číslo.')
             ->setOption('id', 'amortization')
             ->setHtmlAttribute('class', 'form-control')
             ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
-            ->setRequired('Musíte vyplnit opotřebení.')
-            ->addRule($form::FLOAT, 'Musíte zadat desetinné číslo.');
+            ->setRequired('Musíte vyplnit opotřebení.');
 
         $form->setCurrentGroup();
         $form->addSubmit('send', $this->commandId !== null ? 'Upravit' : 'Založit')

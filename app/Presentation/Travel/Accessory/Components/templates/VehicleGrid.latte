@@ -24,3 +24,7 @@
 {define col-subunit}
     {$units[$item->getSubunitId()] ?? '-'}
 {/define}
+
+{define col-consumption}
+    {$item->getConsumption()|decimal}
+{/define}
