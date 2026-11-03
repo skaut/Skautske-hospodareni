@@ -7,6 +7,9 @@ namespace App\Presentation\Admin;
 use App\Model\Auth\Resources\Admin;
 use App\Model\Common\UnitId;
 
+use function is_string;
+use function trim;
+
 abstract class AdminBasePresenter extends \App\BasePresenter
 {
     protected UnitId $unitId;
@@ -37,5 +40,21 @@ abstract class AdminBasePresenter extends \App\BasePresenter
     protected function getRequiredAdminAccess(): array
     {
         return Admin::ACCESS;
+    }
+
+    /** Comes from the session-cached SkautIS user detail, so saving costs no extra call. */
+    protected function getEditorName(): ?string
+    {
+        $detail = (array) $this->userService->getUserDetail();
+
+        foreach (['Person', 'DisplayName', 'Name'] as $key) {
+            $value = $detail[$key] ?? null;
+
+            if (is_string($value) && trim($value) !== '') {
+                return trim($value);
+            }
+        }
+
+        return null;
     }
 }

@@ -145,6 +145,12 @@ task('build:runtime_files', function () {
         $values['DB_FIX_TOKEN_SHA256'] = $dbFixTokenSha256;
     }
 
+    // www/cron.php compares the hash of the token sent by the external cron server.
+    $cronTokenSha256 = optionalEnv('CRON_TOKEN_SHA256');
+    if ($cronTokenSha256 !== null) {
+        $values['CRON_TOKEN_SHA256'] = $cronTokenSha256;
+    }
+
     file_put_contents($runtimeDir.'/.env.local', buildDotenvContent($values));
     file_put_contents($runtimeDir.'/google-credentials.json', requiredEnv('GOOGLE_CREDENTIALS'));
 

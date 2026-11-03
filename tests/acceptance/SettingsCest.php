@@ -589,11 +589,12 @@ JS);
     {
         $I = $this->I;
 
-        $I->wantTo('verify automation page displays CRON and history cards');
+        $I->wantTo('verify automation page displays the cron jobs with their interval');
+        $I->deleteFromDatabase('cron_job', ['name' => 'paymentPairing']);
 
         $this->openSettingsSubpageFromOverview('[data-test="settings-subnav-automation"]', '[data-test="settings-automation-page"]', '/nastaveni/automatizace');
         $I->seeInCurrentUrl('/nastaveni/automatizace');
         $I->seeElement('[data-test="settings-automation-card-cron"]');
-        $I->seeElement('[data-test="settings-automation-card-history"]');
+        $I->see('každé 2 hodiny', '[data-test="settings-automation-interval-paymentPairing"]');
     }
 }

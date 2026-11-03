@@ -37,6 +37,8 @@ use App\Components\Payment\SplitPaymentDialog;
 use App\Http\ExcelResponse;
 use App\Model\Bank\BankTransactionAmountMismatch;
 use App\Model\Bank\BankTransactionPairingNotAllowed;
+use App\Model\Cron\ReadModel\Queries\CronJobsQuery;
+use App\Model\Cron\Services\CronJobRegistry;
 use App\Model\DTO\Payment\BankAccount as PaymentBankAccount;
 use App\Model\DTO\Payment\Group as PaymentGroup;
 use App\Model\DTO\Payment\Payment;
@@ -162,6 +164,9 @@ final class PaymentPresenter extends PaymentsBasePresenter
             'summarize' => $this->model->getGroupSummaries([$id])[$id],
             'now' => new DateTimeImmutable(),
             'notSentPaymentsCount' => $this->countNotSentPayments($this->payments),
+            'paymentPairingJob' => $group->isAutomaticPairingEnabled()
+                ? $this->queryBus->handle(new CronJobsQuery(new DateTimeImmutable()))[CronJobRegistry::PAYMENT_PAIRING] ?? null
+                : null,
         ]);
     }
 

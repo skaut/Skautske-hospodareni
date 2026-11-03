@@ -9,12 +9,12 @@
             <h1 class="h3 mb-2">Automatizace</h1>
             <div class="page-lead">
                 <i class="fi fi-rr-info" aria-hidden="true"></i>
-                <span>Přehled pravidelných úloh, které systém spouští automaticky na pozadí. Konfigurace intervalů je v&nbsp;<code>scheduler.neon</code>.</span>
+                <span>Přehled pravidelných úloh, které systém spouští automaticky na pozadí.</span>
             </div>
         </div>
     </div>
 
-    <article class="card mb-4" data-test="settings-automation-card-cron">
+    <article class="card" data-test="settings-automation-card-cron">
         <div class="card-body">
             <strong>Pravidelné úlohy</strong>
         </div>
@@ -25,20 +25,22 @@
                         <i class="fi fi-rr-time-check" aria-hidden="true"></i>
                     </span>
                     <div class="flex-grow-1">
-                        <strong>{$job['name']}</strong>
-                        <span class="badge text-bg-light ms-2" title="CRON: {$job['cron']}">{$job['interval']}</span>
-                        <p class="text-body-secondary small mb-0 mt-1">{$job['description']}</p>
+                        <strong>{$job->title}</strong>
+                        {if $job->paused}
+                            <span class="badge text-bg-warning ms-2" data-test="settings-automation-paused-{$job->name}">Pozastaveno</span>
+                        {else}
+                            <span class="badge text-bg-light ms-2" data-test="settings-automation-interval-{$job->name}">{$job->getIntervalLabel()}</span>
+                        {/if}
+                        <p class="text-body-secondary small mb-0 mt-1">{$job->description}</p>
+                        <p class="text-body-secondary small mb-0">
+                            {if $job->lastFinishedAt !== null}
+                                Naposledy proběhlo {$job->lastFinishedAt|date:'j. n. Y H:i'}.
+                            {else}
+                                Zatím neproběhlo.
+                            {/if}
+                        </p>
                     </div>
                 </div>
-            </div>
-        </div>
-    </article>
-
-    <article class="card" data-test="settings-automation-card-history">
-        <div class="card-body">
-            <strong>Historie běhů</strong>
-            <div class="alert alert-light mt-3 mb-0">
-                Log posledních spuštění a jejich výsledků zatím není implementován. Připravuje se jako navazující krok.
             </div>
         </div>
     </article>

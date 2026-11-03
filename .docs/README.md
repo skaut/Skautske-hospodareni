@@ -9,5 +9,6 @@ Tato složka je pro lidi, kteří projekt používají, vyvíjejí nebo spravuj�
 - [Jak připravit Pull Request](jak-na-pull-request.md)
 - [Plánování práce](planovani-prace.md)
 - [Dotazy pro přehledy](reporting.md)
+- [Pravidelné úlohy (cron)](cron.md)
 
 Pracovní instrukce pro automatizované agenty jsou anglicky a odděleně v [`.agents`](../.agents/README.md).

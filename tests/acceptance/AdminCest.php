@@ -584,6 +584,41 @@ JS);
     // ─── Helpers ─────────────────────────────────────────────────
 
     /** Spread over two weekdays and two browsers so every breakdown has something to show. */
+    // ─── Cron ────────────────────────────────────────────────────
+
+    /** @group admin */
+    public function adminCanPauseResumeAndRescheduleCronJob(): void
+    {
+        $I = $this->I;
+        $this->becomeAdmin();
+        $I->deleteFromDatabase('cron_job', ['name' => 'paymentPairing']);
+
+        $I->wantTo('pause, resume and change the interval of a cron job');
+
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/cron', '[data-test="admin-cron-job-paymentPairing"]');
+        $I->seeElement('[data-test="admin-nav-cron"].btn-primary');
+        $I->see('Aktivní', '[data-test="admin-cron-state-paymentPairing"]');
+        $I->see('každé 2 hodiny', '[data-test="admin-cron-interval-paymentPairing"]');
+
+        $I->clickStable('[data-test="admin-cron-pause-paymentPairing"]');
+        $I->waitForElementVisible('[data-test="admin-cron-resume-paymentPairing"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeElement('.alert-success');
+        $I->see('Pozastaveno', '[data-test="admin-cron-state-paymentPairing"]');
+        $I->seeInDatabase('cron_job', ['name' => 'paymentPairing', 'paused' => 1]);
+
+        $I->clickStable('[data-test="admin-cron-resume-paymentPairing"]');
+        $I->waitForElementVisible('[data-test="admin-cron-pause-paymentPairing"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see('Aktivní', '[data-test="admin-cron-state-paymentPairing"]');
+        $I->seeInDatabase('cron_job', ['name' => 'paymentPairing', 'paused' => 0]);
+
+        $I->selectOption('[data-test="admin-cron-schedule-paymentPairing"]', 'každou hodinu');
+        $I->clickStable('[data-test="admin-cron-schedule-save-paymentPairing"]');
+        $I->waitForText('každou hodinu', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '[data-test="admin-cron-interval-paymentPairing"]');
+        $I->seeInDatabase('cron_job', ['name' => 'paymentPairing', 'schedule' => '0 * * * *']);
+
+        $I->deleteFromDatabase('cron_job', ['name' => 'paymentPairing']);
+    }
+
     private function haveLogins(): void
     {
         $I = $this->I;

@@ -1,0 +1,101 @@
+{block title}Admin Cron{/block}
+
+{block content}
+<div data-test="admin-cron-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Cron</h1>
+            {include pageLead, default: 'Pravidelné úlohy, které spouští externí server voláním /cron.php. Úlohu tu můžete pozastavit nebo jí změnit interval.'}
+        </div>
+    </div>
+
+    <article class="card" data-test="admin-cron-jobs">
+        <div class="list-group list-group-flush">
+            <section n:foreach="$jobs as $job" class="list-group-item py-3" data-test="admin-cron-job-{$job->name}">
+                <div class="d-flex align-items-start gap-3">
+                    <span class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary tile-icon-sm">
+                        <i class="fi fi-rr-time-check" aria-hidden="true"></i>
+                    </span>
+                    <div class="flex-grow-1">
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                            <h2 class="h5 mb-0">{$job->title}</h2>
+                            {if $job->paused}
+                                <span class="badge text-bg-warning" data-test="admin-cron-state-{$job->name}">Pozastaveno</span>
+                            {else}
+                                <span class="badge text-bg-success" data-test="admin-cron-state-{$job->name}">Aktivní</span>
+                            {/if}
+                            <span class="badge text-bg-light" title="CRON: {$job->schedule}" data-test="admin-cron-interval-{$job->name}">{$job->getIntervalLabel()}</span>
+                        </div>
+                        <p class="text-body-secondary small mb-3">{$job->description}</p>
+
+                        <div n:if="$job->missedRunAt !== null" class="alert alert-warning small py-2" data-test="admin-cron-missed-{$job->name}">
+                            Plánované spuštění {$job->missedRunAt|date:'j. n. Y H:i'} neproběhlo. Zkontrolujte, že externí server volá <code>/cron.php</code>.
+                        </div>
+
+                        <dl class="row small mb-3">
+                            <dt class="col-sm-4 col-lg-3">Příští spuštění</dt>
+                            <dd class="col-sm-8 col-lg-9" data-test="admin-cron-next-run-{$job->name}">
+                                {if $job->nextRunAt !== null}
+                                    {$job->nextRunAt|date:'j. n. Y H:i'}
+                                {else}
+                                    <span class="text-body-secondary">Nespustí se, dokud úlohu neobnovíte.</span>
+                                {/if}
+                            </dd>
+
+                            <dt class="col-sm-4 col-lg-3">Poslední spuštění</dt>
+                            <dd class="col-sm-8 col-lg-9" data-test="admin-cron-last-run-{$job->name}">
+                                {if $job->lastStartedAt === null}
+                                    <span class="text-body-secondary">Zatím neproběhlo.</span>
+                                {elseif $job->isRunning()}
+                                    {$job->lastStartedAt|date:'j. n. Y H:i'} · <span class="badge text-bg-info">Běží</span>
+                                {else}
+                                    {$job->lastStartedAt|date:'j. n. Y H:i'} · trvalo {$job->getLastDurationSeconds()} s ·
+                                    {if $job->lastResult === App\Model\Cron\CronJobResult::FAILED}
+                                        <span class="badge text-bg-danger">Chyba</span>
+                                    {else}
+                                        <span class="badge text-bg-success">V pořádku</span>
+                                    {/if}
+                                {/if}
+                            </dd>
+
+                            {if $job->lastError !== null && ! $job->isRunning()}
+                                <dt class="col-sm-4 col-lg-3">Chyba</dt>
+                                <dd class="col-sm-8 col-lg-9 text-danger text-break" data-test="admin-cron-error-{$job->name}">{$job->lastError}</dd>
+                            {/if}
+
+                            <dt class="col-sm-4 col-lg-3">Naposledy změněno</dt>
+                            <dd class="col-sm-8 col-lg-9 mb-0">
+                                {if $job->updatedAt !== null}
+                                    {$job->updatedAt|date:'j. n. Y H:i'}
+                                    <span n:if="$job->updatedByName !== null" class="text-body-secondary">· {$job->updatedByName}</span>
+                                {else}
+                                    <span class="text-body-secondary">Běží podle výchozího nastavení.</span>
+                                {/if}
+                            </dd>
+                        </dl>
+
+                        <div class="d-flex flex-wrap align-items-end gap-2">
+                            {if $job->paused}
+                                <a n:href="resume! $job->name" class="btn btn-primary" data-test="admin-cron-resume-{$job->name}">
+                                    <i class="fi fi-rr-play" aria-hidden="true"></i> Obnovit
+                                </a>
+                            {else}
+                                <a n:href="pause! $job->name" class="btn btn-outline-secondary" data-test="admin-cron-pause-{$job->name}">
+                                    <i class="fi fi-rr-pause" aria-hidden="true"></i> Pozastavit
+                                </a>
+                            {/if}
+                            {form "scheduleForm-{$job->name}", class => 'd-flex flex-wrap align-items-end gap-2 inline-errors'}
+                                <div>
+                                    {label schedule, class => 'form-label small mb-1' /}
+                                    {input schedule, class => 'form-select'}
+                                </div>
+                                {input save}
+                            {/form}
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </article>
+</div>
+{/block}

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Payment\IntegrationTests;
 
 use App\Model\Common\EmailAddress;
+use App\Model\Common\Embeddable\Transaction;
 use App\Model\Common\Services\CommandBus;
 use App\Model\Common\User;
 use App\Model\Google\Entity\GoogleOAuth;
@@ -17,8 +18,10 @@ use App\Model\Payment\Group;
 use App\Model\Payment\MailerFactoryStub;
 use App\Model\Payment\Payment;
 use App\Model\Payment\PaymentService;
+use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Payment\UserRepositoryStub;
 use App\Model\Utils\MoneyFactory;
+use DateTimeImmutable;
 use Helpers;
 use IntegrationTest;
 use Mockery as m;
@@ -104,6 +107,32 @@ class PaymentCompletedEmailTest extends IntegrationTest
         $this->users->setUser(new User(1, 'František Maša', self::EMAIL));
 
         $this->paymentService->completePayment(1);
+    }
+
+    public function testEmailIsSentAsAutomatWhenNobodyIsLoggedIn(): void
+    {
+        $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
+        $this->initEntities(
+            [
+                EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
+                EmailType::PAYMENT_COMPLETED => new EmailTemplate('subject', 'body'),
+            ],
+            self::EMAIL,
+            $this->createOAuth(),
+        );
+        $this->users->setUser(null);
+        $payments = $this->tester->grabService(IPaymentRepository::class);
+        $payment = $payments->find(1);
+
+        $payment->pairWithTransaction(new DateTimeImmutable(), new Transaction('21924318042', '123456789/0800', 'Joe Doe', null, null));
+        $payments->save($payment);
+
+        $this->assertPaymentWasCompleted();
+        $this->tester->seeInDatabase('pa_payment_sent_emails', [
+            'payment_id' => 1,
+            'type' => EmailType::PAYMENT_COMPLETED,
+            'sender_name' => 'AUTOMAT',
+        ]);
     }
 
     public function testPaymentIsCompletedWhenGroupOAuthIsInvalid(): void
