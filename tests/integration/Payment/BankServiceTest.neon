@@ -1,6 +1,7 @@
 
 services:
     - App\Model\Bank\BankService
+    - Psr\Log\NullLogger
     - App\Model\Bank\Services\BankAccountPairingRunner
     - App\Model\Bank\Services\AutomaticBankPairingService
     - App\Model\Bank\Services\BankPairingCandidateProvider

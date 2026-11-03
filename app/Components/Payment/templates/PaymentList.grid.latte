@@ -9,7 +9,7 @@
                         <span class="datagrid-group-action-title">
                             {='contributte_datagrid.group_actions'|translate}:
                         </span>
-                        <div class="datagrid-group-action-controls">
+                        <div class="datagrid-group-action-controls" data-busy-scope>
                             {foreach $filter['group_action']->getControls() as $form_control}
                                 {if $form_control instanceof \Nette\Forms\Controls\SubmitButton && $form_control->getName() === 'submit'}
                                     {input $form_control, class => 'btn btn-primary btn-sm', disabled => TRUE}
@@ -177,6 +177,7 @@
             <a href="{$control->getParent()->link(send, $item->getId())}"
                class="btn btn-sm btn-primary ajax ui--sendEmail"
                data-test="payment-email-action-{$item->getId()}"
+               data-busy-text="Odesílám e-mail…"
                title="{$emailActionTitle}"><i
                         class="fi fi-rr-envelope-open" aria-hidden="true"></i></a>
         {else}
@@ -196,7 +197,7 @@
         {if $isOverdueForReminder || $reminderSentToday}
         <a href="{$canSendReminder ? $control->getParent()->link(sendReminder, $item->getId()) : '#'}"
            n:class="btn, btn-sm, ajax, $canSendReminder ? btn-warning : btn-light, $canSendReminder ? 'ui--sendEmail' : disabled"
-           n:attr="onclick => $canSendReminder ? null : 'return false;'"
+           n:attr="onclick => $canSendReminder ? null : 'return false;', data-busy-text => $canSendReminder ? 'Odesílám upomínku…' : null"
            data-test="payment-reminder-action-{$item->getId()}"
            title="{$reminderActionTitle}"><i
                     class="fi fi-rr-bell" aria-hidden="true"></i></a>
@@ -209,7 +210,7 @@
             data-test="payment-bank-transaction-action-{$item->getId()}"
             title="Ruční párování s bankovní transakcí"
         ><i class="fi fi-rr-bank" aria-hidden="true"></i></a>
-        <a href="{$control->getParent()->link(complete, $item->getId())}" class="ajax btn btn-sm btn-success" data-test="payment-complete-action-{$item->getId()}" title="Zaplaceno"><i
+        <a href="{$control->getParent()->link(complete, $item->getId())}" class="ajax btn btn-sm btn-success" data-test="payment-complete-action-{$item->getId()}" data-busy-text="Ukládám platbu…" title="Zaplaceno"><i
                     class="fi fi-rr-check" aria-hidden="true"></i></a>
     {elseif $item->isClosed()}
         <a href="{$control->getPresenter()->link('paymentNoteDialog:open!', $item->getId())}"

@@ -9,6 +9,7 @@ import {LogoutTimer} from './LogoutTimer';
 import './ts/checkAll';
 import initializeAjax from './ts/ajax';
 import {initializeAppInstall} from './ts/appInstall';
+import {initializeDecimalInputs} from './ts/decimalInput';
 import {initializeMassEmailSelection} from './ts/massEmailSelection';
 import {initializeMassAddStickyActions} from './ts/massAddStickyAction';
 import {initializePageEnhancements} from './ts/pageEnhancements';
@@ -41,4 +42,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initializePageEnhancements();
     initializeSessionKeepAlive();
     initializeAppInstall();
+    initializeDecimalInputs();
 });

@@ -14,4 +14,11 @@ interface IUserRepository
 
     /** @throws UserNotFound */
     public function getCurrentUser(): User;
+
+    /**
+     * Returns null when nobody is logged in, for example in a cron run.
+     *
+     * @throws UserNotFound
+     */
+    public function findCurrentUser(): ?User;
 }

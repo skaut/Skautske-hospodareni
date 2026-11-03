@@ -63,11 +63,8 @@ class MailingService
             throw new EmailTemplateNotSet("E-mail template '".$emailType->getValue()."' not found");
         }
 
-        if ($cli) {
-            $userName = 'AUTOMAT';
-        } else {
-            $userName = $this->users->getCurrentUser()->getName();
-        }
+        $user = $cli ? null : $this->users->findCurrentUser();
+        $userName = $user?->getName() ?? 'AUTOMAT';
 
         $this->sendForPayment($payment, $group, $template, $userName);
         $payment->recordSentEmail($emailType, new DateTimeImmutable(), $userName);

@@ -106,7 +106,7 @@ final class InvoiceDuplicateDialog extends Dialog
     {
         $invoice = $this->invoice();
         if ($invoice === null) {
-            $this->presenter->flashMessage('Zadaná faktura neexistuje.', 'danger');
+            $this->getPresenter()->flashMessage('Zadaná faktura neexistuje.', 'danger');
             $this->hide();
 
             return;
@@ -132,9 +132,9 @@ final class InvoiceDuplicateDialog extends Dialog
             return;
         }
 
-        $this->presenter->flashMessage('Faktura byla zduplikována.', 'success');
+        $this->getPresenter()->flashMessage('Faktura byla zduplikována.', 'success');
         $this->hide();
-        $this->presenter->redirect(':Payments:InvoiceList:edit', ['id' => $duplicatedInvoice->getId()]);
+        $this->getPresenter()->redirect(':Payments:InvoiceList:edit', ['id' => $duplicatedInvoice->getId()]);
     }
 
     private function invoice(): ?Invoice

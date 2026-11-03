@@ -61,7 +61,7 @@ final class FileStreamResponseTest extends Unit
         [$headers] = $this->send(new FileStreamResponse(Utils::streamFor(self::Pdf), "účtenka \"září\"\r\nX-Evil: 1.pdf", 'application/pdf'));
 
         self::assertSame(
-            'attachment; filename="uctenka _zari_X-Evil: 1.pdf"; filename*=UTF-8\'\'%C3%BA%C4%8Dtenka%20%22z%C3%A1%C5%99%C3%AD%22X-Evil%3A%201.pdf',
+            'attachment; filename="uctenka _zari_X-Evil_ 1.pdf"; filename*=UTF-8\'\'%C3%BA%C4%8Dtenka%20_z%C3%A1%C5%99%C3%AD_X-Evil_%201.pdf',
             $headers->getHeader('Content-Disposition'),
         );
     }

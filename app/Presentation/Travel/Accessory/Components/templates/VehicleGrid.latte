@@ -22,7 +22,7 @@
 {/block}
 
 {define col-consumption}
-    {$item->getConsumption()} {$item->getFuelType()->consumptionUnit()}
+    {$item->getConsumption()|decimal} {$item->getFuelType()->consumptionUnit()}
 {/define}
 
 {define col-subunit}

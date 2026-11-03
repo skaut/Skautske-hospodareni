@@ -119,7 +119,7 @@
                         {var $fuelType = $vehicle->getFuelType()}
                         <span>Cena paliva: <b>{$command->fuelPrice|price}</b> Kč/{$fuelType->fuelPriceUnit()}</span>
                         {* The print has always used units without a space, e.g. l/100km. *}
-                        <span>Spotřeba dle t.p.: <b>{$vehicle->getConsumption()|number:2, ',', ' '}</b> {$fuelType->consumptionUnit()|replace:' ', ''}</span>
+                        <span>Spotřeba dle t.p.: <b>{$vehicle->getConsumption()|decimal}</b> {$fuelType->consumptionUnit()|replace:' ', ''}</span>
                         <span>Cena PHM 1 km: {$command->fuelPricePerKm|price} Kč/km</span>
                         <span>Opotřebení: {$command->amortizationPerKm|price} Kč/km</span>
                         <span>Sazba náhrady: <b>{$command->pricePerKm|price}</b> Kč/km</span>
@@ -145,7 +145,7 @@
                     <td>{$t->details->transportType->getLabel()}</td>
                     {if $t->distance !== NULL}
                     <td>{$command->pricePerKm|price}</td>
-                    <td>{$t->distance}</td>
+                    <td>{$t->distance|decimal}</td>
                     {else}
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>

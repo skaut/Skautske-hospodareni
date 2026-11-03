@@ -1,17 +1,18 @@
 {if $canSend}
-<div class="btn-group">
+<div class="btn-group" data-busy-scope>
     <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="emailsDropdown"
-            data-test="payment-group-email-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            data-test="payment-group-email-toggle" data-busy-label data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="fi fi-rr-envelope-open" aria-hidden="true"></i> E-mail <span class="caret"></span>
     </button>
     <div class="dropdown-menu" aria-labelledby="emailsDropdown" data-test="payment-group-email-menu">
-        <a n:href="sendTest!" class="dropdown-item" data-test="payment-group-email-test">
+        <a n:href="sendTest!" class="dropdown-item" data-test="payment-group-email-test" data-busy-text="Odesílám testovací e-mail…">
             <i class="fi fi-rr-pencil-ruler" aria-hidden="true"></i>
             Zaslat testovací e-mail
         </a>
         {if $isGroupSendActive}
             <a n:href="sendGroup!"
-                    class="dropdown-item ajax">
+                    class="dropdown-item ajax"
+                    data-busy-text="Odesílám e-maily…">
                 <i class="fi fi-rr-paper-plane" aria-hidden="true"></i>
                 Rozeslat e-maily
             </a>
@@ -26,7 +27,8 @@
         {if $isReminderSendActive}
         <a  n:href="sendGroupReminder!"
                 class="dropdown-item"
-                data-confirm="Opravdu chcete rozeslat upomínkové e-maily všem nespárovaným platbám?">
+                data-confirm="Opravdu chcete rozeslat upomínkové e-maily všem nespárovaným platbám?"
+                data-busy-text="Odesílám upomínky…">
             <i class="fi fi-rr-bell" aria-hidden="true"></i>
                 Rozeslat upomínky
         </a>

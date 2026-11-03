@@ -84,6 +84,9 @@ services:
 	- class: UnusedMoneyMethodResultRule
 	  tags: [ phpstan.rules.rule ]
 
+	- class: CodeQuality\DeprecatedMagicPropertyRule
+	  tags: [ phpstan.rules.rule ]
+
 	#
 	# Dynamic method return types
 	#

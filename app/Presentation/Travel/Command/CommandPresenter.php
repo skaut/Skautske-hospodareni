@@ -243,9 +243,8 @@ final class CommandPresenter extends \App\BasePresenter
             ->addRule(Form::FILLED, 'Musíte vyplnit místo počátku cesty.');
         $form->addText('end_place', 'Do*')
             ->addRule(Form::FILLED, 'Musíte vyplnit místo konce cesty.');
-        $form->addText('distance', 'Vzdálenost*')
-            ->addRule(Form::FILLED, 'Musíte vyplnit vzdálenost.')
-            ->addRule(Form::FLOAT, 'Vzdálenost musí být číslo!')
+        $form->addDecimal('distance', 'Vzdálenost*', 'Vzdálenost musí být číslo!')
+            ->setRequired('Musíte vyplnit vzdálenost.')
             ->addRule(Form::MIN, 'Vzdálenost musí být větší než 0.', 0.01);
         $form->addSubmit('send', 'Přidat')
             ->setHtmlAttribute('class', 'btn btn-primary');

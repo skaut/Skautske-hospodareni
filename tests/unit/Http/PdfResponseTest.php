@@ -44,6 +44,21 @@ final class PdfResponseTest extends Unit
         self::assertSame(self::Pdf, $body);
     }
 
+    /**
+     * Název akce v názvu souboru: diakritika zůstane v `filename*`, lomítko (nebo jiný znak zakázaný
+     * v názvu souboru) se nahradí podtržítkem a ASCII záloha nesmí obsahovat uvozovky.
+     */
+    public function testEventNameInFilenameIsSafe(): void
+    {
+        [$headers] = $this->send(new PdfResponse(self::Pdf, 'Export_vše_1. oddíl - 10/2026 - „Laser“.pdf', true));
+
+        self::assertSame(
+            'attachment; filename="Export_vse_1. oddil - 10_2026 - _Laser_.pdf"; '
+                .'filename*=UTF-8\'\'Export_v%C5%A1e_1.%20odd%C3%ADl%20-%2010_2026%20-%20%E2%80%9ELaser%E2%80%9C.pdf',
+            $headers->getHeader('Content-Disposition'),
+        );
+    }
+
     /** @return array{RecordingResponse, string} */
     private function send(PdfResponse $response): array
     {

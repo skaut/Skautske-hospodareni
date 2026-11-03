@@ -57,6 +57,9 @@ final class ParticipantList extends BaseControl
     #[Persistent]
     public ?string $sort = 'displayName';
 
+    /** @var array<int, string>|null */
+    private ?array $personalDataWarnings = null;
+
     /** @param Participant[] $currentParticipants */
     public function __construct(
         public int $aid,
@@ -67,7 +70,7 @@ final class ParticipantList extends BaseControl
         protected bool $isAllowParticipantUpdate,
         protected bool $isAllowParticipantDelete,
         protected bool $isOnlineLogin,
-        private bool $checkNonMemberSex,
+        private bool $checkNonMemberPersonalData,
         private NonMemberParticipantService $nonMemberParticipants,
     ) {
     }
@@ -110,12 +113,42 @@ final class ParticipantList extends BaseControl
             'totalPayment' => $totalPayment,
             'totalRepayment' => $totalRepayment,
             'total' => $totalPayment->subtract($totalRepayment),
-            'participantsWithMissingSex' => $this->checkNonMemberSex
-                ? $this->nonMemberParticipants->findParticipantsWithMissingSex($this->currentParticipants)
-                : [],
+            'personalDataWarnings' => $this->loadPersonalDataWarnings(),
         ]);
 
         $this->template->render();
+    }
+
+    /**
+     * Upozornění k osobním údajům nečlenů podle ID účastníka. Presenter je má načíst ještě před vykreslením stránky,
+     * protože chyba skautISu uprostřed výstupu se uživateli ukáže jen jako useknutá stránka bez chybové hlášky.
+     *
+     * @return array<int, string>
+     */
+    public function loadPersonalDataWarnings(): array
+    {
+        if ($this->personalDataWarnings !== null) {
+            return $this->personalDataWarnings;
+        }
+
+        $warnings = [];
+        $nonMembers = $this->checkNonMemberPersonalData
+            ? $this->nonMemberParticipants->findNonMembers($this->currentParticipants)
+            : [];
+
+        foreach ($nonMembers as $participantId => $nonMember) {
+            if ($nonMember === null) {
+                $warnings[$participantId] = 'Osobní údaje nejsou dostupné, chybí oprávnění ve skautISu';
+                continue;
+            }
+
+            $missing = MissingPersonalData::describe($nonMember);
+            if ($missing !== null) {
+                $warnings[$participantId] = 'Chybí '.$missing;
+            }
+        }
+
+        return $this->personalDataWarnings = $warnings;
     }
 
     /** @param Participant[] $participants */
@@ -195,7 +228,7 @@ final class ParticipantList extends BaseControl
             $this->nonMemberParticipants,
         );
 
-        $dialog->onUpdate[] = function (int $participantId, array $fields, bool $isAccepted): void {
+        $dialog->onUpdate[] = function (int $participantId, array $fields, bool $isAccepted, bool $withoutPersonalData): void {
             $changes = [];
 
             foreach ($fields as $field => $value) {
@@ -203,6 +236,12 @@ final class ParticipantList extends BaseControl
             }
 
             $this->onUpdate($changes);
+            if ($withoutPersonalData) {
+                $this->reload('Účastník byl upraven, osobní údaje zůstaly beze změny.', 'warning');
+
+                return;
+            }
+
             $this->reload('Účastník byl upraven.', 'success');
         };
 

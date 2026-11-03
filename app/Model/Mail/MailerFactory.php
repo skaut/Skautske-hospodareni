@@ -11,6 +11,13 @@ use Nette\Mail\Mailer;
 
 class MailerFactory implements IMailerFactory
 {
+    /**
+     * Each OAuth mailer refreshes the access token on creation, so one mailer serves all e-mails of a request.
+     *
+     * @var array<string, OAuthMailer>
+     */
+    private array $mailers = [];
+
     public function __construct(private Mailer $debugMailer, private bool $enabled, private GoogleService $googleService)
     {
     }
@@ -21,6 +28,6 @@ class MailerFactory implements IMailerFactory
             return $this->debugMailer;
         }
 
-        return new OAuthMailer($this->googleService, $oAuth);
+        return $this->mailers[$oAuth->getId()->toString()] ??= new OAuthMailer($this->googleService, $oAuth);
     }
 }

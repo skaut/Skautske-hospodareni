@@ -12,7 +12,8 @@ use function sprintf;
 
 /**
  * Sestavuje hlavičku Content-Disposition tak, aby název souboru nemohl hlavičku rozbít
- * (uvozovky, zalomení řádku) a diakritika přežila přes `filename*` (RFC 6266).
+ * (uvozovky, zalomení řádku) a diakritika přežila přes `filename*` (RFC 6266). Znaky, které název
+ * souboru nesmí obsahovat (např. lomítko v názvu akce „10/2026“), se nahradí podtržítkem.
  */
 final class ContentDisposition
 {
@@ -29,6 +30,7 @@ final class ContentDisposition
     private static function create(string $type, string $filename): string
     {
         $filename = (string) preg_replace('~[\x00-\x1F\x7F]~u', '', $filename);
+        $filename = (string) preg_replace('~[\\\\/:*?"<>|]~', '_', $filename);
         $fallback = (string) preg_replace('~[^\x20-\x7E]|["\\\\]~', '_', Strings::toAscii($filename));
 
         return sprintf('%s; filename="%s"; filename*=UTF-8\'\'%s', $type, $fallback, rawurlencode($filename));

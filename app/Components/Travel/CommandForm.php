@@ -132,19 +132,18 @@ class CommandForm extends Control
             ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
             ->setRequired('Musíte vyplnit typ vozidla.');
 
-        $form->addText('fuel_price')
+        // Caption with the vehicle's fuel price unit is set in render().
+        $form->addDecimal('fuel_price', 'Cena paliva*', 'Musíte zadat desetinné číslo.')
             ->setOption('id', 'fuel_price')
             ->setHtmlAttribute('class', 'form-control')
             ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
-            ->setRequired('Musíte vyplnit cenu paliva.')
-            ->addRule($form::FLOAT, 'Musíte zadat desetinné číslo.');
+            ->setRequired('Musíte vyplnit cenu paliva.');
 
-        $form->addText('amortization', 'Opotřebení*')
+        $form->addDecimal('amortization', 'Opotřebení*', 'Musíte zadat desetinné číslo.')
             ->setOption('id', 'amortization')
             ->setHtmlAttribute('class', 'form-control')
             ->addConditionOn($typeSelectBox, [MyValidators::class, 'hasSelectedAny'], $vehiclesWithFuel)
-            ->setRequired('Musíte vyplnit opotřebení.')
-            ->addRule($form::FLOAT, 'Musíte zadat desetinné číslo.');
+            ->setRequired('Musíte vyplnit opotřebení.');
 
         $form->setCurrentGroup();
         $form->addSubmit('send', $this->commandId !== null ? 'Upravit' : 'Založit')
@@ -277,7 +276,7 @@ class CommandForm extends Control
             $values['unit'],
         );
 
-        $this->presenter->flashMessage('Cestovní příkaz byl založen.');
+        $presenter->flashMessage('Cestovní příkaz byl založen.');
     }
 
     private function updateCommand(ArrayHash $values): void
@@ -297,7 +296,7 @@ class CommandForm extends Control
             $values['unit'],
         );
 
-        $this->presenter->flashMessage('Cestovní příkaz byl upraven.');
+        $this->getPresenter()->flashMessage('Cestovní příkaz byl upraven.');
     }
 
     /**

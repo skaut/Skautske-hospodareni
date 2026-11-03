@@ -2,6 +2,7 @@ import naja from 'naja';
 import Dropdown from 'bootstrap/js/dist/dropdown';
 import Tooltip from 'bootstrap/js/dist/tooltip';
 import {ProgressBar} from './ProgressBar';
+import {BusyIndicator} from './BusyIndicator';
 import {ModalExtension} from './ModalExtension';
 import {TravelModule} from "../modules/travel";
 import {SnippetProcessor} from "./SnippetProcessor";
@@ -34,6 +35,7 @@ function initializeTooltips(root: ParentNode): void {
 
 export default function (): void {
     naja.registerExtension(new ProgressBar());
+    naja.registerExtension(new BusyIndicator());
 
     naja.registerExtension(new TravelModule());
     naja.registerExtension(new SnippetProcessor(snippet => {

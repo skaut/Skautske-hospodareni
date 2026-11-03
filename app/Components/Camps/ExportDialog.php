@@ -57,7 +57,7 @@ final class ExportDialog extends Dialog
 
     private function formSucceeded(ArrayHash $values): void
     {
-        $this->presenter->sendResponse(
+        $this->getPresenter()->sendResponse(
             new ExcelResponse(
                 sprintf('Souhrn-táborů-%s', ChronosDate::today()->format('Y_n_j')),
                 $this->queryBus->handle(new ExportCamps($values->campIds)),

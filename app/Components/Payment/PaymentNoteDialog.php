@@ -75,7 +75,7 @@ final class PaymentNoteDialog extends Dialog
         $values = $form->getValues(\Nette\Utils\ArrayHash::class);
         $payment = $this->payment();
         if ($payment === null) {
-            $this->presenter->flashMessage('Zadaná platba neexistuje', 'danger');
+            $this->getPresenter()->flashMessage('Zadaná platba neexistuje', 'danger');
             $this->hide();
 
             return;
