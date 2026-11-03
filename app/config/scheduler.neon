@@ -9,7 +9,10 @@ messenger:
         queryBus:
             singleHandlerPerMessage: true
 
+# Hosting neumí cron, úlohy spouští www/cron.php volaný z externího serveru (.docs/cron.md).
 scheduler:
     jobs:
-        - { cron: '* * * * *', callback: [ @group, reminder ] }
-        - { cron: '*/10 * * * *', callback: [ @App\Model\Bank\InvoiceBankService, pairAutomaticSequences ] }
+        paymentPairing: { cron: '0 */2 * * *', callback: [ @App\Model\Bank\BankService, pairAutomaticGroups ] }
+
+services:
+    - App\Model\Infrastructure\Scheduler\CronRunner(lockDir: %tempDir%/scheduler)

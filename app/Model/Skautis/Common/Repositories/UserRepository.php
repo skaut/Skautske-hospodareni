@@ -7,14 +7,18 @@ namespace App\Model\Skautis\Common\Repositories;
 use App\Model\Common\Repositories\IUserRepository;
 use App\Model\Common\User;
 use App\Model\Common\UserNotFound;
+use Skautis\User as SkautisUser;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 
 final class UserRepository implements IUserRepository
 {
-    public function __construct(private WebServiceInterface $userWebService, private WebServiceInterface $orgWebService)
-    {
+    public function __construct(
+        private WebServiceInterface $userWebService,
+        private WebServiceInterface $orgWebService,
+        private SkautisUser $skautisUser,
+    ) {
     }
 
     public function find(int $id): User
@@ -25,6 +29,11 @@ final class UserRepository implements IUserRepository
     public function getCurrentUser(): User
     {
         return $this->findWithArguments([]);
+    }
+
+    public function findCurrentUser(): ?User
+    {
+        return $this->skautisUser->isLoggedIn() ? $this->getCurrentUser() : null;
     }
 
     /** @param mixed[] $arguments */

@@ -21,10 +21,14 @@ use App\Model\Payment\Repositories\IPaymentRepository;
 use Assert\Assert;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
+use Psr\Log\LoggerInterface;
 
 use function array_map;
+use function array_sum;
 use function array_values;
+use function count;
 use function min;
+use function sprintf;
 
 class BankService
 {
@@ -37,6 +41,7 @@ class BankService
         private IBankAccountRepository $bankAccounts,
         private BankPairingCandidateProvider $pairingCandidates,
         private BankAccountPairingRunner $pairingRunner,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -96,24 +101,42 @@ class BankService
     /**
      * Pair groups that have automatic pairing enabled (cron).
      *
-     * @return PairingResult[]
+     * Each bank account is paired on its own, so one unreachable bank or invalid token does not stop the others.
      *
-     * @throws BankTimeLimit
-     * @throws BankTimeout
-     * @throws BankWrongTokenAccount
-     * @throws InvalidOAuth
+     * @return PairingResult[]
      */
     public function pairAutomaticGroups(): array
     {
-        $groups = $this->groups->findAutomaticPairingEnabled();
+        $groupIdsByBankAccount = [];
 
-        if ($groups === []) {
-            return [];
+        foreach ($this->groups->findAutomaticPairingEnabled() as $group) {
+            $bankAccountId = $group->getBankAccountId();
+
+            if ($bankAccountId !== null) {
+                $groupIdsByBankAccount[$bankAccountId][] = (int) $group->getId();
+            }
         }
 
-        $groupIds = array_values(array_map(static fn (Group $g): int => (int) $g->getId(), $groups));
+        $pairingResults = [];
 
-        return $this->pairAllGroups($groupIds);
+        foreach ($groupIdsByBankAccount as $bankAccountId => $groupIds) {
+            try {
+                $pairingResults = [...$pairingResults, ...$this->pairAllGroups($groupIds)];
+            } catch (BankTimeLimit|BankTimeout|BankWrongTokenAccount $exception) {
+                $this->logger->warning(
+                    sprintf('Automatic pairing of bank account #%d failed: %s', $bankAccountId, $exception->getMessage()),
+                    ['exception' => $exception],
+                );
+            }
+        }
+
+        $this->logger->info(sprintf(
+            'Automatic pairing paired %d payments on %d bank accounts',
+            array_sum(array_map(static fn (PairingResult $result): int => $result->getCount(), $pairingResults)),
+            count($groupIdsByBankAccount),
+        ));
+
+        return $pairingResults;
     }
 
     /** @param Group[] $groups */

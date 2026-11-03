@@ -8,6 +8,7 @@ use App\Model\Bank\BankService;
 use App\Model\Bank\Entity\BankAccount;
 use App\Model\Bank\Entity\BankTransaction as PersistedBankTransaction;
 use App\Model\Bank\Enum\BankTransactionSource;
+use App\Model\Bank\Exception\BankTimeout;
 use App\Model\Bank\Services\BankAccountPairingRunner;
 use App\Model\Bank\Services\BankPairingCandidateProvider;
 use App\Model\Bank\Services\BankTransactionPairingService;
@@ -28,6 +29,8 @@ use Codeception\Test\Unit;
 use DateTimeImmutable;
 use Helpers;
 use Mockery as m;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Stubs\BankAccountAccessCheckerStub;
 use Stubs\OAuthsAccessCheckerStub;
 
@@ -382,6 +385,67 @@ final class BankServiceTest extends Unit
         $bankService->pairAllGroups([(int) $group1->getId(), (int) $group2->getId()]);
     }
 
+    public function testAutomaticPairingContinuesWhenOneBankAccountFails(): void
+    {
+        $failingGroup = $this->group(12, 159, null);
+        $pairedGroup = $this->group(34, 357, null);
+        $failingPayment = new Payment($failingGroup, '-', [], MoneyFactory::fromDecimal('100'), ChronosDate::now(), new VariableSymbol('123'), null, null, '');
+        $pairedPayment = new Payment($pairedGroup, '-', [], MoneyFactory::fromDecimal('100'), ChronosDate::now(), new VariableSymbol('7854'), null, null, '');
+
+        $groups = m::mock(IGroupRepository::class);
+        $groups->shouldReceive('findAutomaticPairingEnabled')->once()->andReturn([$failingGroup, $pairedGroup]);
+        $groups->shouldReceive('findByIds')->once()->with([12])->andReturn([12 => $failingGroup]);
+        $groups->shouldReceive('findByIds')->once()->with([34])->andReturn([34 => $pairedGroup]);
+        $groups->shouldReceive('save')->once()->with($pairedGroup);
+
+        $bank = m::mock(BankTransactionService::class);
+        $bank->shouldReceive('getPersistentTransactionsForPeriod')
+            ->once()
+            ->withArgs(static fn (BankAccount $account): bool => $account->getId() === 159)
+            ->andThrow(new BankTimeout('There was an error when connecting to FIO'));
+        $bank->shouldReceive('getPersistentTransactionsForPeriod')
+            ->once()
+            ->withArgs(static fn (BankAccount $account): bool => $account->getId() === 357)
+            ->andReturn([]);
+
+        $candidates = m::mock(BankPairingCandidateProvider::class, [
+            'getDomainCandidatesForBankAccount' => [],
+            'getScopedCandidatesForGroups' => [],
+        ]);
+
+        $pairingService = m::mock(BankTransactionPairingService::class);
+        $pairingService->shouldReceive('pairAutomatically')->once()->andReturn(['payments' => [$pairedPayment], 'invoices' => []]);
+
+        $payments = m::mock(IPaymentRepository::class);
+        $payments->shouldReceive('findByMultipleGroups')->once()->with([12])->andReturn([$failingPayment]);
+        $payments->shouldReceive('findByMultipleGroups')->once()->with([34])->andReturn([$pairedPayment]);
+        $payments->shouldReceive('saveMany')->once()->with([$pairedPayment]);
+
+        $logger = m::mock(LoggerInterface::class);
+        $logger->shouldReceive('warning')
+            ->once()
+            ->with('Automatic pairing of bank account #159 failed: There was an error when connecting to FIO', m::type('array'));
+        $logger->shouldReceive('info')->once()->with('Automatic pairing paired 1 payments on 2 bank accounts');
+
+        $bankService = $this->createBankService(
+            $groups,
+            $bank,
+            $payments,
+            $this->mockBankAccountRepository([
+                159 => $this->mockBankAccount(159, '123'),
+                357 => $this->mockBankAccount(357, '852'),
+            ]),
+            $candidates,
+            $pairingService,
+            $logger,
+        );
+
+        $results = $bankService->pairAutomaticGroups();
+
+        $this->assertCount(1, $results);
+        $this->assertSame(1, $results[0]->getCount());
+    }
+
     /** @param BankAccount[] $bankAccounts */
     public function mockBankAccountRepository(array $bankAccounts): IBankAccountRepository
     {
@@ -492,6 +556,7 @@ final class BankServiceTest extends Unit
         IBankAccountRepository $bankAccounts,
         BankPairingCandidateProvider $candidates,
         BankTransactionPairingService $pairingService,
+        ?LoggerInterface $logger = null,
     ): BankService {
         return new BankService(
             $groups,
@@ -500,6 +565,7 @@ final class BankServiceTest extends Unit
             $bankAccounts,
             $candidates,
             new BankAccountPairingRunner($candidates, $pairingService),
+            $logger ?? new NullLogger(),
         );
     }
 }
