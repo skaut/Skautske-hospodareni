@@ -33,7 +33,7 @@ final class SelectFirstActiveRoleHandler
             return;
         }
 
-        $identity->currentRole = $this->userService->getActualRole();
+        $identity->currentRole = $this->userService->getActualRole($roles);
         $identity->skautisRoles = $roles;
     }
 }

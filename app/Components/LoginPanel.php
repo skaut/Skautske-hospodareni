@@ -34,9 +34,10 @@ final class LoginPanel extends BaseControl
         if (! $identity instanceof SimpleIdentity) {
             throw new LogicException('Assertion failed.');
         }
-        $identity->access = $this->userService->getAccessArrays($this->unitService);
-        $identity->currentRole = $this->userService->getActualRole();
-        $identity->skautisRoles = $this->userService->getAllSkautisRoles();
+        $roles = $this->userService->getAllSkautisRoles();
+        $identity->access = $this->userService->getAccessArrays($this->unitService, $roles);
+        $identity->currentRole = $this->userService->getActualRole($roles);
+        $identity->skautisRoles = $roles;
 
         $this->redirect('this');
     }
