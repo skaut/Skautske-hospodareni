@@ -21,6 +21,7 @@ import {initializeSendMassForm} from "./ChitListExtension"
 import {initializeEditForm} from "./ChitListExtension"
 import {initializePageEnhancements} from "./pageEnhancements";
 import {initializeTaskQueueStatus} from "./taskQueueStatus";
+import {resizeAutoGrowTextareas} from "./autoGrowTextarea";
 
 function initializeDropdowns(root: ParentNode): void {
     root.querySelectorAll<HTMLElement>('[data-bs-toggle="dropdown"]').forEach((element) => {
@@ -56,6 +57,7 @@ export default function (): void {
         initializeUnitMemberScopeToggles(snippet);
         initializePageEnhancements(snippet);
         initializeTaskQueueStatus(snippet, naja);
+        resizeAutoGrowTextareas(snippet);
     }));
 
     naja.registerExtension(new ModalExtension());
