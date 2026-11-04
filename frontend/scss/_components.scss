@@ -126,8 +126,9 @@
 }
 
 @media (min-width: 768px) {
+  // Content-sized basis: a title too long to share the row pushes the actions onto the next line.
   .page-heading > .card-body > h1 {
-    flex: 1 1 0;
+    flex: 1 1 auto;
   }
 }
 
