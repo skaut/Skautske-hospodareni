@@ -7,12 +7,13 @@ namespace App\Model\User\ReadModel\QueryHandlers;
 use App\Model\Skautis\Exception\MissingCurrentRole;
 use App\Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use App\Model\User\SkautisRole;
+use Codeception\Test\Unit;
 use Mockery as m;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
 use Nette\Security\UserStorage;
 
-final class ActiveSkautisRoleQueryHandlerTest extends \Codeception\Test\Unit
+final class ActiveSkautisRoleQueryHandlerTest extends Unit
 {
     public function testReturnsCurrentRoleFromIdentity(): void
     {
