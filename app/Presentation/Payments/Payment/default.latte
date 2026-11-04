@@ -13,7 +13,7 @@
                 {elseif $group->type === "camp"}Tábor
                 {elseif $group->type === "event"}Akce
                 {elseif $group->type === "registration"}Registrace{/if}
-                {if $paymentPairingJob !== null && $group->state === 'open' && $hasBankAccount}
+                {if $paymentPairingJob !== null}
                     <span>·</span>
                     <span data-test="payment-group-automatic-pairing">
                         <i class="fi fi-rr-time-check" aria-hidden="true"></i>

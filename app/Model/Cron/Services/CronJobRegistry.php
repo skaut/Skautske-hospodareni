@@ -24,7 +24,7 @@ final class CronJobRegistry
     private const DESCRIPTIONS = [
         self::PAYMENT_PAIRING => [
             'title' => 'Párování plateb',
-            'description' => 'Páruje bankovní transakce s platbami ve skupinách, kde je zapnuté automatické párování.',
+            'description' => 'Páruje transakce z účtů napojených na FIO s platbami ve skupinách, kde je zapnuté automatické párování.',
         ],
     ];
 

@@ -6,7 +6,6 @@ namespace App\Components\Payment;
 
 use App\Model\Bank\BankService;
 use App\Model\DTO\Payment\Group;
-use App\Model\DTO\Payment\PairingResult;
 use App\Model\Payment\PaymentService;
 
 use function array_filter;
@@ -55,22 +54,6 @@ final class GroupPairButtonScope implements PairButtonScope
 
     public function pair(?int $daysBack = null): array
     {
-        $pairingResults = $this->bankService->pairAllGroups($this->groupIds, $daysBack);
-        $messages = [];
-
-        if ($pairingResults === []) {
-            $messages[] = new PairButtonFlashMessage('Nebyly nalezeny žádné úhrady k párování.', 'warning');
-        }
-
-        foreach ($pairingResults as $pairingResult) {
-            $messages[] = $this->createResultMessage($pairingResult);
-        }
-
-        return $messages;
-    }
-
-    private function createResultMessage(PairingResult $pairingResult): PairButtonFlashMessage
-    {
-        return new PairButtonFlashMessage($pairingResult->getMessage(), $pairingResult->getCount() > 0 ? 'success' : 'info');
+        return PairButtonFlashMessage::fromPairingResults($this->bankService->pairAllGroups($this->groupIds, $daysBack));
     }
 }

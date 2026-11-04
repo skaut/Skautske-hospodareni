@@ -31,7 +31,7 @@ class BankPairingCandidateProvider
             array_map(
                 static fn (Payment $payment): PairingCandidate => PairingCandidate::forPayment($payment),
                 array_filter(
-                    $this->payments->findByMultipleGroups($groupIds),
+                    $this->payments->findOpenByGroups($groupIds),
                     static fn (Payment $payment): bool => $payment->canBePaired(),
                 ),
             ),

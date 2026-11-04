@@ -97,6 +97,63 @@ class PaymentDetailCest extends PaymentAcceptanceCest
     }
 
     /** @group payment */
+    public function automaticPairingIsUnavailableForGpcAccount(): void
+    {
+        $I = $this->I;
+        $fioAccountId = $this->haveBankAccount('Účet FIO pro cron', 'fio', 'acceptance-token', '2000942147');
+        $gpcAccountId = $this->haveBankAccount('Účet GPC pro cron', 'gpc', null, '2000942148');
+        $groupId = $this->createSubtypePaymentGroup('event', $fioAccountId);
+        $checkbox = 'input[name="automaticPairingEnabled"]';
+        $label = '//label[.//input[@name="automaticPairingEnabled"]]';
+
+        $I->wantTo('see that automatic pairing can be turned on only for a FIO account');
+
+        $I->amOnPage('/platby/skupiny/'.$groupId.'/upravit');
+        $I->waitForElementVisible('[data-test="payment-group-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeElement($checkbox.':enabled');
+
+        $I->selectOption('select[name="bankAccount"]', (string) $gpcAccountId);
+        $I->seeElement($checkbox.':disabled:not(:checked)');
+        $I->moveMouseOver($label);
+        $I->waitForText('Automatické párování je dostupné pouze pro účet napojený na FIO.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '.tooltip');
+
+        $I->selectOption('select[name="bankAccount"]', (string) $fioAccountId);
+        $I->seeElement($checkbox.':enabled');
+    }
+
+    /** @group payment */
+    public function importedGpcStatementPairsPaymentsWhenAsked(): void
+    {
+        $I = $this->I;
+        // The account number matches the header of tests/_data/bank/incoming-payment.gpc.
+        $bankAccountId = $this->haveBankAccount('Účet GPC pro import', 'gpc', null, '8310192897');
+        $groupId = $this->createSubtypePaymentGroup('event', $bankAccountId);
+        $paymentId = $I->haveInDatabase('pa_payment', [
+            'group_id' => $groupId,
+            'name' => 'Platba z importu GPC',
+            'amount' => 25000, // 250 Kč v haléřích, stejně jako v nahraném výpisu
+            'due_date' => ChronosDate::today()->addWeekdays(1)->format('Y-m-d'),
+            'variable_symbol' => '220010',
+            'constant_symbol' => null,
+            'note' => '',
+            'state' => 'preparing',
+        ]);
+
+        $I->wantTo('pair the payments of an imported GPC statement');
+
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/nastaveni/bankovni-ucty/'.$bankAccountId, '[data-test="settings-bank-account-import-gpc"]');
+        $I->clickStable('[data-test="settings-bank-account-import-gpc"]');
+        $I->waitForElementVisible('.modal input[name="file"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->attachFile('.modal input[name="file"]', 'bank/incoming-payment.gpc');
+        $I->checkOption('.modal input[name="pairPayments"]');
+        $I->clickStable('.modal input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+
+        $I->waitForText('GPC import dokončen: 1 transakcí, z toho 1 nových.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see('Platby na účtu "Účet GPC pro import" byly spárovány (1)');
+        $I->seeInDatabase('pa_payment', ['id' => $paymentId, 'state' => 'completed']);
+    }
+
+    /** @group payment */
     public function openPaymentRepaymentsOnCanonicalUrl(): void
     {
         $I = $this->I;
@@ -1114,5 +1171,20 @@ JS);
         }
 
         $I->seeNumberOfElements('//*[contains(text(), "Rozděleno z platby #'.$sourcePaymentId.'")]', 2);
+    }
+
+    private function haveBankAccount(string $name, string $source, ?string $token, string $number): int
+    {
+        return $this->I->haveInDatabase('pa_bank_account', [
+            'unit_id' => AcceptanceTester::UNIT_ID,
+            'name' => $name,
+            'token' => $token,
+            'transaction_source' => $source,
+            'created_at' => '2026-06-18 12:00:00',
+            'allowed_for_subunits' => 1,
+            'number_prefix' => null,
+            'number_number' => $number,
+            'number_bank_code' => '2010',
+        ]);
     }
 }

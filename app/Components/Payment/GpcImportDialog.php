@@ -6,6 +6,7 @@ namespace App\Components\Payment;
 
 use App\Components\BaseControl;
 use App\Components\Dialog;
+use App\Model\Bank\BankService;
 use App\Model\Bank\Enum\BankTransactionSource;
 use App\Model\DTO\Payment\BankAccount as BankAccountDto;
 use App\Model\Payment\BankAccountService;
@@ -45,6 +46,7 @@ final class GpcImportDialog extends Dialog
      */
     public function __construct(
         private readonly BankAccountService $bankAccounts,
+        private readonly BankService $bankService,
         private readonly UserService $userService,
         private readonly Closure $canImportBankAccount,
     ) {
@@ -83,8 +85,11 @@ final class GpcImportDialog extends Dialog
             ->addRule(Form::REQUIRED, 'Vyber GPC soubor k importu.')
             ->addRule(BaseForm::MAX_FILE_SIZE, self::MAX_FILE_SIZE_ERROR, BaseControl::MAX_FILE_SIZE_VALUE);
 
+        $form->addCheckbox('pairPayments', 'Po importu spárovat platby');
+
         $form->addSubmit('send', 'Importovat GPC soubor')
-            ->setHtmlAttribute('class', 'ajax btn btn-primary');
+            ->setHtmlAttribute('class', 'ajax btn btn-primary')
+            ->setHtmlAttribute('data-busy-text', 'Importuji…');
 
         $form->onValidate[] = function (BaseForm $form, ArrayHash $values): void {
             if (! $this->canValidateUpload($form, $values)) {
@@ -123,8 +128,9 @@ final class GpcImportDialog extends Dialog
             throw new LogicException('Assertion failed.');
         }
         try {
-            $batch = $this->bankAccounts->importGpcTransactions(
-                $this->requireImportableAccount()->getId(),
+            $bankAccountId = $this->requireImportableAccount()->getId();
+            $import = $this->bankAccounts->importGpcTransactions(
+                $bankAccountId,
                 $upload,
                 (string) $this->userService->getUserDetail()->Person,
             );
@@ -132,11 +138,18 @@ final class GpcImportDialog extends Dialog
             $this->flashMessage(
                 sprintf(
                     'GPC import dokončen: %d transakcí, z toho %d nových.',
-                    $batch->getTransactionCount(),
-                    $batch->getNewTransactionCount(),
+                    $import->batch->getTransactionCount(),
+                    $import->batch->getNewTransactionCount(),
                 ),
                 'success',
             );
+
+            if ($values->pairPayments && $import->statementStart !== null) {
+                foreach (PairButtonFlashMessage::fromPairingResults($this->bankService->pairImportedStatement($bankAccountId, $import->statementStart)) as $message) {
+                    $this->flashMessage($message->message, $message->type);
+                }
+            }
+
             $this->getPresenter()->redrawControl('flash');
             $this->hide();
 

@@ -9,6 +9,7 @@ use App\Model\Bank\Entity\BankAccount;
 use App\Model\Bank\Entity\BankTransaction as PersistedBankTransaction;
 use App\Model\Bank\Enum\BankTransactionSource;
 use App\Model\Bank\Exception\BankTimeout;
+use App\Model\Bank\PairingCandidate;
 use App\Model\Bank\Services\BankAccountPairingRunner;
 use App\Model\Bank\Services\BankPairingCandidateProvider;
 use App\Model\Bank\Services\BankTransactionPairingService;
@@ -35,7 +36,7 @@ use Stubs\BankAccountAccessCheckerStub;
 use Stubs\OAuthsAccessCheckerStub;
 
 use function array_keys;
-use function array_merge;
+use function array_map;
 use function count;
 
 final class BankServiceTest extends Unit
@@ -72,16 +73,16 @@ final class BankServiceTest extends Unit
             ->once()
             ->with($bankAccountId)
             ->andReturn([]);
-        $candidates->shouldReceive('getScopedCandidatesForGroups')
-            ->once()
-            ->with([$groupId])
-            ->andReturn([]);
-
         $payments = [
             new Payment($group, '-', [], MoneyFactory::fromDecimal((string) $amount), ChronosDate::now(), $vs, null, null, ''),
         ];
 
         Helpers::assignIdentity($payments[0], 1);
+
+        $candidates->shouldReceive('getScopedCandidatesForGroups')
+            ->once()
+            ->with([$groupId])
+            ->andReturn($this->candidates($payments));
 
         $pairingService = m::mock(BankTransactionPairingService::class);
         $pairingService->shouldReceive('pairAutomatically')
@@ -94,7 +95,7 @@ final class BankServiceTest extends Unit
                 return ['payments' => [$payment], 'invoices' => []];
             });
 
-        $paymentRepository = $this->mockPaymentRepository([$groupId => $payments]);
+        $paymentRepository = $this->mockPaymentRepository();
 
         $bankService = $this->createBankService($groups, $bank, $paymentRepository, $bankAccounts, $candidates, $pairingService);
 
@@ -151,16 +152,20 @@ final class BankServiceTest extends Unit
             ->once()
             ->with($bankAccountId1)
             ->andReturn([]);
-        $candidates->shouldReceive('getScopedCandidatesForGroups')
-            ->once()
-            ->with([$groupId1])
-            ->andReturn([]);
-
         $payments1 = [
             new Payment($group1, '-', [], MoneyFactory::fromDecimal((string) $amount), ChronosDate::now(), $vs1, null, null, ''),
             new Payment($group2, '-', [], MoneyFactory::fromDecimal((string) $amount), ChronosDate::now(), $vs2, null, null, ''),
         ];
         Helpers::assignIdentity($payments1[0], 1);
+
+        $candidates->shouldReceive('getScopedCandidatesForGroups')
+            ->once()
+            ->with([$groupId1])
+            ->andReturn($this->candidates([$payments1[0]]));
+        $candidates->shouldReceive('getScopedCandidatesForGroups')
+            ->once()
+            ->with([$groupId2])
+            ->andReturn([]);
 
         $pairingService = m::mock(BankTransactionPairingService::class);
         $pairingService->shouldReceive('pairAutomatically')
@@ -173,12 +178,7 @@ final class BankServiceTest extends Unit
                 return ['payments' => [$payment], 'invoices' => []];
             });
 
-        $payments2 = [];
-
-        $paymentRepository = $this->mockPaymentRepository([
-            $groupId1 => $payments1,
-            $groupId2 => $payments2,
-        ]);
+        $paymentRepository = $this->mockPaymentRepository();
 
         $bankService = $this->createBankService($groups, $bank, $paymentRepository, $bankAccounts, $candidates, $pairingService);
 
@@ -218,24 +218,6 @@ final class BankServiceTest extends Unit
             ->once()
             ->andReturn([$transaction2]);
 
-        $candidates = m::mock(BankPairingCandidateProvider::class);
-        $candidates->shouldReceive('getDomainCandidatesForBankAccount')
-            ->once()
-            ->with($bankAccountId1)
-            ->andReturn([]);
-        $candidates->shouldReceive('getScopedCandidatesForGroups')
-            ->once()
-            ->with([$groupId1])
-            ->andReturn([]);
-        $candidates->shouldReceive('getDomainCandidatesForBankAccount')
-            ->once()
-            ->with($bankAccountId2)
-            ->andReturn([]);
-        $candidates->shouldReceive('getScopedCandidatesForGroups')
-            ->once()
-            ->with([$groupId2])
-            ->andReturn([]);
-
         $payments1 = [
             new Payment($group1, '-', [], MoneyFactory::fromDecimal('200.50'), ChronosDate::now(), new VariableSymbol('123456'), null, null, ''),
         ];
@@ -246,6 +228,24 @@ final class BankServiceTest extends Unit
         Helpers::assignIdentity($payments1[0], 1);
         Helpers::assignIdentity($payments2[0], 2);
 
+        $candidates = m::mock(BankPairingCandidateProvider::class);
+        $candidates->shouldReceive('getDomainCandidatesForBankAccount')
+            ->once()
+            ->with($bankAccountId1)
+            ->andReturn([]);
+        $candidates->shouldReceive('getScopedCandidatesForGroups')
+            ->once()
+            ->with([$groupId1])
+            ->andReturn($this->candidates($payments1));
+        $candidates->shouldReceive('getDomainCandidatesForBankAccount')
+            ->once()
+            ->with($bankAccountId2)
+            ->andReturn([]);
+        $candidates->shouldReceive('getScopedCandidatesForGroups')
+            ->once()
+            ->with([$groupId2])
+            ->andReturn($this->candidates($payments2));
+
         $pairingService = m::mock(BankTransactionPairingService::class);
         $pairingService->shouldReceive('pairAutomatically')
             ->once()
@@ -254,10 +254,7 @@ final class BankServiceTest extends Unit
             ->once()
             ->andReturn(['payments' => [$payments2[0]], 'invoices' => []]);
 
-        $paymentRepository = $this->mockPaymentRepository([
-            $groupId1 => $payments1,
-            $groupId2 => $payments2,
-        ]);
+        $paymentRepository = $this->mockPaymentRepository();
 
         $bankService = $this->createBankService($groups, $bank, $paymentRepository, $bankAccounts, $candidates, $pairingService);
 
@@ -293,17 +290,7 @@ final class BankServiceTest extends Unit
         Helpers::assignIdentity($payments1[0], 1);
         Helpers::assignIdentity($payments1[1], 2);
 
-        $payments2 = [];
-
         $paymentRepository = m::mock(IPaymentRepository::class);
-        $paymentRepository->shouldReceive('findByMultipleGroups')
-            ->once()
-            ->with([$group1->getId()])
-            ->andReturn($payments1);
-        $paymentRepository->shouldReceive('findByMultipleGroups')
-            ->once()
-            ->with([$group1->getId(), $group2->getId()])
-            ->andReturn(array_merge($payments1, $payments2));
 
         // Pair group #1
         $bank = m::mock(BankTransactionService::class);
@@ -319,7 +306,7 @@ final class BankServiceTest extends Unit
         $candidates->shouldReceive('getScopedCandidatesForGroups')
             ->once()
             ->with([$group1->getId()])
-            ->andReturn([]);
+            ->andReturn($this->candidates([$payments1[0]]));
 
         $pairingService = m::mock(BankTransactionPairingService::class);
         $pairingService->shouldReceive('pairAutomatically')
@@ -356,7 +343,7 @@ final class BankServiceTest extends Unit
         $candidates->shouldReceive('getScopedCandidatesForGroups')
             ->once()
             ->with([$group1->getId(), $group2->getId()])
-            ->andReturn([]);
+            ->andReturn($this->candidates($payments1));
 
         $pairingService = m::mock(BankTransactionPairingService::class);
         $pairingService->shouldReceive('pairAutomatically')
@@ -408,17 +395,15 @@ final class BankServiceTest extends Unit
             ->withArgs(static fn (BankAccount $account): bool => $account->getId() === 357)
             ->andReturn([]);
 
-        $candidates = m::mock(BankPairingCandidateProvider::class, [
-            'getDomainCandidatesForBankAccount' => [],
-            'getScopedCandidatesForGroups' => [],
-        ]);
+        $candidates = m::mock(BankPairingCandidateProvider::class, ['getDomainCandidatesForBankAccount' => []]);
+        $candidates->allows('getScopedCandidatesForGroups')->with([12])->andReturn($this->candidates([$failingPayment]));
+        $candidates->allows('getScopedCandidatesForGroups')->with([34])->andReturn($this->candidates([$pairedPayment]));
 
         $pairingService = m::mock(BankTransactionPairingService::class);
         $pairingService->shouldReceive('pairAutomatically')->once()->andReturn(['payments' => [$pairedPayment], 'invoices' => []]);
 
         $payments = m::mock(IPaymentRepository::class);
-        $payments->shouldReceive('findByMultipleGroups')->once()->with([12])->andReturn([$failingPayment]);
-        $payments->shouldReceive('findByMultipleGroups')->once()->with([34])->andReturn([$pairedPayment]);
+        $payments->shouldReceive('findOpenByGroups')->once()->with([12, 34])->andReturn([$failingPayment, $pairedPayment]);
         $payments->shouldReceive('saveMany')->once()->with([$pairedPayment]);
 
         $logger = m::mock(LoggerInterface::class);
@@ -444,6 +429,107 @@ final class BankServiceTest extends Unit
 
         $this->assertCount(1, $results);
         $this->assertSame(1, $results[0]->getCount());
+    }
+
+    public function testAutomaticPairingLeavesOutGpcAccountsAndGroupsWithoutUnpaidPayments(): void
+    {
+        $fioGroup = $this->group(12, 159, null);
+        $gpcGroup = $this->group(34, 357, null);
+        $paidGroup = $this->group(56, 951, null);
+        $fioPayment = new Payment($fioGroup, '-', [], MoneyFactory::fromDecimal('100'), ChronosDate::now(), new VariableSymbol('123'), null, null, '');
+        $gpcPayment = new Payment($gpcGroup, '-', [], MoneyFactory::fromDecimal('100'), ChronosDate::now(), new VariableSymbol('456'), null, null, '');
+
+        $groups = m::mock(IGroupRepository::class);
+        $groups->shouldReceive('findAutomaticPairingEnabled')->once()->andReturn([$fioGroup, $gpcGroup, $paidGroup]);
+        $groups->shouldReceive('findByIds')->once()->with([12])->andReturn([12 => $fioGroup]);
+        $groups->shouldReceive('save')->once()->with($fioGroup);
+
+        $bank = m::mock(BankTransactionService::class);
+        $bank->shouldReceive('getPersistentTransactionsForPeriod')
+            ->once()
+            ->withArgs(static fn (BankAccount $account): bool => $account->getId() === 159)
+            ->andReturn([]);
+
+        $candidates = m::mock(BankPairingCandidateProvider::class, ['getDomainCandidatesForBankAccount' => []]);
+        $candidates->shouldReceive('getScopedCandidatesForGroups')->once()->with([12])->andReturn($this->candidates([$fioPayment]));
+
+        $pairingService = m::mock(BankTransactionPairingService::class);
+        $pairingService->shouldReceive('pairAutomatically')->once()->andReturn(['payments' => [], 'invoices' => []]);
+
+        $payments = m::mock(IPaymentRepository::class);
+        $payments->shouldReceive('findOpenByGroups')->once()->with([12, 34, 56])->andReturn([$fioPayment, $gpcPayment]);
+        $payments->shouldReceive('saveMany')->once();
+
+        $logger = m::mock(LoggerInterface::class);
+        $logger->shouldReceive('info')->once()->with('Automatic pairing paired 0 payments on 1 bank accounts');
+
+        $bankService = $this->createBankService(
+            $groups,
+            $bank,
+            $payments,
+            $this->mockBankAccountRepository([
+                159 => $this->mockBankAccount(159, '123'),
+                357 => $this->mockBankAccount(357, null, BankTransactionSource::GPC),
+            ]),
+            $candidates,
+            $pairingService,
+            $logger,
+        );
+
+        $this->assertCount(1, $bankService->pairAutomaticGroups());
+    }
+
+    public function testBankIsNotAskedWhenNoPaymentIsLeftToPair(): void
+    {
+        $group = $this->group(12, 159, null);
+
+        $bank = m::mock(BankTransactionService::class);
+        $bank->shouldNotReceive('getPersistentTransactionsForPeriod');
+
+        $candidates = m::mock(BankPairingCandidateProvider::class);
+        $candidates->shouldReceive('getScopedCandidatesForGroups')->once()->with([12])->andReturn([]);
+
+        $bankService = $this->createBankService(
+            $this->mockGroupRepository([12 => $group]),
+            $bank,
+            $this->mockPaymentRepository(),
+            $this->mockBankAccountRepository([159 => $this->mockBankAccount(159, '123')]),
+            $candidates,
+            m::mock(BankTransactionPairingService::class),
+        );
+
+        $this->assertSame([], $bankService->pairAllGroups([12]));
+    }
+
+    /** A run stores today as the last pairing, so the next run of the same day loads the whole day again. */
+    public function testNextRunOnTheSameDayLoadsTheWholeDayAgain(): void
+    {
+        $group = $this->group(12, 159, ChronosDate::today()->toNative());
+        $payment = new Payment($group, '-', [], MoneyFactory::fromDecimal('100'), ChronosDate::now(), new VariableSymbol('123'), null, null, '');
+
+        $bank = m::mock(BankTransactionService::class);
+        $bank->shouldReceive('getPersistentTransactionsForPeriod')
+            ->once()
+            ->withArgs(static fn (BankAccount $account, ChronosDate $since, ChronosDate $until): bool => $since->equals(ChronosDate::today())
+                && $until->equals(ChronosDate::today()))
+            ->andReturn([]);
+
+        $candidates = m::mock(BankPairingCandidateProvider::class, ['getDomainCandidatesForBankAccount' => []]);
+        $candidates->shouldReceive('getScopedCandidatesForGroups')->once()->with([12])->andReturn($this->candidates([$payment]));
+
+        $pairingService = m::mock(BankTransactionPairingService::class);
+        $pairingService->shouldReceive('pairAutomatically')->once()->andReturn(['payments' => [], 'invoices' => []]);
+
+        $bankService = $this->createBankService(
+            $this->mockGroupRepository([12 => $group]),
+            $bank,
+            $this->mockPaymentRepository(),
+            $this->mockBankAccountRepository([159 => $this->mockBankAccount(159, '123')]),
+            $candidates,
+            $pairingService,
+        );
+
+        $bankService->pairAllGroups([12]);
     }
 
     /** @param BankAccount[] $bankAccounts */
@@ -472,30 +558,32 @@ final class BankServiceTest extends Unit
         return $repository;
     }
 
-    private function mockBankAccount(int $id, string $token): BankAccount
+    private function mockBankAccount(int $id, ?string $token, BankTransactionSource $source = BankTransactionSource::FIO): BankAccount
     {
         return m::mock(BankAccount::class, [
             'getId' => $id,
             'getToken' => $token,
             'getName' => 'ucet jednotky',
-            'getTransactionSource' => BankTransactionSource::FIO,
+            'getTransactionSource' => $source,
         ]);
     }
 
-    /** @param array<int, list<Payment>> $paymentsByGroup */
-    private function mockPaymentRepository(array $paymentsByGroup): IPaymentRepository
+    private function mockPaymentRepository(): IPaymentRepository
     {
         $repository = m::mock(IPaymentRepository::class);
-        foreach ($paymentsByGroup as $groupId => $payments) {
-            $repository->shouldReceive('findByMultipleGroups')
-                ->once()
-                ->with([$groupId])
-                ->andReturn($payments);
-        }
-
         $repository->shouldReceive('saveMany');
 
         return $repository;
+    }
+
+    /**
+     * @param list<Payment> $payments
+     *
+     * @return list<PairingCandidate>
+     */
+    private function candidates(array $payments): array
+    {
+        return array_map(static fn (Payment $payment): PairingCandidate => PairingCandidate::forPayment($payment), $payments);
     }
 
     private function group(int $groupId, int $bankAccountId, ?DateTimeImmutable $lastPairing): Group

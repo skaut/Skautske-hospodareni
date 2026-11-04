@@ -6,6 +6,7 @@ namespace App\Components\Payment;
 
 use App\Components\BaseControl;
 use App\Model\Bank\BankService;
+use App\Model\Bank\Enum\BankTransactionSource;
 use App\Model\Common\Services\QueryBus;
 use App\Model\Common\UnitId;
 use App\Model\DTO\Google\OAuth;
@@ -31,18 +32,27 @@ use Component\Forms\DateControl;
 use DateTimeImmutable;
 use LogicException;
 use Nette\Application\UI\Form;
+use Nette\Forms\Controls\Checkbox;
 use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Controls\TextBase;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\FileSystem;
+use Nette\Utils\Json;
 
 use function array_filter;
 use function array_key_exists;
 use function array_map;
 use function array_unique;
+use function array_values;
+use function in_array;
 
 final class GroupForm extends BaseControl
 {
+    private const FIO_ONLY_PAIRING_MESSAGE = 'Automatické párování je dostupné pouze pro účet napojený na FIO. U účtu s importem GPC se páruje jen ručně.';
+
+    /** @var list<BankAccount>|null */
+    private ?array $accessibleBankAccounts = null;
+
     public function __construct(
         private UnitId $unitId,
         private ?SkautisEntity $skautisEntity,
@@ -132,6 +142,8 @@ final class GroupForm extends BaseControl
             ->setRequired(false)
             ->setPrompt('Vyberte bankovní účet');
 
+        $bankAccount->setHtmlAttribute('data-gpc-bank-accounts', Json::encode($this->gpcBankAccountIds()));
+
         if ($this->groupId !== null) {
             $bankAccount->setHtmlAttribute('data-original-value', (string) ($defaults['bankAccount'] ?? ''));
             $bankAccount->setHtmlAttribute(
@@ -144,7 +156,8 @@ final class GroupForm extends BaseControl
         $form->setCurrentGroup($pairingGroup);
         $form->addCheckbox('automaticPairingEnabled', 'Automaticky párovat úhrady v cronu')
             ->setOption('description', 'Cron páruje jen skupiny, které mají tuto volbu výslovně zapnutou.')
-            ->setHtmlAttribute('data-bank-pairing-field', '1');
+            ->setHtmlAttribute('data-bank-pairing-field', '1')
+            ->setHtmlAttribute('data-fio-only-message', self::FIO_ONLY_PAIRING_MESSAGE);
         $form->addText('pairingDaysBack', 'Rozšířit hledání zpětně o dnů')
             ->setDefaultValue((string) BankService::DAYS_BACK_DEFAULT)
             ->setRequired(false)
@@ -176,6 +189,7 @@ final class GroupForm extends BaseControl
 
         $form->onValidate[] = function (BaseForm $form, ArrayHash $values): void {
             $this->validateEmailTemplatesRequireBankAccount($form, $values);
+            $this->validateAutomaticPairingRequiresFio($form, $values);
         };
 
         $form->onSuccess[] = function (BaseForm $form): void {
@@ -282,6 +296,21 @@ final class GroupForm extends BaseControl
                 return;
             }
         }
+    }
+
+    /** The cron pairs only FIO accounts, a GPC statement is paired when it is imported. */
+    private function validateAutomaticPairingRequiresFio(BaseForm $form, ArrayHash $values): void
+    {
+        if (! $values->automaticPairingEnabled || ! in_array($values->bankAccount, $this->gpcBankAccountIds(), true)) {
+            return;
+        }
+
+        $automaticPairing = $form['automaticPairingEnabled'];
+        if (! $automaticPairing instanceof Checkbox) {
+            throw new LogicException('Assertion failed.');
+        }
+
+        $automaticPairing->addError(self::FIO_ONLY_PAIRING_MESSAGE);
     }
 
     private function getDefaultEmailBody(string $name): string
@@ -462,18 +491,45 @@ final class GroupForm extends BaseControl
     /** @return array<int, string> */
     private function bankAccountItems(): array
     {
-        $bankAccounts = $this->queryBus->handle(new BankAccountsAccessibleByUnitsQuery($this->groupUnitIds()));
-
         $items = [];
 
-        foreach ($bankAccounts as $bankAccount) {
-            if (! $bankAccount instanceof BankAccount) {
-                throw new LogicException('Assertion failed.');
-            }
+        foreach ($this->accessibleBankAccounts() as $bankAccount) {
             $items[$bankAccount->getId()] = $bankAccount->getName();
         }
 
         return $items;
+    }
+
+    /** @return list<int> */
+    private function gpcBankAccountIds(): array
+    {
+        return array_values(array_map(
+            static fn (BankAccount $bankAccount): int => $bankAccount->getId(),
+            array_filter(
+                $this->accessibleBankAccounts(),
+                static fn (BankAccount $bankAccount): bool => $bankAccount->getTransactionSource() === BankTransactionSource::GPC,
+            ),
+        ));
+    }
+
+    /** @return list<BankAccount> */
+    private function accessibleBankAccounts(): array
+    {
+        if ($this->accessibleBankAccounts !== null) {
+            return $this->accessibleBankAccounts;
+        }
+
+        $this->accessibleBankAccounts = [];
+
+        foreach ($this->queryBus->handle(new BankAccountsAccessibleByUnitsQuery($this->groupUnitIds())) as $bankAccount) {
+            if (! $bankAccount instanceof BankAccount) {
+                throw new LogicException('Assertion failed.');
+            }
+
+            $this->accessibleBankAccounts[] = $bankAccount;
+        }
+
+        return $this->accessibleBankAccounts;
     }
 
     /** @return array<string, array<string, string>> */

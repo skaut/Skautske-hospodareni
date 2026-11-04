@@ -37,6 +37,7 @@ use App\Components\Payment\SplitPaymentDialog;
 use App\Http\ExcelResponse;
 use App\Model\Bank\BankTransactionAmountMismatch;
 use App\Model\Bank\BankTransactionPairingNotAllowed;
+use App\Model\Bank\Enum\BankTransactionSource;
 use App\Model\Cron\ReadModel\Queries\CronJobsQuery;
 use App\Model\Cron\Services\CronJobRegistry;
 use App\Model\DTO\Payment\BankAccount as PaymentBankAccount;
@@ -45,6 +46,7 @@ use App\Model\DTO\Payment\Payment;
 use App\Model\DTO\Payment\Person;
 use App\Model\Excel\ExcelService;
 use App\Model\Payment\BankAccountService;
+use App\Model\Payment\Group as PaymentGroupEntity;
 use App\Model\Payment\GroupNotFound;
 use App\Model\Payment\InvalidVariableSymbol;
 use App\Model\Payment\Payment\State;
@@ -164,7 +166,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
             'summarize' => $this->model->getGroupSummaries([$id])[$id],
             'now' => new DateTimeImmutable(),
             'notSentPaymentsCount' => $this->countNotSentPayments($this->payments),
-            'paymentPairingJob' => $group->isAutomaticPairingEnabled()
+            'paymentPairingJob' => $this->isPairedByCron($group)
                 ? $this->queryBus->handle(new CronJobsQuery(new DateTimeImmutable()))[CronJobRegistry::PAYMENT_PAIRING] ?? null
                 : null,
         ]);
@@ -614,6 +616,17 @@ final class PaymentPresenter extends PaymentsBasePresenter
         }
 
         $this->publishBankAccountTemplateParameters($group);
+    }
+
+    /** Mirrors BankService::pairAutomaticGroups(): the cron pairs only open groups on a FIO account. */
+    private function isPairedByCron(PaymentGroup $group): bool
+    {
+        $bankAccountId = $group->getBankAccountId();
+
+        return $group->isAutomaticPairingEnabled()
+            && $group->getState() === PaymentGroupEntity::STATE_OPEN
+            && $bankAccountId !== null
+            && $this->bankAccounts->find($bankAccountId)?->getTransactionSource() === BankTransactionSource::FIO;
     }
 
     private function publishBankAccountTemplateParameters(PaymentGroup $group): void
