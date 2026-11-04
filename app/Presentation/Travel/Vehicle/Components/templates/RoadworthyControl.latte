@@ -1,7 +1,7 @@
 {var $count = count($files)}
 
 {if ! $isEditable && $files === []}
-    <span class="btn btn-light disabled" title="Nemáte oprávnění upravovat vozidlo" data-bs-toggle="tooltip">
+    <span class="btn btn-sm btn-light disabled" title="Nemáte oprávnění upravovat vozidlo" data-bs-toggle="tooltip">
         Technický průkaz: žádné soubory
     </span>
 {else}
@@ -9,12 +9,12 @@
         <span n:snippet="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-popper-config='{ "strategy": "fixed" }' aria-haspopup="true" aria-expanded="false" data-test="roadworthy-menu-toggle">
             {var $count = count($files)}
             {if $count === 0}
-                <button type="button" class="btn btn-primary dropdown-toggle">
+                <button type="button" class="btn btn-sm btn-primary dropdown-toggle">
                     <i class="fi fi-rr-cloud-upload-alt" aria-hidden="true"></i>
                     Nahrát technický průkaz
                 </button>
             {else}
-                <button type="button" class="btn btn-light dropdown-toggle">
+                <button type="button" class="btn btn-sm btn-light dropdown-toggle">
                     Technický průkaz: {$count} soubor{if $count >= 5}ů{elseif $count > 1}y{/if}
                 </button>
             {/if}
