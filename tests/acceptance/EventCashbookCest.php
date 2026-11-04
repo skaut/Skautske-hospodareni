@@ -202,12 +202,12 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->clickStable('input[name="send"]');
         $this->I->waitForText('Zadejte účel výplaty', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->I->seeElement('input[name="send"]');
-        $this->I->seeInField('input[name="items[0][purpose]"]', 'Rohlíky');
+        $this->I->seeInField('textarea[name="items[0][purpose]"]', 'Rohlíky');
         $this->I->seeInField('input[name="recipient"]', 'Testovací skaut');
         $this->I->seeInField('input[name="items[0][price]"]', '50');
         $this->I->seeInField('input[name="items[1][price]"]', '50');
 
-        $this->I->fillFieldStable('input[name="items[1][purpose]"]', 'Hřebíky');
+        $this->I->fillFieldStable('textarea[name="items[1][purpose]"]', 'Hřebíky');
         $this->I->scrollTo('input[name="send"]');
         $this->I->waitForElementClickable('input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $this->I->clickStable('input[name="send"]');
@@ -280,7 +280,7 @@ class EventCashbookCest extends BaseAcceptanceCest
 
         // Kliknutí na „Upravit“ musí otevřít formulář s načteným dokladem a jeho kategorií.
         $this->openImportedParticipantIncomeChitForEdit();
-        $this->I->seeInField('input[name="items[0][purpose]"]', 'účastnické příspěvky');
+        $this->I->seeInField('textarea[name="items[0][purpose]"]', 'účastnické příspěvky');
         $this->I->seeInField('input[name="items[0][price]"]', '125.00');
 
         // Standardní úprava: datum, pokladna/banka, číslo, Komu/Od, účel i částka.
@@ -290,7 +290,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->checkOption('input[name="paymentMethod"][value="bank"]');
         $this->I->fillFieldStable('input[name="num"]', 'HPD123');
         $this->I->fillFieldStable('input[name="recipient"]', 'Účastníci akce');
-        $this->I->fillFieldStable('input[name="items[0][purpose]"]', 'účastnické příspěvky upravené');
+        $this->I->fillFieldStable('textarea[name="items[0][purpose]"]', 'účastnické příspěvky upravené');
         $this->I->fillFieldStable('input[name="items[0][price]"]', '130');
         $this->I->clickStable('input[name="send"]');
         $this->I->waitForText('Paragon byl upraven.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -315,7 +315,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->seeCheckboxIsChecked('input[name="paymentMethod"][value="bank"]');
         $this->I->seeInField('input[name="num"]', 'HPD123');
         $this->I->seeInField('input[name="recipient"]', 'Účastníci akce');
-        $this->I->seeInField('input[name="items[0][purpose]"]', 'účastnické příspěvky upravené');
+        $this->I->seeInField('textarea[name="items[0][purpose]"]', 'účastnické příspěvky upravené');
         $this->I->seeInField('input[name="items[0][price]"]', '130');
     }
 
@@ -374,7 +374,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->wantToTest('Uložit');
         $this->I->fillFieldStable('input[name="date"]', $date->format('d.m. Y'));
         $this->I->pressKey('body', [WebDriverKeys::ESCAPE]); // close datepicker
-        $this->I->fillFieldStable('input[name="items[0][purpose]"]', $purpose);
+        $this->I->fillFieldStable('textarea[name="items[0][purpose]"]', $purpose);
         $this->I->selectOption('#chit-type', $type->equals(Operation::EXPENSE()) ? 'Výdaje' : 'Příjmy');
         $this->I->selectOption(sprintf('items[0][%sCategories]', $type->equals(Operation::EXPENSE()) ? 'expense' : 'income'), $category);
         $this->I->fillFieldStable('input[name="recipient"]', $recipient);
@@ -384,7 +384,7 @@ class EventCashbookCest extends BaseAcceptanceCest
     private function fillSecondChitForm(string $purpose, Operation $type, string $category, string $recipient, string $amount): void
     {
         $this->I->wantToTest('Uložit');
-        $this->I->fillFieldStable('input[name="items[1][purpose]"]', $purpose);
+        $this->I->fillFieldStable('textarea[name="items[1][purpose]"]', $purpose);
         $this->I->selectOption(sprintf('items[1][%sCategories]', $type->equals(Operation::EXPENSE()) ? 'expense' : 'income'), $category);
         $this->I->fillFieldStable('input[name="recipient"]', $recipient);
         $this->I->fillFieldStable('input[name="items[1][price]"]', $amount);
