@@ -81,6 +81,20 @@ final class SkautisLoginRefresherTest extends Unit
         self::assertTrue($this->createRefresher()->isLoginDead());
     }
 
+    public function testUnknownLoginIsDeadOnNextRequest(): void
+    {
+        $this->logInWithLogoutAt('2026-11-04 12:10:00');
+        // Message returned by test-is.skaut.cz for LoginUpdateRefresh with an unknown login ID.
+        $this->webService->shouldReceive('call')->once()->andThrow(new WsdlException(
+            "Server was unable to process request. ---> Neplatný login\nPři editaci objektu UM_Login nastala chyba",
+        ));
+
+        $this->refresher->extend(static function (): void {
+        });
+
+        self::assertTrue($this->createRefresher()->isLoginDead());
+    }
+
     public function testOtherSkautisFailureDoesNotMarkLoginDeadNorEscape(): void
     {
         $this->logInWithLogoutAt('2026-11-04 12:10:00');

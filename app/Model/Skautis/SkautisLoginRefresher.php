@@ -12,7 +12,10 @@ use Psr\Log\LoggerInterface;
 use Skautis\User;
 use Skautis\Wsdl\AuthenticationException;
 use Skautis\Wsdl\WebServiceInterface;
+use Skautis\Wsdl\WsdlException;
 use Throwable;
+
+use function str_contains;
 
 /**
  * Extends the SkautIS login at most once per minute, after the response is sent.
@@ -62,11 +65,25 @@ final class SkautisLoginRefresher
             // Directly through the web service: Skautis\User::updateLogoutTime() writes to the already closed session.
             $this->userWebService->call('LoginUpdateRefresh', ['ID' => $loginId]);
         } catch (AuthenticationException) {
-            $this->cache->save($loginId, true, [Cache::Expire => self::DEAD_LOGIN_TTL]);
+            $this->markDead($loginId);
+        } catch (WsdlException $exception) {
+            // SkautIS rejects an unknown login with "Neplatný login", which the library does not map to AuthenticationException.
+            if (str_contains($exception->getMessage(), 'Neplatný login')) {
+                $this->markDead($loginId);
+
+                return;
+            }
+
+            $this->logger->warning('SkautIS login extension failed.', ['exception' => $exception]);
         } catch (Throwable $exception) {
             // The next due extension, a minute later, tries again.
             $this->logger->warning('SkautIS login extension failed.', ['exception' => $exception]);
         }
+    }
+
+    private function markDead(string $loginId): void
+    {
+        $this->cache->save($loginId, true, [Cache::Expire => self::DEAD_LOGIN_TTL]);
     }
 
     /** Was this login rejected by SkautIS during an earlier background extension? */
