@@ -19,6 +19,7 @@ services:
     skautis.webservice.user: App\Model\Skautis\WebserviceFactory::createCached('user')
     skautis.cached.event: App\Model\Skautis\WebserviceFactory::createCached('event')
     skautis.cached.grants: App\Model\Skautis\WebserviceFactory::createCached('Grants')
+    - App\Model\Skautis\SkautisLoginRefresher(userWebService: App\Model\Skautis\WebserviceFactory::create('user'))
 
     # Skautis repositories
     unitRepository:

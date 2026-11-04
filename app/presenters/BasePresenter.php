@@ -324,7 +324,7 @@ abstract class BasePresenter extends Presenter
         $this->logoutInvalidUser();
     }
 
-    private function logoutInvalidUser(): void
+    protected function logoutInvalidUser(): void
     {
         $this->getUser()->logout(true);
         if ($this->isPublicRequest()) {

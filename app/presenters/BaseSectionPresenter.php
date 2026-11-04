@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Model\Common\UnitId;
+use App\Model\Skautis\SkautisLoginRefresher;
 use App\Model\Skautis\SkautisMaintenanceChecker;
 use App\Model\User\UserService;
 use LogicException;
@@ -12,6 +13,10 @@ use Nette\Security\SimpleIdentity;
 use stdClass;
 
 use function array_keys;
+use function fastcgi_finish_request;
+use function function_exists;
+use function ignore_user_abort;
+use function register_shutdown_function;
 
 abstract class BaseSectionPresenter extends BasePresenter
 {
@@ -31,12 +36,19 @@ abstract class BaseSectionPresenter extends BasePresenter
 
     private SkautisMaintenanceChecker $skautisMaintenanceChecker;
 
+    private SkautisLoginRefresher $skautisLoginRefresher;
+
     /** @var string camp, event, unit */
     public string $type;
 
     public function injectSkautisMaintenanceChecker(SkautisMaintenanceChecker $checker): void
     {
         $this->skautisMaintenanceChecker = $checker;
+    }
+
+    public function injectSkautisLoginRefresher(SkautisLoginRefresher $refresher): void
+    {
+        $this->skautisLoginRefresher = $refresher;
     }
 
     protected function startup(): void
@@ -56,6 +68,20 @@ abstract class BaseSectionPresenter extends BasePresenter
             }
         }
 
+        if ($this->skautisLoginRefresher->isLoginDead()) {
+            $this->logoutInvalidUser();
+        }
+
+        // Registered at runtime, so it runs after Tracy's shutdown handler has written the bar.
+        register_shutdown_function(fn () => $this->skautisLoginRefresher->extend(function (): void {
+            $this->getSession()->close();
+            if (function_exists('fastcgi_finish_request')) { // without PHP-FPM the extension runs before the response ends
+                fastcgi_finish_request();
+            }
+
+            ignore_user_abort(true);
+        }));
+
         $aid = $this->getParameter('aid');
         $this->aid = $aid === null ? null : (int) $aid;
         if ($this->aid !== null) { // Parameters aren't auto-casted to int
@@ -64,8 +90,6 @@ abstract class BaseSectionPresenter extends BasePresenter
 
         $unitId = $this->getParameter('unitId');
         $this->unitId = new UnitId($unitId !== null ? (int) $unitId : $this->unitService->getUnitId());
-
-        $this->userService->updateLogoutTime();
     }
 
     /** @param string $message */
