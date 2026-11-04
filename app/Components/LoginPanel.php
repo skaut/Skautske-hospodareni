@@ -36,6 +36,7 @@ final class LoginPanel extends BaseControl
         }
         $identity->access = $this->userService->getAccessArrays($this->unitService);
         $identity->currentRole = $this->userService->getActualRole();
+        $identity->skautisRoles = $this->userService->getAllSkautisRoles();
 
         $this->redirect('this');
     }
@@ -45,9 +46,11 @@ final class LoginPanel extends BaseControl
     {
         $this->template->setFile(__DIR__.'/templates/LoginPanel.latte');
         if ($this->user->isLoggedIn()) {
+            $identity = $this->user->getIdentity();
             $roles = [];
 
-            foreach ($this->userService->getAllSkautisRoles() as $role) {
+            // Roles come from the identity (set at login and role change), so rendering makes no SkautIS call.
+            foreach ($identity instanceof SimpleIdentity ? $identity->skautisRoles ?? [] : [] as $role) {
                 $roles[$role->ID] = $role->DisplayName;
             }
 

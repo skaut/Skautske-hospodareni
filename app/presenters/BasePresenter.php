@@ -223,20 +223,6 @@ abstract class BasePresenter extends Presenter
                 ? $this->linkGenerator->link('SessionKeepAlive:default')
                 : null,
         ]);
-
-        if (! $this->getUser()->isLoggedIn()) {
-            return;
-        }
-
-        try {
-            $this->template->setParameters([
-                'currentUnitId' => $this->unitService->getUnitId(),
-                'myRoles' => $this->userService->getAllSkautisRoles(),
-                'myRole' => $this->userService->getRoleId(),
-            ]);
-        } catch (AuthenticationException) {
-            $this->getUser()->logout(true);
-        }
     }
 
     public function handleChangeRole(?int $roleId = null): void
