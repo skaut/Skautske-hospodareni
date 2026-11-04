@@ -236,6 +236,26 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
             ->getResult();
     }
 
+    public function findOpenByGroups(array $groupIds): array
+    {
+        Assert::thatAll($groupIds)->integer();
+
+        if ($groupIds === []) {
+            return [];
+        }
+
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('p')
+            ->from(Payment::class, 'p')
+            ->where('p.groupId IN (:groupIds)')
+            ->andWhere('p.state = :state')
+            ->andWhere('p.variableSymbol IS NOT NULL')
+            ->setParameter('groupIds', $groupIds)
+            ->setParameter('state', State::PREPARING)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function existsPairedPaymentForBankAccount(int $bankAccountId): bool
     {
         return (int) $this->getEntityManager()->createQueryBuilder()

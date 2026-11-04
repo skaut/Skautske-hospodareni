@@ -6,8 +6,8 @@ namespace App\Model\Bank\Services;
 
 use App\Model\Bank\Entity\BankAccount;
 use App\Model\Bank\Entity\BankTransaction;
-use App\Model\Bank\Entity\BankTransactionImportBatch;
 use App\Model\Bank\Enum\BankTransactionSource;
+use App\Model\Bank\GpcImportResult;
 use App\Model\Bank\Manager\BankTransactionImportManager;
 use App\Model\Bank\Repository\BankTransactionRepository;
 use App\Model\Bank\Transaction;
@@ -17,7 +17,9 @@ use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use InvalidArgumentException;
 
+use function array_map;
 use function explode;
+use function min;
 use function sprintf;
 use function trim;
 
@@ -75,7 +77,7 @@ class BankTransactionService
         );
     }
 
-    public function importGpcTransactions(int $bankAccountId, string $fileName, string $contents, string $importedBy): BankTransactionImportBatch
+    public function importGpcTransactions(int $bankAccountId, string $fileName, string $contents, string $importedBy): GpcImportResult
     {
         $bankAccount = $this->bankAccounts->find($bankAccountId);
 
@@ -97,7 +99,7 @@ class BankTransactionService
             throw new InvalidArgumentException(sprintf('GPC soubor patri k uctu %s a nelze jej importovat k uctu %s.', $parsedFile->statementAccountNumber, $targetAccountNumber));
         }
 
-        return $this->importManager->importGpcTransactions(
+        $batch = $this->importManager->importGpcTransactions(
             $bankAccount,
             $fileName,
             $contents,
@@ -105,6 +107,9 @@ class BankTransactionService
             $parsedFile->transactions,
             new DateTimeImmutable(),
         );
+        $dates = array_map(static fn (Transaction $transaction): DateTimeImmutable => $transaction->getDate(), $parsedFile->transactions);
+
+        return new GpcImportResult($batch, $dates === [] ? null : new ChronosDate(min($dates)));
     }
 
     public function hasTransactions(BankAccount $bankAccount): bool

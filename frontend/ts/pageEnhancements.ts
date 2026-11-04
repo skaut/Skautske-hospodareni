@@ -1,3 +1,4 @@
+import Tooltip from 'bootstrap/js/dist/tooltip';
 import {initializeHelpSectionEditor} from './helpSectionEditor';
 
 const initializedAttribute = 'data-ui-initialized';
@@ -22,6 +23,45 @@ function setFieldsEnabled(fields: NodeListOf<HTMLInputElement|HTMLSelectElement|
         field.disabled = !enabled;
         getFieldWrapper(field)?.classList.toggle('form-field-disabled', !enabled);
     });
+}
+
+function parseIdList(value: string|undefined): number[] {
+    const ids: unknown = JSON.parse(value ?? '[]');
+
+    return Array.isArray(ids) ? ids.filter((id): id is number => typeof id === 'number') : [];
+}
+
+/**
+ * A field that works only with a FIO account. For a GPC account it is unchecked, greyed out and its wrapper
+ * explains why, because a disabled input itself shows no tooltip. The previous state comes back with a FIO account.
+ */
+function setFioOnlyFieldAvailable(field: HTMLInputElement, available: boolean): void {
+    const wrapper = getFieldWrapper(field);
+
+    if (!available) {
+        field.dataset.checkedBeforeGpc ??= String(field.checked);
+        field.checked = false;
+        field.disabled = true;
+
+        if (wrapper !== null) {
+            wrapper.classList.add('form-field-unavailable');
+            wrapper.tabIndex = 0;
+            Tooltip.getOrCreateInstance(wrapper, {title: field.dataset.fioOnlyMessage ?? ''});
+        }
+
+        return;
+    }
+
+    if (field.dataset.checkedBeforeGpc !== undefined) {
+        field.checked = field.dataset.checkedBeforeGpc === 'true';
+        delete field.dataset.checkedBeforeGpc;
+    }
+
+    if (wrapper !== null) {
+        Tooltip.getInstance(wrapper)?.dispose();
+        wrapper.classList.remove('form-field-unavailable');
+        wrapper.removeAttribute('tabindex');
+    }
 }
 
 function moveAlertBeforeField(alert: HTMLElement|null, field: Element): void {
@@ -178,12 +218,16 @@ export function initializePaymentForms(root: ParentNode = document): void {
 
             const bankAlert = document.getElementById('bankAccountUnavailableAlert');
             const pairingFields = form.querySelectorAll<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>('[data-bank-pairing-field]');
+            const fioOnlyFields = form.querySelectorAll<HTMLInputElement>('input[data-fio-only-message]');
+            const gpcBankAccounts = parseIdList(bankAccountSelect.dataset.gpcBankAccounts);
             moveAlertBeforeField(bankAlert, bankAccountSelect);
 
             const synchronizeBankFields = (): void => {
                 const enabled = bankAccountSelect.value !== '';
+                const isGpcAccount = gpcBankAccounts.includes(Number(bankAccountSelect.value));
                 bankAlert?.classList.toggle('d-none', enabled);
                 setFieldsEnabled(pairingFields, enabled);
+                fioOnlyFields.forEach((field) => setFioOnlyFieldAvailable(field, !isGpcAccount));
             };
 
             synchronizeBankFields();

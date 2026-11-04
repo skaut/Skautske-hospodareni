@@ -6,9 +6,15 @@ Hosting aplikace neumí spouštět cron ani příkazy v konzoli. Pravidelné úl
 
 | Úloha | Kdy | Co dělá |
 | --- | --- | --- |
-| Párování plateb | každé 2 hodiny, vždy v celou sudou hodinu (0:00, 2:00, …) | Páruje bankovní transakce s platbami v otevřených skupinách, které mají bankovní účet a zapnutou volbu „Automaticky párovat úhrady v cronu“. |
+| Párování plateb | každé 2 hodiny, vždy v celou sudou hodinu (0:00, 2:00, …) | Páruje transakce z účtů napojených na FIO s platbami v otevřených skupinách, které mají zapnutou volbu „Automaticky párovat úhrady v cronu“. |
 
-Když se nepodaří načíst transakce jednoho účtu (např. kvůli neplatnému tokenu FIO nebo výpadku banky), ostatní účty se spárují normálně a chyba se zapíše do logu. E-mail „platba přijata“ se odešle i z cronu, za odesílatele se do něj doplní „AUTOMAT“.
+Podrobnosti párování:
+
+- Výpis se stahuje za každý FIO účet jen jednou za běh, i když na něm je víc skupin. Stahuje se od data posledního párování do dneška, takže každý běh znovu načte celý dnešní den i s platbami, které přibyly od minulého běhu.
+- Účty s importem výpisů (GPC) cron vynechává. Výpis se po importu nemění, a tak by další průchod nic nového nenašel. Ve formuláři skupiny s účtem GPC proto automatické párování zapnout nejde. Platby se párují ručně, nebo hned po importu, když v dialogu importu zaškrtnete „Po importu spárovat platby“. Párují se pak všechny otevřené skupiny s tímto účtem podle transakcí od prvního dne nahraného výpisu.
+- Skupiny, kterým už nezbývá žádná nezaplacená platba, se přeskočí. Když nezbývá nic na celém účtu, banka se vůbec nevolá.
+- Když se nepodaří načíst transakce jednoho účtu (např. kvůli neplatnému tokenu FIO nebo výpadku banky), ostatní účty se spárují normálně a chyba se zapíše do logu.
+- E-mail „platba přijata“ se odešle i z cronu, za odesílatele se do něj doplní „AUTOMAT“.
 
 Úloha se přidává do `app/config/scheduler.neon` (co se má spustit a výchozí interval). Název a popis pro lidi jí doplňte v `CronJobRegistry`. Uživatelům úlohy ukazuje stránka Nastavení → Automatizace.
 

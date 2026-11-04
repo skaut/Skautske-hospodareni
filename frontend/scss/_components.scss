@@ -819,6 +819,11 @@ fieldset:disabled label {
   pointer-events: none;
 }
 
+// Unavailable for the chosen option, but it keeps pointer events so its tooltip can say why.
+.form-field-unavailable {
+  opacity: 0.5;
+}
+
 .invoice-preview-frame {
   width: 100%;
   min-height: 73.75rem;

@@ -11,6 +11,7 @@ use App\Model\Bank\Enum\BankTransactionSource;
 use App\Model\Bank\Exception\BankTimeLimit;
 use App\Model\Bank\Exception\BankTimeout;
 use App\Model\Bank\Exception\BankWrongTokenAccount;
+use App\Model\Bank\GpcImportResult;
 use App\Model\Bank\Repository\BankTransactionImportBatchRepository;
 use App\Model\Bank\Services\BankTransactionService;
 use App\Model\Bank\Transaction;
@@ -238,7 +239,7 @@ class BankAccountService
         return $this->transactionImportBatches->findByBankAccount($account, $limit);
     }
 
-    public function importGpcTransactions(int $bankAccountId, FileUpload $fileUpload, string $importedBy): BankTransactionImportBatch
+    public function importGpcTransactions(int $bankAccountId, FileUpload $fileUpload, string $importedBy): GpcImportResult
     {
         if (! $fileUpload->isOk()) {
             throw new InvalidArgumentException('Vyskytla se chyba při nahrávání GPC souboru.');

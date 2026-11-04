@@ -15,6 +15,7 @@ use App\Components\Payment\BankAccountForm;
 use App\Components\Payment\GpcImportDialog;
 use App\Model\Auth\Resources\InvoiceAccess;
 use App\Model\Auth\Resources\Unit as UnitResource;
+use App\Model\Bank\BankService;
 use App\Model\Bank\BankTransactionAmountMismatch;
 use App\Model\Bank\BankTransactionPairingNotAllowed;
 use App\Model\Bank\Enum\BankTransactionSource;
@@ -56,6 +57,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
         private readonly BankAccountService $accounts,
         private readonly BankAccountDetailViewFactory $detailViewFactory,
         private readonly BankAccountManualPairingService $manualPairingService,
+        private readonly BankService $bankService,
     ) {
         parent::__construct();
     }
@@ -370,6 +372,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
     {
         $dialog = new GpcImportDialog(
             $this->accounts,
+            $this->bankService,
             $this->userService,
             fn (int $bankAccountId): bool => $this->canImportGpcForAccountId($bankAccountId),
         );

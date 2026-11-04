@@ -62,5 +62,14 @@ interface IPaymentRepository
     /** @return Payment[] */
     public function findOpenByBankAccount(int $bankAccountId): array;
 
+    /**
+     * Unpaid payments with a variable symbol, the ones bank pairing can still complete.
+     *
+     * @param int[] $groupIds
+     *
+     * @return Payment[]
+     */
+    public function findOpenByGroups(array $groupIds): array;
+
     public function existsPairedPaymentForBankAccount(int $bankAccountId): bool;
 }
