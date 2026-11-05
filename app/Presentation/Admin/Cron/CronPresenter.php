@@ -7,7 +7,13 @@ namespace App\Presentation\Admin\Cron;
 use App\Model\Cron\CronInterval;
 use App\Model\Cron\Manager\CronJobManager;
 use App\Model\Cron\ReadModel\Queries\CronJobsQuery;
+use App\Model\Cron\Services\CronJobRegistry;
 use App\Model\DTO\Cron\CronJob;
+use App\Model\DTO\TaskQueue\TaskJobStatus;
+use App\Model\DTO\TaskQueue\TaskTypeSummary;
+use App\Model\Payment\ReadModel\Queries\CountAutomaticPairingGroupsQuery;
+use App\Model\Payment\ReadModel\Queries\CountAutomaticReminderGroupsQuery;
+use App\Model\TaskQueue\ReadModel\Queries\TaskQueueOverviewQuery;
 use App\Presentation\Admin\AdminBasePresenter;
 use Component\Forms\BaseForm;
 use DateTimeImmutable;
@@ -16,7 +22,13 @@ use Nette\Application\UI\Form;
 use Nette\Application\UI\Multiplier;
 use Nette\Http\IResponse;
 
+use function array_filter;
+use function array_map;
+use function array_sum;
+use function array_unique;
+use function count;
 use function is_string;
+use function sprintf;
 
 /**
  * Overview of the jobs that www/cron.php runs, with pausing and a choice of interval.
@@ -34,6 +46,7 @@ final class CronPresenter extends AdminBasePresenter
     {
         $this->template->setParameters([
             'jobs' => $this->getJobs(),
+            'jobUsage' => $this->getJobUsage(),
         ]);
     }
 
@@ -112,5 +125,46 @@ final class CronPresenter extends AdminBasePresenter
     private function getJobs(): array
     {
         return $this->jobs ??= $this->queryBus->handle(new CronJobsQuery(new DateTimeImmutable()));
+    }
+
+    /**
+     * What each job works with, so the administrator sees how much it is used. Closed groups are left out.
+     *
+     * @return array<string, array{value: string, note: string, link: string|null}>
+     */
+    private function getJobUsage(): array
+    {
+        $overview = $this->queryBus->handle(new TaskQueueOverviewQuery(new DateTimeImmutable()));
+        $waiting = array_sum(array_map(static fn (TaskTypeSummary $type): int => $type->pending + $type->running, $overview->types));
+        $activeJobs = array_filter($overview->jobs, static fn (TaskJobStatus $job): bool => ! $job->isFinished());
+        $scopes = count(array_unique(array_map(static fn (TaskJobStatus $job): string => $job->scopeType.':'.$job->scopeId, $activeJobs)));
+
+        return [
+            CronJobRegistry::PAYMENT_PAIRING => [
+                'value' => self::openGroups($this->queryBus->handle(new CountAutomaticPairingGroupsQuery())),
+                'note' => 'se zapnutým automatickým párováním a účtem FIO, uzavřené skupiny se nepočítají',
+                'link' => null,
+            ],
+            CronJobRegistry::PAYMENT_REMINDERS => [
+                'value' => self::openGroups($this->queryBus->handle(new CountAutomaticReminderGroupsQuery())),
+                'note' => 'se zapnutými automatickými upomínkami, zvoleným počtem dní, aktivní šablonou a odesílatelem, uzavřené skupiny se nepočítají',
+                'link' => null,
+            ],
+            CronJobRegistry::TASK_QUEUE => [
+                'value' => sprintf('Čeká úloh: %d, skupin se zpracovávanou dávkou: %d', $waiting, $scopes),
+                'note' => '',
+                'link' => $this->link('TaskQueue:default'),
+            ],
+        ];
+    }
+
+    private static function openGroups(int $count): string
+    {
+        return match (true) {
+            $count === 0 => 'Žádná otevřená skupina',
+            $count === 1 => '1 otevřená skupina',
+            $count < 5 => $count.' otevřené skupiny',
+            default => $count.' otevřených skupin',
+        };
     }
 }

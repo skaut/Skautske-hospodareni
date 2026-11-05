@@ -58,6 +58,10 @@ class Group
     #[ORM\Column(type: 'boolean', options: ['default' => 0])]
     private bool $isRemindersEnabled = false;
 
+    /** How many days after the due date the automatic reminder goes out; the user has to choose it. */
+    #[ORM\Column(name: 'reminder_days_after_due', type: 'integer', nullable: true)]
+    private ?int $reminderDaysAfterDue = null;
+
     #[ORM\Embedded(class: Group\BankAccount::class, columnPrefix: false)]
     #[Nullable]
     private ?Group\BankAccount $bankAccount = null;
@@ -269,6 +273,38 @@ class Group
     public function isRemindersEnabled(): bool
     {
         return $this->isRemindersEnabled;
+    }
+
+    public function getReminderDaysAfterDue(): ?int
+    {
+        return $this->reminderDaysAfterDue;
+    }
+
+    /** Automatic reminders need the switch and the number of days after the due date. */
+    public function configureAutomaticReminders(bool $enabled, ?int $daysAfterDue): void
+    {
+        if ($daysAfterDue !== null && $daysAfterDue < 1) {
+            throw new InvalidArgumentException('Automatic reminder must go out at least one day after the due date.');
+        }
+
+        $this->isRemindersEnabled = $enabled;
+        $this->reminderDaysAfterDue = $daysAfterDue;
+    }
+
+    /** The user turned automatic reminders on, chose the days and the reminder template is active. */
+    public function hasAutomaticRemindersEnabled(): bool
+    {
+        return $this->isRemindersEnabled
+            && $this->reminderDaysAfterDue !== null
+            && $this->isEmailEnabled(EmailType::get(EmailType::PAYMENT_REMINDER));
+    }
+
+    /** The cron sends automatic reminders only of open groups that also have a sender. */
+    public function sendsAutomaticReminders(): bool
+    {
+        return $this->hasAutomaticRemindersEnabled()
+            && $this->state === self::STATE_OPEN
+            && $this->oauthId !== null;
     }
 
     public function getCreatedAt(): ?DateTimeImmutable

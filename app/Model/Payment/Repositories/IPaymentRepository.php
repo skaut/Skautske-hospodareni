@@ -8,6 +8,7 @@ use App\Model\Payment\Payment;
 use App\Model\Payment\PaymentNotFound;
 use App\Model\Payment\Summary;
 use App\Model\Payment\VariableSymbol;
+use Cake\Chronos\ChronosDate;
 
 interface IPaymentRepository
 {
@@ -18,11 +19,11 @@ interface IPaymentRepository
     public function findByGroup(int $groupId): array;
 
     /**
-     * @param int[] $groupIds
+     * Payments of the group whose automatic reminder is due today, see {@see Payment::isAutomaticReminderDue()}.
      *
      * @return Payment[]
      */
-    public function findByReminder(array $groupIds): array;
+    public function findDueAutomaticReminders(int $groupId, int $daysAfterDueDate, ChronosDate $today): array;
 
     /**
      * @param int[] $groupIds

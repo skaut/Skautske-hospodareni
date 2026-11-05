@@ -575,7 +575,9 @@ JS);
         $I->seeElement($selector.'.ui--sendEmail');
         $I->dontSeeElement('[data-test="payment-bank-transaction-action-'.$paymentId.'"]');
         $I->clickStable($selector);
-        $I->waitForText('1 informační e-mail odeslán', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        // One e-mail goes out right away, the queue is only for more of them.
+        $I->waitForText('E-mail byl odeslán.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeInDatabase('pa_payment_sent_emails', ['payment_id' => $paymentId, 'type' => 'payment_info']);
     }
 
     /** @group payment */

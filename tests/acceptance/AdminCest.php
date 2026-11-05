@@ -619,6 +619,41 @@ JS);
         $I->deleteFromDatabase('cron_job', ['name' => 'paymentPairing']);
     }
 
+    /** @group admin */
+    public function adminSeesTaskQueueOverviewAndAutomationUsage(): void
+    {
+        $I = $this->I;
+        $this->becomeAdmin();
+        $runId = $I->haveInDatabase('task_queue_run', [
+            'started_at' => date('Y-m-d H:i:s', time() - 120),
+            'finished_at' => date('Y-m-d H:i:s', time() - 110),
+            'taken' => 5,
+            'done' => 4,
+            'skipped' => 0,
+            'failed' => 1,
+            'uncertain' => 0,
+            'postponed' => 0,
+            'recovered' => 0,
+            'stop_reason' => 'empty',
+            'pending_after' => 0,
+        ]);
+
+        $I->wantTo('see the task queue and how much the automation is used');
+
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/cron', '[data-test="admin-cron-usage-taskQueue"]');
+        $I->seeElement('[data-test="admin-cron-usage-paymentPairing"]');
+        $I->seeElement('[data-test="admin-cron-usage-paymentReminders"]');
+        $I->clickStable('[data-test="admin-cron-usage-taskQueue"] a');
+
+        $I->waitForElementVisible('[data-test="admin-task-queue-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeElement('[data-test="admin-nav-task-queue"].btn-primary');
+        $I->see('E-maily plateb', '[data-test="admin-task-queue-types"]');
+        $I->see('fronta je prázdná', '[data-test="admin-task-queue-run-'.$runId.'"]');
+        $I->seeNoHorizontalOverflowOnPhone('fronta úloh');
+
+        $I->deleteFromDatabase('task_queue_run', ['id' => $runId]);
+    }
+
     private function haveLogins(): void
     {
         $I = $this->I;

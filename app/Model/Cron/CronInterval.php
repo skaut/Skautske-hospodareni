@@ -10,6 +10,7 @@ namespace App\Model\Cron;
  */
 enum CronInterval: string
 {
+    case EVERY_MINUTE = '* * * * *';
     case EVERY_15_MINUTES = '*/15 * * * *';
     case EVERY_30_MINUTES = '*/30 * * * *';
     case HOURLY = '0 * * * *';
@@ -22,6 +23,7 @@ enum CronInterval: string
     public function getLabel(): string
     {
         return match ($this) {
+            self::EVERY_MINUTE => 'každou minutu',
             self::EVERY_15_MINUTES => 'každých 15 minut',
             self::EVERY_30_MINUTES => 'každých 30 minut',
             self::HOURLY => 'každou hodinu',

@@ -14,10 +14,12 @@ use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Payment\Summary;
 use App\Model\Payment\VariableSymbol;
 use Assert\Assert;
-use DateTimeImmutable;
+use Cake\Chronos\ChronosDate;
 use Money\Money;
 
 use function array_fill_keys;
+use function array_filter;
+use function array_values;
 
 final class PaymentRepository extends AggregateRepository implements IPaymentRepository
 {
@@ -100,37 +102,32 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
             ->getResult();
     }
 
-    public function findByReminder(array $groupIds): array
+    public function findDueAutomaticReminders(int $groupId, int $daysAfterDueDate, ChronosDate $today): array
     {
-        Assert::thatAll($groupIds)->integer();
-
-        if (empty($groupIds)) {
-            return [];
-        }
-
-        $today = new DateTimeImmutable('today');
-        $tomorrow = new DateTimeImmutable('tomorrow');
-
-        return $this->getEntityManager()->createQueryBuilder()
+        $candidates = $this->getEntityManager()->createQueryBuilder()
             ->select('p, e')
             ->from(Payment::class, 'p')
             ->leftJoin('p.sentEmails', 'e')
-            ->where('p.groupId IN (:groupIds)')
+            ->where('p.groupId = :groupId')
             ->andWhere('p.state = :state')
-            ->andWhere('p.dueDate < :dueDate')
+            ->andWhere('p.dueDate <= :dueOnOrBefore')
+            ->andWhere('p.automaticReminderAt IS NULL')
             ->andWhere(
-                'NOT EXISTS (
-            SELECT 1 FROM '.Payment\SentEmail::class.' se
-            WHERE se.payment = p AND se.type = :reminderType AND se.time >= :today AND se.time < :tomorrow)',
+                'NOT EXISTS (SELECT 1 FROM '.Payment\SentEmail::class.' se WHERE se.payment = p AND se.type = :reminderType)',
             )
-            ->setParameter('groupIds', $groupIds)
+            ->setParameter('groupId', $groupId)
             ->setParameter('state', State::PREPARING)
-            ->setParameter('dueDate', $today->format('Y-m-d'))
-            ->setParameter('today', $today)
-            ->setParameter('tomorrow', $tomorrow)
+            ->setParameter('dueOnOrBefore', $today->subDays($daysAfterDueDate)->format('Y-m-d'))
             ->setParameter('reminderType', EmailType::PAYMENT_REMINDER)
+            ->orderBy('p.id')
+            ->getQuery()
+            ->getResult();
 
-            ->getQuery()->getResult();
+        // The query narrows the rows, the aggregate holds the rule.
+        return array_values(array_filter(
+            $candidates,
+            static fn (Payment $payment): bool => $payment->isAutomaticReminderDue($daysAfterDueDate, $today),
+        ));
     }
 
     public function save(Payment $payment): void

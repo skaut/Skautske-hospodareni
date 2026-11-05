@@ -1,0 +1,71 @@
+{* Only the content of the snippet is replaced on refresh, so the polling attributes live inside it. *}
+<div n:snippet="status" aria-live="polite">
+    <div data-task-queue-status
+         data-refresh-url="{$refreshUrl}"
+         data-active="{$isActive ? '1' : '0'}"
+         data-test="task-queue-status">
+        <section n:if="$jobs !== []" class="card mb-4" data-test="task-queue-status-panel">
+            <div class="card-body">
+                <h2 class="h5 mb-3">
+                    <i class="fi fi-rr-paper-plane" aria-hidden="true"></i>
+                    Odesílání e-mailů na pozadí
+                </h2>
+
+                <div n:foreach="$jobs as $job" n:class="!$iterator->last ? 'mb-4'" data-test="task-queue-job-{$job->id}">
+                    {var $percent = $job->getProgressPercent()}
+                    <div class="d-flex flex-wrap justify-content-between gap-2">
+                        <strong>{$job->label}</strong>
+                        <span data-test="task-queue-job-progress">
+                            odesláno {$job->done} z {$job->total}
+                            {if $job->isFinished() && !$job->hasProblems()} · hotovo{/if}
+                        </span>
+                    </div>
+                    <div class="progress my-2" role="progressbar" aria-label="Průběh: {$job->label}"
+                         aria-valuenow="{$percent}" aria-valuemin="0" aria-valuemax="100">
+                        <div n:class="progress-bar, $job->isFinished() && !$job->hasProblems() ? bg-success" style="width: {$percent}%"></div>
+                    </div>
+                    <div class="small text-body-secondary">
+                        Zadáno {$job->createdAt|date:'j. n. Y H:i'}, {$job->createdByName ?? 'automaticky'}
+                        {if !$job->isFinished()} · e-maily odcházejí po dávkách každou minutu{/if}
+                    </div>
+
+                    <div n:if="$job->stalled" class="alert alert-warning small mt-2 mb-0" data-test="task-queue-job-stalled">
+                        Odesílání se zastavilo. Dejte prosím vědět správci aplikace.
+                    </div>
+
+                    {var $failed = $job->getProblems(\App\Model\TaskQueue\TaskItemState::FAILED)}
+                    <div n:if="$failed !== []" class="small mt-2" data-test="task-queue-job-failed">
+                        Nepodařilo se odeslat:
+                        <ul class="mb-0">
+                            <li n:foreach="$failed as $problem">{$problem->label} – {$problem->message}</li>
+                        </ul>
+                    </div>
+
+                    {var $uncertain = $job->getProblems(\App\Model\TaskQueue\TaskItemState::UNCERTAIN)}
+                    <div n:if="$uncertain !== []" class="alert alert-warning small mt-2 mb-0" data-test="task-queue-job-uncertain">
+                        U těchto e-mailů nevíme, jestli odešly, protože se zpracování přerušilo:
+                        <ul class="mb-1">
+                            <li n:foreach="$uncertain as $problem">{$problem->label}</li>
+                        </ul>
+                        Než je pošlete znovu, zkontrolujte odeslanou poštu e-mailu odesílatele skupiny.
+                    </div>
+
+                    {var $skipped = $job->getProblems(\App\Model\TaskQueue\TaskItemState::SKIPPED)}
+                    <div n:if="$skipped !== []" class="small text-body-secondary mt-2" data-test="task-queue-job-skipped">
+                        Vynecháno:
+                        <ul class="mb-0">
+                            <li n:foreach="$skipped as $problem">{$problem->label} – {$problem->message}</li>
+                        </ul>
+                    </div>
+
+                    <div n:if="$job->isFinished()" class="d-flex flex-wrap gap-2 mt-2">
+                        <a n:if="$finishedActionUrl !== null" href="{$finishedActionUrl}" class="btn btn-sm btn-light ajax"
+                           data-test="task-queue-finished-action">{$finishedActionLabel}</a>
+                        <a n:if="$job->hasProblems() && $canAcknowledge" n:href="acknowledge! jobId => $job->id"
+                           class="btn btn-sm btn-light ajax" data-test="task-queue-job-acknowledge">Skrýt přehled</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

@@ -251,6 +251,7 @@ class RouterFactory
             ->addRoute('oznameni/nove', 'Announcements:create')
             ->addRoute('oznameni/<id [0-9]+>/upravit', 'Announcements:edit')
             ->addRoute('statistiky ? jednotka=<unitId>', 'Statistics:default')
+            ->addRoute('fronta', 'TaskQueue:default')
             ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
     }
 

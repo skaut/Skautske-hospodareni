@@ -7,7 +7,6 @@ namespace App\Model\Infrastructure\Repositories\Payment;
 use App\Model\Common\Services\EventBus;
 use App\Model\Google\OAuthId;
 use App\Model\Payment\DomainEvents\GroupWasRemoved;
-use App\Model\Payment\EmailType;
 use App\Model\Payment\Group;
 use App\Model\Payment\Group\Type;
 use App\Model\Payment\GroupNotFound;
@@ -18,7 +17,9 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 use function array_diff;
 use function array_fill;
+use function array_filter;
 use function array_keys;
+use function array_values;
 use function count;
 use function implode;
 
@@ -56,18 +57,21 @@ final class GroupRepository implements IGroupRepository
         return $groups;
     }
 
-    public function findByReminder(): array
+    public function findSendingAutomaticReminders(): array
     {
-        return $this->em->createQueryBuilder()
+        $groups = $this->em->createQueryBuilder()
             ->select('g')
-            ->from(Group::class, 'g', 'g.id')
-            ->leftJoin(Group\Email::class, 'e', Join::WITH, 'e.group = g')
-            ->where('g.isRemindersEnabled = 1')
-            ->andWhere('e.type = :reminder')
-            ->andWhere('e.enabled = 1')
-            ->setParameter('reminder', EmailType::PAYMENT_REMINDER)
+            ->from(Group::class, 'g')
+            ->where('g.isRemindersEnabled = :enabled')
+            ->andWhere('g.reminderDaysAfterDue IS NOT NULL')
+            ->andWhere('g.state = :state')
+            ->andWhere('g.oauthId IS NOT NULL')
+            ->setParameter('enabled', true)
+            ->setParameter('state', Group::STATE_OPEN)
             ->getQuery()
             ->getResult();
+
+        return array_values(array_filter($groups, static fn (Group $group): bool => $group->sendsAutomaticReminders()));
     }
 
     public function findByUnits(array $unitIds, bool $openOnly): array

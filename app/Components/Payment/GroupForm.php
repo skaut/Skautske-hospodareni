@@ -32,6 +32,7 @@ use Component\Forms\DateControl;
 use DateTimeImmutable;
 use LogicException;
 use Nette\Application\UI\Form;
+use Nette\Forms\Container;
 use Nette\Forms\Controls\Checkbox;
 use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Controls\TextBase;
@@ -228,11 +229,15 @@ final class GroupForm extends BaseControl
         $emails = array_filter($emails);
         $oAuthId = OAuthId::fromStringOrNull($v->oAuthId);
         $remindersEnabled = $v->emails[EmailType::PAYMENT_REMINDER]?->remindersEnabled ?? false;
+        $reminderDaysAfterDue = $this->reminderDaysAfterDue($v->emails[EmailType::PAYMENT_REMINDER]?->reminderDaysAfterDue ?? null);
 
         if ($this->cloneSourceGroupId !== null && $oAuthId === null) {
             $emails = $this->buildEmailTemplatesFromDefaults($originalGroupData['emails'] ?? []);
             $remindersEnabled = (bool) (
                 $originalGroupData['emails'][EmailType::PAYMENT_REMINDER]['remindersEnabled'] ?? false
+            );
+            $reminderDaysAfterDue = $this->reminderDaysAfterDue(
+                $originalGroupData['emails'][EmailType::PAYMENT_REMINDER]['reminderDaysAfterDue'] ?? null,
             );
         }
 
@@ -247,6 +252,7 @@ final class GroupForm extends BaseControl
                 $remindersEnabled,
                 (bool) $v->automaticPairingEnabled,
                 $v->pairingDaysBack !== null && $v->pairingDaysBack !== '' ? (int) $v->pairingDaysBack : null,
+                $reminderDaysAfterDue,
             );
 
             $this->flashMessage('Skupina byla upravena');
@@ -262,12 +268,50 @@ final class GroupForm extends BaseControl
                 $remindersEnabled,
                 (bool) $v->automaticPairingEnabled,
                 $v->pairingDaysBack !== null && $v->pairingDaysBack !== '' ? (int) $v->pairingDaysBack : null,
+                $reminderDaysAfterDue,
             );
 
             $this->flashMessage('Skupina byla založena');
         }
 
         $this->getPresenter()->redirect(':Payments:Payment:default', ['id' => $this->groupId]);
+    }
+
+    private function addAutomaticReminderFields(BaseForm $form, Container $container, string $remindersId): void
+    {
+        $daysId = $remindersId.'_days';
+
+        $remindersEnabled = $container->addCheckbox('remindersEnabled', 'Automaticky odeslat upomínku po splatnosti')
+            ->setOption('id', $remindersId)
+            ->setHtmlAttribute('data-email-field', '1');
+
+        $days = $container->addText('reminderDaysAfterDue', 'Počet dní po splatnosti')
+            ->setHtmlType('number')
+            ->setHtmlAttribute('min', '1')
+            ->setHtmlAttribute('data-email-field', '1')
+            ->setNullable()
+            ->setOption('id', $daysId)
+            ->setOption(
+                'description',
+                'Upomínka odejde automaticky jen jednou, až od splatnosti uplyne zadaný počet dní. Platby, které jsou po splatnosti už déle, ji dostanou při nejbližším automatickém odeslání. Platbě, které už upomínka odešla ručně, automatická neodejde.',
+            );
+
+        $enabled = $container['enabled'];
+        if (! $enabled instanceof Checkbox) {
+            throw new LogicException('Assertion failed.');
+        }
+
+        $days->addConditionOn($enabled, $form::FILLED)
+            ->addConditionOn($remindersEnabled, $form::FILLED)
+            ->toggle($daysId)
+            ->setRequired('Zadejte, kolik dní po splatnosti se má upomínka odeslat.')
+            ->addRule($form::INTEGER, 'Počet dní musí být celé číslo.')
+            ->addRule($form::MIN, 'Počet dní musí být alespoň 1.', 1);
+    }
+
+    private function reminderDaysAfterDue(mixed $value): ?int
+    {
+        return $value === null || $value === '' ? null : (int) $value;
     }
 
     private function validateEmailTemplatesRequireBankAccount(BaseForm $form, ArrayHash $values): void
@@ -344,7 +388,9 @@ final class GroupForm extends BaseControl
                 continue;
             }
 
-            $emails[$emailType->toString()]['remindersEnabled'] = $group->isRemindersEnabled();
+            // Without the chosen days the automatic reminder does not go out, so the switch shows as off.
+            $emails[$emailType->toString()]['remindersEnabled'] = $group->isRemindersEnabled() && $group->getReminderDaysAfterDue() !== null;
+            $emails[$emailType->toString()]['reminderDaysAfterDue'] = $group->getReminderDaysAfterDue();
         }
 
         $defaults = [
@@ -404,9 +450,7 @@ final class GroupForm extends BaseControl
             }
 
             if ($type === EmailType::PAYMENT_REMINDER) {
-                $container->addCheckbox('remindersEnabled', 'Automaticky odeslat email po splatnosti')
-                    ->setOption('id', $remindersId)
-                    ->setHtmlAttribute('data-email-field', '1');
+                $this->addAutomaticReminderFields($form, $container, $remindersId);
             }
 
             $defaultSubjects = [

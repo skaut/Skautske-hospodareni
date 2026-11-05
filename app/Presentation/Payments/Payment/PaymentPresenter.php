@@ -17,6 +17,7 @@ use App\Components\Factories\Payment\IPaymentListFactory;
 use App\Components\Factories\Payment\IPaymentNoteDialogFactory;
 use App\Components\Factories\Payment\IRemoveGroupDialogFactory;
 use App\Components\Factories\Payment\ISplitPaymentDialogFactory;
+use App\Components\Factories\TaskQueue\ITaskQueueStatusFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountDetail;
 use App\Components\Payment\BankAccountDetail\BankAccountDetailViewFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingOutcome;
@@ -34,6 +35,7 @@ use App\Components\Payment\PaymentList;
 use App\Components\Payment\PaymentNoteDialog;
 use App\Components\Payment\RemoveGroupDialog;
 use App\Components\Payment\SplitPaymentDialog;
+use App\Components\TaskQueue\TaskQueueStatus;
 use App\Http\ExcelResponse;
 use App\Model\Bank\BankTransactionAmountMismatch;
 use App\Model\Bank\BankTransactionPairingNotAllowed;
@@ -53,6 +55,7 @@ use App\Model\Payment\Payment\State;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
 use App\Model\Payment\ReadModel\Queries\PaymentListQuery;
+use App\Model\TaskQueue\TaskScope;
 use App\Model\Unit\UnitService;
 use App\Model\User\Manager\PaymentGroupVisitManager;
 use App\Presentation\Payments\PaymentsBasePresenter;
@@ -117,6 +120,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
         private BankAccountService $bankAccounts,
         private BankAccountDetailViewFactory $bankAccountDetailViewFactory,
         private BankAccountManualPairingService $bankAccountManualPairingService,
+        private ITaskQueueStatusFactory $taskQueueStatusFactory,
     ) {
         parent::__construct();
     }
@@ -160,6 +164,8 @@ final class PaymentPresenter extends PaymentsBasePresenter
             $this->publishBankAccountTemplateParameters($group);
         }
 
+        $cronJobs = $this->queryBus->handle(new CronJobsQuery(new DateTimeImmutable()));
+
         $this->template->setParameters([
             'group' => $group,
             'nextVS' => $nextVS,
@@ -167,8 +173,10 @@ final class PaymentPresenter extends PaymentsBasePresenter
             'summarize' => $this->model->getGroupSummaries([$id])[$id],
             'now' => new DateTimeImmutable(),
             'notSentPaymentsCount' => $this->countNotSentPayments($this->payments),
-            'paymentPairingJob' => $this->isPairedByCron($group)
-                ? $this->queryBus->handle(new CronJobsQuery(new DateTimeImmutable()))[CronJobRegistry::PAYMENT_PAIRING] ?? null
+            'paymentPairingJob' => $this->isPairedByCron($group) ? $cronJobs[CronJobRegistry::PAYMENT_PAIRING] ?? null : null,
+            // Mirrors Group::sendsAutomaticReminders(); a missing sender is shown instead of hiding the setting.
+            'automaticRemindersJob' => $group->hasAutomaticRemindersEnabled() && $group->getState() === PaymentGroupEntity::STATE_OPEN
+                ? $cronJobs[CronJobRegistry::PAYMENT_REMINDERS] ?? null
                 : null,
         ]);
     }
@@ -344,6 +352,16 @@ final class PaymentPresenter extends PaymentsBasePresenter
         $this->redirect('this');
     }
 
+    /** Loads the payments again after a background batch finished; only on request, the page never reloads them itself. */
+    public function handleRefreshPayments(): void
+    {
+        if (! $this->isAjax()) {
+            $this->redirect('this');
+        }
+
+        $this->redrawPaymentAndBankAccountGrids();
+    }
+
     public function handleOpenRemoveDialog(): void
     {
         $dialog = $this['removeGroupDialog'];
@@ -416,6 +434,15 @@ final class PaymentPresenter extends PaymentsBasePresenter
         };
 
         return $dialog;
+    }
+
+    protected function createComponentTaskQueueStatus(): TaskQueueStatus
+    {
+        // The scope is the group checked in startup(), so the panel never shows batches of another group.
+        $status = $this->taskQueueStatusFactory->create(TaskScope::paymentGroup($this->id), $this->isEditable);
+        $status->setFinishedAction('Načíst aktuální seznam plateb', $this->link('refreshPayments!'));
+
+        return $status;
     }
 
     protected function createComponentPairButton(): PairButton
@@ -520,6 +547,8 @@ final class PaymentPresenter extends PaymentsBasePresenter
         }
 
         $this->redrawControl('flash');
+        // Changes of payments may queue e-mails (confirmations, reminders), so their progress shows right away.
+        $this['taskQueueStatus']->follow();
         $this->publishBankAccountTransactionsUrl();
     }
 

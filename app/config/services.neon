@@ -121,10 +121,20 @@ services:
     # Grids
     - App\Components\Grids\GridFactory
 
+    # Task queue processed by the cron (.docs/fronta-uloh.md)
+    - App\Model\TaskQueue\TaskQueue
+    - App\Model\TaskQueue\ReadModel\TaskJobStatusReader
+    - App\Model\TaskQueue\TaskQueueProcessor(
+          handlers: typed(App\Model\TaskQueue\TaskHandler)
+          budgetSeconds: 20
+          leaseSeconds: 600
+      )
+
     # Payment
-    group:
-        factory: App\Model\Payment\GroupService
     - App\Model\Payment\PaymentService
+    - App\Model\Payment\Mailing\PaymentEmailQueue
+    - App\Model\Payment\Mailing\PaymentEmailTaskHandler
+    - App\Model\Payment\Mailing\AutomaticPaymentReminders
     - App\Model\Payment\BankAccountService(fioCache: @fio.cache)
     - App\Components\Payment\PairButtonBankAccountSupport
     - App\Components\Payment\BankAccountDetail\BankAccountDetailViewFactory

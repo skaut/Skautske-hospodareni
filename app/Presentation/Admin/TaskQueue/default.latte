@@ -1,0 +1,163 @@
+{block title}Admin Fronta úloh{/block}
+
+{block content}
+<div data-test="admin-task-queue-page">
+    <div class="card page-heading">
+        <div class="card-body">
+            <h1 class="h3 mb-2">Fronta úloh</h1>
+            {include pageLead, default: 'Úlohy, které cron zpracovává na pozadí, například hromadně odesílané e-maily. Přehled ukazuje stav dávek všech skupin a statistiku posledních běhů.', class: 'mb-3'}
+
+            <div n:if="$queueJob?->paused" class="alert alert-warning mb-0" data-test="admin-task-queue-paused">
+                Zpracování fronty je pozastavené v <a n:href="Cron:default">Cronu</a>, úlohy se teď nezpracovávají.
+            </div>
+            <div n:if="$queueJob !== null && $queueJob->missedRunAt !== null" class="alert alert-warning mb-0" data-test="admin-task-queue-missed">
+                Plánované spuštění {$queueJob->missedRunAt|date:'j. n. Y H:i'} neproběhlo. Zkontrolujte, že externí server volá <code>/cron.php</code>.
+            </div>
+        </div>
+    </div>
+
+    <section class="card mb-4" data-test="admin-task-queue-types">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Typy úloh</h2>
+            <div class="table-responsive">
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Typ</th>
+                            <th scope="col" class="text-end">Čeká</th>
+                            <th scope="col" class="text-end">Zpracovává se</th>
+                            <th scope="col" class="text-end">Hotovo za 24 h</th>
+                            <th scope="col" class="text-end">Vynecháno za 24 h</th>
+                            <th scope="col" class="text-end">Neproběhlo za 24 h</th>
+                            <th scope="col" class="text-end">Nejisté za 24 h</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr n:foreach="$overview->types as $type" data-test="admin-task-queue-type-{$type->type}">
+                            <th scope="row">{$type->label}</th>
+                            <td class="text-end">{$type->pending}</td>
+                            <td class="text-end">{$type->running}</td>
+                            <td class="text-end">{$type->doneLastDay}</td>
+                            <td class="text-end">{$type->skippedLastDay}</td>
+                            <td n:class="text-end, $type->failedLastDay > 0 ? text-danger">{$type->failedLastDay}</td>
+                            <td n:class="text-end, $type->uncertainLastDay > 0 ? text-warning-emphasis">{$type->uncertainLastDay}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="card mb-4" data-test="admin-task-queue-jobs">
+        <div class="card-body">
+            <h2 class="h5 mb-2">Dávky</h2>
+            <p class="small text-body-secondary">Dávky, které se právě zpracovávají, a dokončené dávky s problémem, které ve skupině ještě nikdo neskryl.</p>
+
+            {if $overview->jobs === []}
+                <p class="text-body-secondary mb-0">Žádná dávka se nezpracovává a žádná neskončila s problémem.</p>
+            {else}
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">Kde</th>
+                                <th scope="col">Dávka</th>
+                                <th scope="col">Zadáno</th>
+                                <th scope="col">Průběh</th>
+                                <th scope="col">Problémy</th>
+                                <th scope="col">Stav</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr n:foreach="$overview->jobs as $job" data-test="admin-task-queue-job-{$job->id}">
+                                <td>{$overview->getScopeLabel($job)}</td>
+                                <td>{$job->label}</td>
+                                <td class="text-nowrap">
+                                    {$job->createdAt|date:'j. n. Y H:i'}
+                                    <div class="small text-body-secondary">{$job->createdByName ?? 'automaticky'}</div>
+                                </td>
+                                <td class="text-nowrap">{$job->done} z {$job->total}</td>
+                                <td>
+                                    {if $job->failed > 0}<span class="text-danger">neproběhlo {$job->failed}</span>{/if}
+                                    {if $job->uncertain > 0}<span class="text-warning-emphasis">nejisté {$job->uncertain}</span>{/if}
+                                    {if $job->skipped > 0}<span class="text-body-secondary">vynecháno {$job->skipped}</span>{/if}
+                                </td>
+                                <td>
+                                    {if $job->stalled}
+                                        <span class="badge text-bg-warning">Stojí</span>
+                                    {elseif !$job->isFinished()}
+                                        <span class="badge text-bg-info">Zpracovává se</span>
+                                    {else}
+                                        <span class="badge text-bg-danger">Skončila s problémem</span>
+                                    {/if}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            {/if}
+        </div>
+    </section>
+
+    <section class="card mb-4" data-test="admin-task-queue-runs">
+        <div class="card-body">
+            <h2 class="h5 mb-2">Poslední běhy</h2>
+            {var $day = $overview->lastDay}
+            <p class="small text-body-secondary" data-test="admin-task-queue-last-day">
+                Ukládají se jen běhy, které něco zpracovaly.
+                Za posledních 24 hodin: běhů {$day->runs}, úloh {$day->taken}
+                (hotovo {$day->done}, neproběhlo {$day->failed}, nejisté {$day->uncertain})
+                {if $day->averageSeconds !== null}, průměrná doba {$day->averageSeconds} s, nejdelší {$day->longestSeconds} s{/if}
+                {if $day->unfinished > 0}, nedokončených běhů {$day->unfinished}{/if}.
+            </p>
+
+            {if $overview->recentRuns === []}
+                <p class="text-body-secondary mb-0">Fronta zatím nic nezpracovala.</p>
+            {else}
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">Začátek</th>
+                                <th scope="col" class="text-end">Doba</th>
+                                <th scope="col" class="text-end">Převzato</th>
+                                <th scope="col" class="text-end">Hotovo</th>
+                                <th scope="col" class="text-end">Vynecháno</th>
+                                <th scope="col" class="text-end">Neproběhlo</th>
+                                <th scope="col" class="text-end">Nejisté</th>
+                                <th scope="col" class="text-end">Odloženo</th>
+                                <th scope="col" class="text-end">Obnoveno</th>
+                                <th scope="col" class="text-end">Zbývá</th>
+                                <th scope="col">Konec</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr n:foreach="$overview->recentRuns as $run" data-test="admin-task-queue-run-{$run->id}">
+                                <td class="text-nowrap">{$run->startedAt|date:'j. n. Y H:i:s'}</td>
+                                <td class="text-end text-nowrap">{if $run->getDurationSeconds() !== null}{$run->getDurationSeconds()} s{else}–{/if}</td>
+                                <td class="text-end">{$run->taken}</td>
+                                <td class="text-end">{$run->done}</td>
+                                <td class="text-end">{$run->skipped}</td>
+                                <td n:class="text-end, $run->failed > 0 ? text-danger">{$run->failed}</td>
+                                <td n:class="text-end, $run->uncertain > 0 ? text-warning-emphasis">{$run->uncertain}</td>
+                                <td class="text-end">{$run->postponed}</td>
+                                <td class="text-end">{$run->recovered}</td>
+                                <td class="text-end">{$run->pendingAfter ?? '–'}</td>
+                                <td>
+                                    {if $run->stopReason !== null}
+                                        {$run->stopReason->getLabel()}
+                                    {elseif $run->isCutOff($now)}
+                                        <span class="badge text-bg-warning">přerušeno</span>
+                                    {else}
+                                        <span class="badge text-bg-info">běží</span>
+                                    {/if}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            {/if}
+        </div>
+    </section>
+</div>
+{/block}

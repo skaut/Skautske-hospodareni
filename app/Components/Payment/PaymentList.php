@@ -9,18 +9,12 @@ use App\Components\DataGrid;
 use App\Components\Grids\DtoListDataSource;
 use App\Components\Grids\GridFactory;
 use App\Helpers\AccountancyHelpers;
-use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Payment\Payment;
-use App\Model\Google\Exception\OAuthNotSet;
-use App\Model\Google\InvalidOAuth;
-use App\Model\Payment\Commands\Mailing\SendPaymentReminder;
-use App\Model\Payment\EmailTemplateNotSet;
 use App\Model\Payment\EmailType;
-use App\Model\Payment\InvalidBankAccount;
+use App\Model\Payment\Mailing\PaymentEmailQueue;
 use App\Model\Payment\Payment\State;
 use App\Model\Payment\PaymentClosed;
-use App\Model\Payment\PaymentHasNoEmails;
 use App\Model\Payment\PaymentNotFound;
 use App\Model\Payment\PaymentReminderNotAllowed;
 use App\Model\Payment\PaymentService;
@@ -63,7 +57,7 @@ final class PaymentList extends BaseControl
         State::CANCELED,
     ];
 
-    public function __construct(private PaymentService $model, private CommandBus $commandBus, private int $groupId, private bool $isEditable, private QueryBus $queryBus, private GridFactory $gridFactory)
+    public function __construct(private PaymentService $model, private PaymentEmailQueue $emailQueue, private int $groupId, private bool $isEditable, private QueryBus $queryBus, private GridFactory $gridFactory)
     {
     }
 
@@ -99,14 +93,14 @@ final class PaymentList extends BaseControl
         $grid->setColumnsHideable();
 
         $grid->addGroupButtonAction('Odeslat email')
-            ->setAttribute('data-busy-text', 'Odesílám e-maily…')
+            ->setAttribute('data-busy-text', 'Zařazuji e-maily k odeslání…')
             ->onClick[] = [$this, 'requestPaymentInfoEmail'];
         if ($this->isEditable) {
             $grid->addGroupButtonAction('Úprava e-mailů', 'btn btn-sm btn-light')->onClick[] = [$this, 'openBulkEmailRecipientsDialog'];
         }
         if ($email !== null && $email->isEnabled()) {
             $grid->addGroupButtonAction('Odeslat upomínku')
-                ->setAttribute('data-busy-text', 'Odesílám upomínky…')
+                ->setAttribute('data-busy-text', 'Zařazuji upomínky k odeslání…')
                 ->onClick[] = [$this, 'sendReminder'];
         }
 
@@ -247,42 +241,18 @@ final class PaymentList extends BaseControl
         $this->onBulkEmailRecipientsEditRequested($this->editablePaymentIds($ids));
     }
 
-    /** @param array<int,int> $ids */
+    /**
+     * One reminder goes out right away, more of them wait in the queue (PaymentEmailQueue).
+     *
+     * @param array<int,int> $ids
+     */
     public function sendReminder(array $ids): void
     {
-        $count = 0;
-        try {
-            foreach ($this->editablePaymentIds($ids) as $id) {
-                try {
-                    $payment = $this->model->findPayment($id);
-                    if ($payment === null || ! $payment->canSendReminder()) {
-                        continue;
-                    }
+        $type = EmailType::get(EmailType::PAYMENT_REMINDER);
+        $dispatch = $this->emailQueue->send($this->groupId, $type, $this->editablePaymentIds($ids));
 
-                    $this->commandBus->handle(new SendPaymentReminder($id));
-                    ++$count;
-                } catch (OAuthNotSet) {
-                    $this->flashMessage(EmailButton::NO_MAILER_MESSAGE, 'warning');
-                } catch (InvalidBankAccount) {
-                    $this->flashMessage(EmailButton::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-                } catch (InvalidOAuth $e) {
-                    $this->flashMessage($e->getExplainedMessage(), 'danger');
-                } catch (PaymentClosed $e) {
-                    $this->flashMessage($e->getMessage(), 'warning');
-                } catch (PaymentHasNoEmails $e) {
-                    $this->flashMessage($e->getMessage(), 'warning');
-                } catch (PaymentReminderNotAllowed $e) {
-                    $this->flashMessage($e->getMessage(), 'warning');
-                }
-            }
-
-            if ($count === 1) {
-                $this->getPresenter()->flashMessage($count.' upomínkový e-mailů odeslán', 'info');
-            } else {
-                $this->getPresenter()->flashMessage($count.' upomínkových e-mailů odesláno', 'info');
-            }
-        } catch (EmailTemplateNotSet) {
-            $this->flashMessage('Platební skupina nemá povolené upomínky', 'warning');
+        foreach (PaymentEmailMessages::forDispatch($dispatch, $type) as [$message, $flashType]) {
+            $this->getPresenter()->flashMessage($message, $flashType);
         }
 
         $this->finishMutation();
@@ -297,8 +267,6 @@ final class PaymentList extends BaseControl
                 $this->flashMessage('Platba byla zaplacena.');
             } catch (PaymentClosed $e) {
                 $this->flashMessage($e->getMessage(), 'warning');
-            } catch (InvalidOAuth $exc) {
-                $this->flashMessage($exc->getExplainedMessage(), 'danger');
             }
         }
 
