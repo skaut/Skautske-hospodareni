@@ -63,7 +63,7 @@ final class SkautisLoginRefresher
 
         try {
             // Directly through the web service: Skautis\User::updateLogoutTime() writes to the already closed session.
-            $this->userWebService->call('LoginUpdateRefresh', ['ID' => $loginId]);
+            $this->userWebService->call('LoginUpdateRefresh', [['ID' => $loginId]]);
         } catch (AuthenticationException) {
             $this->markDead($loginId);
         } catch (WsdlException $exception) {

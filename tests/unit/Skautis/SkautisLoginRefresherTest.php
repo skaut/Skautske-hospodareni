@@ -56,7 +56,7 @@ final class SkautisLoginRefresherTest extends Unit
         $steps = [];
         $this->webService->shouldReceive('call')
             ->once()
-            ->with('LoginUpdateRefresh', ['ID' => self::LOGIN_ID])
+            ->with('LoginUpdateRefresh', [['ID' => self::LOGIN_ID]]) // WebService::call() reads the SOAP input from $arguments[0]
             ->andReturnUsing(static function () use (&$steps): object {
                 $steps[] = 'skautis call';
 
