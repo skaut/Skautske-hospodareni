@@ -10,7 +10,7 @@ Skautske hospodareni is a web application for accounting and financial administr
 
 - The project targets PHP 8.3 exclusively. Do not maintain PHP 8.2 compatibility and do not use features that require PHP 8.4 or newer.
 - The PHP image is based on `thecodingmachine/php:8.3-v4-fpm-node22`.
-- The database is MySQL 8.0 with `utf8mb4` and `utf8mb4_czech_ci` collation.
+- The database is MySQL 8.4 (production server lebeda) with `utf8mb4` and `utf8mb4_czech_ci` collation.
 - The web stack consists of Nginx and Traefik.
 - The application time zone is `Europe/Prague`.
 
