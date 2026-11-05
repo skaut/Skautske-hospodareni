@@ -100,6 +100,12 @@ class Unit
         return in_array($this->type, self::OFFICIAL_UNIT_TYPES, true);
     }
 
+    /** Official units above a středisko hold further official units, a středisko holds only troops. */
+    public function hasOfficialChildren(): bool
+    {
+        return $this->isOfficial() && $this->type !== 'stredisko';
+    }
+
     public function getShortRegistrationNumber(): string
     {
         $splitNumber = explode('.', $this->registrationNumber);

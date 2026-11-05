@@ -15,7 +15,7 @@ use function date;
 /**
  * Usage of the application itself, kept apart from Admin:Statistics on purpose:
  * that page answers "what is in the system", this one answers "who uses it".
- * It also stays free of skautIS calls, so it loads out of the database alone.
+ * The statistics come out of the database alone, skautIS is asked only for the cached unit tree.
  */
 final class UsagePresenter extends \App\Presentation\Admin\AdminBasePresenter
 {
@@ -51,7 +51,7 @@ final class UsagePresenter extends \App\Presentation\Admin\AdminBasePresenter
     public function createComponentSelectYearForm(): Form
     {
         $form = new BaseForm();
-        $form->addSelect('unitId', 'Jednotka', $this->unitTreeSelectOptions->getOptions())
+        $form->addSelect('unitId', 'Jednotka', $this->unitTreeSelectOptions->getOptions(selectedUnitId: $this->unitId->toInt()))
             ->setDefaultValue($this->unitId->toInt());
         $form->addSelect('year', 'Rok', $this->getYearRange())
             ->setDefaultValue($this->year);
