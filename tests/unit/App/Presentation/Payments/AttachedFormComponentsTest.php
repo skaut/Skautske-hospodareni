@@ -199,6 +199,7 @@ final class AttachedFormComponentsTest extends Unit
         (new ReflectionProperty(BasePresenter::class, 'queryBus'))->setValue($presenter, $queryBus);
         (new ReflectionProperty(BaseSectionPresenter::class, 'unitId'))->setValue($presenter, new UnitId(self::UNIT_ID));
         (new ReflectionProperty(BaseSectionPresenter::class, 'isEditable'))->setValue($presenter, true);
+        (new ReflectionProperty(PaymentsBasePresenter::class, 'editableUnits'))->setValue($presenter, [self::UNIT_ID]);
         (new ReflectionProperty(Control::class, 'template'))->setValue($presenter, new DefaultTemplate(new Engine()));
     }
 

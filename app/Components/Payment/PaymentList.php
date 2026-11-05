@@ -27,9 +27,14 @@ use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use App\Model\Payment\ReadModel\Queries\PaymentListQuery;
 use App\Utils\CzechStringComparator;
+use Nette\Application\BadRequestException;
+use Nette\Http\IResponse;
 
 use function array_flip;
+use function array_intersect;
+use function array_map;
 use function array_reverse;
+use function array_values;
 use function usort;
 
 final class PaymentList extends BaseControl
@@ -173,7 +178,7 @@ final class PaymentList extends BaseControl
 
     public function handleSend(int $pid): void
     {
-        $payment = $this->model->findPayment($pid);
+        $payment = $this->editablePaymentIds([$pid]) === [] ? null : $this->model->findPayment($pid);
 
         if ($payment === null) {
             $this->getPresenter()->flashMessage('Zadaná platba neexistuje', 'danger');
@@ -194,7 +199,7 @@ final class PaymentList extends BaseControl
 
     public function handleSendReminder(int $pid): void
     {
-        $payment = $this->model->findPayment($pid);
+        $payment = $this->editablePaymentIds([$pid]) === [] ? null : $this->model->findPayment($pid);
 
         if ($payment === null) {
             $this->getPresenter()->flashMessage('Zadaná platba neexistuje', 'danger');
@@ -233,13 +238,13 @@ final class PaymentList extends BaseControl
     /** @param array<int,int> $ids */
     public function requestPaymentInfoEmail(array $ids): void
     {
-        $this->onSendPaymentInfoRequested($ids);
+        $this->onSendPaymentInfoRequested($this->editablePaymentIds($ids));
     }
 
     /** @param array<int,int> $ids */
     public function openBulkEmailRecipientsDialog(array $ids): void
     {
-        $this->onBulkEmailRecipientsEditRequested($ids);
+        $this->onBulkEmailRecipientsEditRequested($this->editablePaymentIds($ids));
     }
 
     /** @param array<int,int> $ids */
@@ -247,7 +252,7 @@ final class PaymentList extends BaseControl
     {
         $count = 0;
         try {
-            foreach ($ids as $id) {
+            foreach ($this->editablePaymentIds($ids) as $id) {
                 try {
                     $payment = $this->model->findPayment($id);
                     if ($payment === null || ! $payment->canSendReminder()) {
@@ -286,14 +291,7 @@ final class PaymentList extends BaseControl
     /** @param array<int,int> $ids */
     public function setPay(array $ids): void
     {
-        if (! $this->isEditable) {
-            $this->flashMessage('Nejste oprávněni k uzavření platby!', 'danger');
-            $this->finishMutation();
-
-            return;
-        }
-
-        foreach ($ids as $id) {
+        foreach ($this->editablePaymentIds($ids) as $id) {
             try {
                 $this->model->completePayment($id);
                 $this->flashMessage('Platba byla zaplacena.');
@@ -310,7 +308,7 @@ final class PaymentList extends BaseControl
     /** @param array<int,int> $ids */
     public function setCancel(array $ids): void
     {
-        foreach ($ids as $id) {
+        foreach ($this->editablePaymentIds($ids) as $id) {
             try {
                 $this->model->cancelPayment($id);
                 $this->flashMessage('Platba byla uzavřena');
@@ -322,6 +320,28 @@ final class PaymentList extends BaseControl
         }
 
         $this->finishMutation();
+    }
+
+    /**
+     * Payment IDs come from the request (row links and grid group actions), so only payments of this
+     * group are kept, and nothing happens without the right to edit the group.
+     *
+     * @param array<int|string, int|string> $ids
+     *
+     * @return list<int>
+     */
+    private function editablePaymentIds(array $ids): array
+    {
+        if (! $this->isEditable) {
+            throw new BadRequestException('Nemáte oprávnění upravovat platby této skupiny.', IResponse::S403_Forbidden);
+        }
+
+        $groupPaymentIds = array_map(
+            static fn (Payment $payment): int => $payment->getId(),
+            $this->payments ?? $this->queryBus->handle(new PaymentListQuery($this->groupId)),
+        );
+
+        return array_values(array_intersect(array_map('intval', $ids), $groupPaymentIds));
     }
 
     private function finishMutation(): void

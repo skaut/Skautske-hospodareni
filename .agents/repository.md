@@ -62,6 +62,11 @@ CI commands always use the base and CI Compose files, without the rootless overr
 - For dates without time, use the established `Cake\Chronos\ChronosDate`; for points in time, use `DateTimeImmutable`.
 - Use existing domain value objects and custom Doctrine types instead of bypassing the domain model with primitive values.
 
+### Access Control
+
+- An access denial must end the request: call `denyAccess()` (403) in presenters or throw `BadRequestException` with 403 in components. Never only switch the view; Nette still runs signals and form submissions after the action.
+- Check rights to the entity the request works with (group, payment, bank account, cashbook), not to the unit from the URL. Filter IDs coming from the request, including datagrid group actions, to that entity.
+
 ### Service Emails
 
 - Do not write service email texts directly in PHP services as concatenated strings or `implode()` blocks. Store them as plaintext Latte templates in `app/Model/emails`.

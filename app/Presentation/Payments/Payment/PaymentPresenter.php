@@ -63,7 +63,6 @@ use Nette\Application\Attributes\Persistent;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use RuntimeException;
 use Skautis\Wsdl\PermissionException;
 
 use function array_filter;
@@ -96,6 +95,8 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     private ?PaymentBankAccount $bankAccount = null;
 
+    private PaymentGroup $group;
+
     public function __construct(
         private PaymentService $model,
         protected UnitService $unitService,
@@ -125,23 +126,23 @@ final class PaymentPresenter extends PaymentsBasePresenter
         parent::startup();
 
         $this->readUnits = $this->unitService->getReadUnits($this->user);
+
+        // Every action, signal and component of this presenter works with the group from the URL,
+        // so its edit rights are checked once here, before any signal can run.
+        $group = $this->model->getGroup($this->id);
+        if ($group === null || ! $this->canEditGroup($group)) {
+            $this->denyAccess('Nemáte oprávnění pracovat s touto platební skupinou.');
+        }
+
+        $this->group = $group;
+        $this->isEditable = true;
     }
 
     public function actionDefault(int $id): void
     {
-        $this->assertCanEditGroup();
-        $group = $this->model->getGroup($id);
+        $group = $this->group;
 
-        if ($group === null || ! $this->hasAccessToGroup($group)) {
-            $this->setView('accessDenied');
-            $this->template->setParameters(['message' => 'Nemáte oprávnění zobrazit detail plateb.']);
-
-            return;
-        }
-
-        if ($this->canEditGroup($group)) {
-            $this['pairButton']->setGroups([$id]);
-        }
+        $this['pairButton']->setGroups([$id]);
 
         $this->paymentGroupVisitManager->markVisited((int) $this->getUser()->getId(), $id);
 
@@ -174,13 +175,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     public function actionPairTransactionToPayment(int $id, int $accountId, string $transactionKey, ?int $paymentId = null): void
     {
-        $group = $this->model->getGroup($id);
-        if ($group === null || ! $this->canEditGroup($group)) {
-            $this->setView('accessDenied');
-            $this->template->setParameters(['message' => 'Nemáte oprávnění pracovat s touto skupinou.']);
-
-            return;
-        }
+        $group = $this->group;
 
         if ($group->getBankAccountId() !== $accountId) {
             $this->flashMessage('Bankovní transakce nepatří k účtu této platební skupiny.', 'danger');
@@ -214,18 +209,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     public function handleLoadBankAccountTransactions(?int $paymentId = null): void
     {
-        $group = $this->model->getGroup($this->id);
-        if ($group === null || ! $this->canEditGroup($group)) {
-            $this->flashMessage('Nemáte oprávnění pracovat s touto skupinou.', 'danger');
-
-            if ($this->isAjax()) {
-                $this->redrawControl('flash');
-            } else {
-                $this->redirect('default', ['id' => $this->id]);
-            }
-
-            return;
-        }
+        $group = $this->group;
 
         if ($group->getBankAccountId() === null) {
             $this->flashMessage('Platební skupina nemá připojený bankovní účet.', 'warning');
@@ -254,18 +238,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     public function handleHideBankAccountTransactions(): void
     {
-        $group = $this->model->getGroup($this->id);
-        if ($group === null || ! $this->canEditGroup($group)) {
-            $this->flashMessage('Nemáte oprávnění pracovat s touto skupinou.', 'danger');
-
-            if ($this->isAjax()) {
-                $this->redrawControl('flash');
-            } else {
-                $this->redirect('default', ['id' => $this->id]);
-            }
-
-            return;
-        }
+        $group = $this->group;
 
         $this->bankAccountTransactionsLoaded = false;
         $this->bankAccountPaymentId = null;
@@ -285,9 +258,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
     /** @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY */
     public function actionMassAdd(int $id, ?int $unitId = null, bool $directMemberOnly = true): void
     {
-        $this->assertCanEditGroup();
-
-        $group = $this->model->getGroup($id);
+        $group = $this->group;
 
         $form = $this['massAddForm'];
         $list = $this->queryBus->handle(new MembersWithoutPaymentInGroupQuery($this->unitId, $id, $this->directMemberOnly));
@@ -308,22 +279,8 @@ final class PaymentPresenter extends PaymentsBasePresenter
         ]);
     }
 
-    private function assertCanEditGroup(): void
-    {
-        $group = $this->model->getGroup($this->id);
-
-        if ($group !== null && $this->canEditGroup($group)) {
-            return;
-        }
-
-        $this->setView('accessDenied');
-        $this->template->setParameters(['message' => 'Nemáte oprávnění pracovat s touto skupinou.']);
-    }
-
     public function handleGenerateVs(): void
     {
-        $this->assertCanEditGroup();
-
         try {
             $nextVS = $this->model->getNextVS($this->id);
             if ($nextVS === null) {
@@ -340,12 +297,10 @@ final class PaymentPresenter extends PaymentsBasePresenter
         }
     }
 
-    public function handleExport(int $id): void
+    public function handleExport(): void
     {
-        $this->assertCanEditGroup();
-
-        $group = $this->model->getGroup($id) ?? throw new RuntimeException('Platební skupina nebyla nalezena.');
-        $payments = $this->getPaymentsForGroup($id);
+        $group = $this->group;
+        $payments = $this->getPaymentsForGroup($this->id);
         $groupName = substr(Strings::webalize($group->getName(), null, false), 0, Worksheet::SHEET_TITLE_MAXIMUM_LENGTH);
 
         try {
@@ -365,8 +320,6 @@ final class PaymentPresenter extends PaymentsBasePresenter
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function handleCloseGroup(): void
     {
-        $this->assertCanEditGroup();
-
         $userData = $this->userService->getUserDetail();
         $note = 'Uživatel '.$userData->Person.' uzavřel skupinu plateb dne '.date('j.n.Y H:i');
 
@@ -380,8 +333,6 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     public function handleOpenGroup(): void
     {
-        $this->assertCanEditGroup();
-
         $userData = $this->userService->getUserDetail();
         $note = 'Uživatel '.$userData->Person.' otevřel skupinu plateb dne '.date('j.n.Y H:i');
 
@@ -401,8 +352,6 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     protected function createComponentPaymentDialog(): PaymentDialog
     {
-        $this->assertCanEditGroup();
-
         $dialog = $this->paymentDialogFactory->create($this->id);
 
         $dialog->onSuccess[] = function (): void {
@@ -414,7 +363,6 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     protected function createComponentImportDialog(): ImportDialog
     {
-        $this->assertCanEditGroup();
         $dialog = $this->importDialogFactory->create($this->id);
         $dialog->onSuccess[] = function (): void {
             $this->redrawPaymentGrid();
@@ -425,8 +373,6 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     protected function createComponentPaymentNoteDialog(): PaymentNoteDialog
     {
-        $this->assertCanEditGroup();
-
         $dialog = $this->paymentNoteDialogFactory->create($this->id);
 
         $dialog->onSuccess[] = function (): void {
@@ -464,8 +410,6 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     protected function createComponentSplitPaymentDialog(): SplitPaymentDialog
     {
-        $this->assertCanEditGroup();
-
         $dialog = $this->splitPaymentDialogFactory->create($this->id);
         $dialog->onSuccess[] = function (): void {
             $this->redrawPaymentGrid();
@@ -487,9 +431,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     protected function createComponentEmailButton(): EmailButton
     {
-        $group = $this->model->getGroup($this->id) ?? throw new RuntimeException('Platební skupina nebyla nalezena.');
-
-        $emailButton = $this->emailButtonFactory->create($this->isEditable, $this->payments, $group);
+        $emailButton = $this->emailButtonFactory->create($this->isEditable, $this->payments, $this->group);
         $emailButton->onSendPaymentInfoRequested[] = function (array $paymentIds): void {
             $this['paymentInfoEmailDialog']->send($paymentIds);
         };
@@ -530,9 +472,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     protected function createComponentRemoveGroupDialog(): RemoveGroupDialog
     {
-        $group = $this->model->getGroup($this->id);
-
-        return $this->removeGroupDialogFactory->create($this->id, $group !== null && $this->canEditGroup($group));
+        return $this->removeGroupDialogFactory->create($this->id, $this->isEditable);
     }
 
     protected function createComponentProgress(): GroupProgress

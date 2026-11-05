@@ -8,6 +8,8 @@ use App\Model\Common\UnitId;
 use App\Model\Skautis\SkautisMaintenanceChecker;
 use App\Model\User\UserService;
 use LogicException;
+use Nette\Application\BadRequestException;
+use Nette\Http\IResponse;
 use Nette\Security\SimpleIdentity;
 use stdClass;
 
@@ -100,8 +102,12 @@ abstract class BaseSectionPresenter extends BasePresenter
         return array_keys($editableUnits);
     }
 
-    public function renderAccessDenied(): void
+    /**
+     * Ends the request with 403. A denial must stop the request: Nette processes signals and form
+     * submissions after the action, so only changing the view would still let them run.
+     */
+    protected function denyAccess(string $message = 'Nemáte oprávnění k této stránce.'): never
     {
-        $this->template->setFile(__DIR__.'/accessDenied.latte');
+        throw new BadRequestException($message, IResponse::S403_Forbidden);
     }
 }

@@ -53,7 +53,7 @@ final class RegistrationAddMembersPresenter extends BasePresenter
 
         $group = $this->model->getGroup($id);
 
-        if ($group === null) {
+        if ($group === null || ! $this->canEditGroup($group)) {
             $this->flashMessage('Neplatný požadavek na přidání registračních plateb', 'danger');
             $this->redirect(':Payments:GroupList:');
         }

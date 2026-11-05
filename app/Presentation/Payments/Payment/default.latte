@@ -148,7 +148,7 @@
                     </span>
                     {include '../../../Components/templates/FileActionButton.latte',
                         label => 'Stáhnout Excel',
-                        downloadUrl => $presenter->link('export!', [$group->id]),
+                        downloadUrl => $presenter->link('export!'),
                         variant => 'light',
                         dataTest => 'payment-group-export',
                     }
