@@ -72,47 +72,23 @@ final class UsageTrackingCest extends BaseAcceptanceCest
         $I->dontSeeInDatabase('usage_session_daily', ['page' => 'Default:privacy']);
     }
 
-    public function switchingTheThemeIsStoredWithTheLogin(AcceptanceTester $I): void
+    public function thePageReportsTheThemeOfTheLogin(AcceptanceTester $I): void
     {
-        $I->wantTo('have the theme a user switched to stored for the share of dark mode');
+        $I->wantTo('have the theme of a login stored for the share of dark mode');
 
         $I->login(AcceptanceTester::UNIT_LEADER_ROLE);
         $this->openPageAndWaitForElementWithSkautisRetry($I, self::PAGE_URL, '[data-test="dashboard"]');
 
-        if ($I->executeJS('return document.documentElement.dataset.bsTheme') === 'dark') {
-            $I->clickStable('[data-test="dark-mode-toggle"]');
-            sleep(2);
+        $reported = 0;
+        for ($second = 0; $second < self::THEME_REPORT_WAIT_SECONDS && $reported === 0; ++$second) {
+            $reported = (int) $I->grabNumRecords('user_login', ['dark_mode !=' => null]);
+
+            if ($reported === 0) {
+                sleep(1);
+            }
         }
 
-        $before = $this->darkLogins($I);
-
-        $I->clickStable('[data-test="dark-mode-toggle"]');
-        $afterDark = $this->waitForDarkLogins($I, static fn (int $count): bool => $count > $before);
-
-        // Back to the light theme, so the scenarios after this one see the pages as before.
-        $I->clickStable('[data-test="dark-mode-toggle"]');
-        $afterLight = $this->waitForDarkLogins($I, static fn (int $count): bool => $count === $before);
-
-        Assert::assertGreaterThan($before, $afterDark, 'Přepnutí na tmavý režim se k přihlášení neuložilo');
-        Assert::assertSame($before, $afterLight, 'Přepnutí zpět na světlý režim se k přihlášení neuložilo');
-    }
-
-    private function darkLogins(AcceptanceTester $I): int
-    {
-        return (int) $I->grabNumRecords('user_login', ['dark_mode' => 1]);
-    }
-
-    /** @param callable(int): bool $done */
-    private function waitForDarkLogins(AcceptanceTester $I, callable $done): int
-    {
-        $count = $this->darkLogins($I);
-
-        for ($second = 0; $second < self::THEME_REPORT_WAIT_SECONDS && ! $done($count); ++$second) {
-            sleep(1);
-            $count = $this->darkLogins($I);
-        }
-
-        return $count;
+        Assert::assertGreaterThan(0, $reported, 'Stránka nenahlásila tmavý režim přihlášení');
     }
 
     private function pageSessions(AcceptanceTester $I, string $day): int

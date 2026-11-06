@@ -39,6 +39,7 @@ class RouterFactory
         // Utility & auth
         $router->addRoute('debugging', 'Admin:Debugging:default');
         $router->addRoute('prodlouzit-prihlaseni', 'SessionKeepAlive:default');
+        $router->addRoute('vzhled', 'ThemeReport:default');
         $router->addRoute('google/<action>', 'Settings:Google:default');
         $router->addRoute(
             'sign/<action>[/back-<backlink>]',

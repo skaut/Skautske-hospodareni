@@ -221,6 +221,9 @@ abstract class BasePresenter extends Presenter
             'sessionKeepAliveUrl' => $sessionKeepAliveEnabled
                 ? $this->linkGenerator->link('SessionKeepAlive:default')
                 : null,
+            'themeReportUrl' => $this->getUser()->isLoggedIn() && $this->loginTracker->needsThemeReport()
+                ? $this->linkGenerator->link('ThemeReport:default')
+                : null,
         ]);
 
         if (! $this->getUser()->isLoggedIn()) {

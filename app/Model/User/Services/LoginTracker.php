@@ -68,6 +68,7 @@ final class LoginTracker
             $section = $this->session->getSection(self::SESSION_SECTION);
             $section->set('loginId', $login->getId());
             $section->set('touchedAt', time());
+            $section->set('themeReported', false);
         } catch (Throwable $e) {
             $this->logger->warning('Nepodařilo se zaznamenat přihlášení pro statistiky využití.', ['exception' => $e]);
         }
@@ -111,19 +112,33 @@ final class LoginTracker
         }
     }
 
+    /** The page reports its theme once per login; afterwards it stops asking. */
+    public function needsThemeReport(): bool
+    {
+        try {
+            $section = $this->session->getSection(self::SESSION_SECTION);
+
+            return is_int($section->get('loginId')) && $section->get('themeReported') !== true;
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
     /**
-     * Stores the theme the user switched to with the button, on the current login. Only a click is known to
-     * the server: the choice itself is kept in the browser.
+     * Stores whether the pages of this login show dark. Only the browser knows it: the choice lives in its
+     * local storage or comes from the system settings.
      */
     public function recordTheme(bool $darkMode): void
     {
         try {
-            $loginId = $this->session->getSection(self::SESSION_SECTION)->get('loginId');
+            $section = $this->session->getSection(self::SESSION_SECTION);
+            $loginId = $section->get('loginId');
 
-            if (! is_int($loginId)) {
+            if (! is_int($loginId) || $section->get('themeReported') === true) {
                 return;
             }
 
+            $section->set('themeReported', true);
             $login = $this->repository->findById($loginId);
 
             if (! $login instanceof UserLogin) {

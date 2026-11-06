@@ -37,8 +37,8 @@
 {/define}
 
 {*
-    Share of dark mode among the users who switched the theme with the button: one ratio, so a meter. The fill wears
-    the primary colour, the track a lighter step of it; the figure and the note beside it say the same in words.
+    Share of dark mode among the users of the period: one ratio, so a meter. The fill wears the primary colour,
+    the track a lighter step of it; the figure and the note beside it say the same in words.
 *}
 {define darkModeMeter, int $dark, int $users}
     {var $share = $users > 0 ? (int) round($dark / $users * 100) : 0}
@@ -46,14 +46,14 @@
     <span class="usage-kpi__label">Tmavý režim</span>
     <span n:if="$users > 0" class="usage-meter" role="meter" aria-label="Podíl tmavého režimu"
           aria-valuemin="0" aria-valuemax="100" aria-valuenow="{$share}" aria-valuetext="{$share} %"
-          title="Tmavý režim {$dark} z {$users} uživatelů" data-test="admin-usage-dark-mode-meter">
+          title="Tmavý režim má {$dark} z {$users} uživatelů" data-test="admin-usage-dark-mode-meter">
         <span class="usage-meter__fill" style="width: {$share}%"></span>
     </span>
     <span class="usage-kpi__note">
         {if $users === 0}
-            zatím nikdo nepřepnul režim tlačítkem
+            zatím bez údajů
         {else}
-            {$dark|num} z {$users|num} uživatelů, kteří přepnuli režim
+            {$dark|num} z {$users|num} uživatelů
         {/if}
     </span>
 {/define}
@@ -405,8 +405,8 @@
                 <h2 class="h5 mb-1">Volitelné funkce</h2>
                 <p class="text-body-secondary small mb-3">
                     Kolik uživatelů má volbu z uživatelského nastavení zapnutou, počítáno ze všech, kdo si nastavení někdy uložili
-                    ({$preferences->users|num} uživatelů). Tmavý režim počítáme z uživatelů, kteří za {$periodLabel} přepnuli režim tlačítkem,
-                    podle toho, co zvolili naposledy. Automatizace ukazují, kolik otevřených platebních skupin je teď používá.
+                    ({$preferences->users|num} uživatelů). Tmavý režim počítáme z uživatelů přihlášených za {$periodLabel} podle jejich
+                    posledního přihlášení, včetně tmavého režimu převzatého ze systému. Automatizace ukazují, kolik otevřených platebních skupin je teď používá.
                 </p>
 
                 {var $preferencesNote = $preferences->users === 0 ? 'nikdo si zatím nastavení neuložil' : 'z ' . ($preferences->users|num) . ' uživatelů'}

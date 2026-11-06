@@ -8,9 +8,7 @@ export class DarkModeToggle {
         }
 
         this.element.onclick = () => {
-            const theme = document.documentElement.dataset.bsTheme === "dark" ? "light" : "dark";
-            this.setTheme(theme);
-            this.report(theme);
+            this.setTheme(document.documentElement.dataset.bsTheme === "dark" ? "light" : "dark");
         };
 
         const currentTheme = document.documentElement.dataset.bsTheme;
@@ -27,24 +25,5 @@ export class DarkModeToggle {
         this.element.setAttribute("aria-label", label);
         this.element.setAttribute("title", label);
         localStorage.setItem("theme", theme);
-    }
-
-    /** Tells the server which theme a signed-in user switched to, for the usage statistics. */
-    private report(theme: "dark"|"light"): void {
-        const url = this.element?.dataset.reportUrl;
-        if (url === undefined || url === "") {
-            return;
-        }
-
-        const body = new URLSearchParams();
-        body.set("theme", theme);
-
-        window.fetch(url, {
-            method: "POST",
-            credentials: "same-origin",
-            cache: "no-store",
-            headers: {"X-Requested-With": "XMLHttpRequest"},
-            body,
-        }).catch(() => undefined);
     }
 }
