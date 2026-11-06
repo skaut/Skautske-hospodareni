@@ -46,6 +46,13 @@ interface IPaymentRepository
 
     public function remove(Payment $payment): void;
 
+    /**
+     * Removes the payments at once, so a part of a split payment never points to an original removed before it.
+     *
+     * @param Payment[] $payments
+     */
+    public function removeMany(array $payments): void;
+
     public function getMaxVariableSymbol(int $groupId): ?VariableSymbol;
 
     public function existsPaymentWithVariableSymbolInGroup(

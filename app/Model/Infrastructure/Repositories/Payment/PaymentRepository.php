@@ -156,6 +156,19 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
         $entityManager->flush();
     }
 
+    public function removeMany(array $payments): void
+    {
+        Assert::thatAll($payments)->isInstanceOf(Payment::class);
+
+        $entityManager = $this->getEntityManager();
+
+        foreach ($payments as $payment) {
+            $entityManager->remove($payment);
+        }
+
+        $entityManager->flush();
+    }
+
     public function getMaxVariableSymbol(int $groupId): ?VariableSymbol
     {
         $result = $this->getEntityManager()->createQueryBuilder()
