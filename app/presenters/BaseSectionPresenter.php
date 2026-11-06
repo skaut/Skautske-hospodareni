@@ -8,8 +8,6 @@ use App\Model\Common\UnitId;
 use App\Model\Skautis\SkautisMaintenanceChecker;
 use App\Model\User\UserService;
 use LogicException;
-use Nette\Application\BadRequestException;
-use Nette\Http\IResponse;
 use Nette\Security\SimpleIdentity;
 use stdClass;
 
@@ -108,6 +106,6 @@ abstract class BaseSectionPresenter extends BasePresenter
      */
     protected function denyAccess(string $message = 'Nemáte oprávnění k této stránce.'): never
     {
-        throw new BadRequestException($message, IResponse::S403_Forbidden);
+        throw new AccessDenied($message);
     }
 }

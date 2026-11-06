@@ -36,6 +36,8 @@ class AccessControlCest extends PaymentAcceptanceCest
             $I->amOnPage(sprintf('/platby/skupiny/%d/platby?do=%s', $foreignGroupId, $signal));
             $I->waitForDocumentReady();
             $I->dontSeeElement('[data-test="payment-group-detail-page"]');
+            // The 403 page says why, not just that access was denied.
+            $I->see('Nemáte oprávnění pracovat s touto platební skupinou.', '[data-test="error-403-reason"]');
         }
 
         $I->amOnPage(sprintf('/platby/skupiny/%d/vratky', $foreignGroupId));
