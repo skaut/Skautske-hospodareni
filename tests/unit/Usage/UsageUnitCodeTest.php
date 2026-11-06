@@ -6,6 +6,8 @@ namespace App\Model\Usage;
 
 use Codeception\Test\Unit as TestCase;
 
+use function usort;
+
 final class UsageUnitCodeTest extends TestCase
 {
     /** @return array<string, array{string, string, string}> */
@@ -71,6 +73,14 @@ final class UsageUnitCodeTest extends TestCase
         self::assertFalse(UsageUnitCode::isDistrict('621.66'));
         self::assertFalse(UsageUnitCode::isDistrict('62%'));
         self::assertFalse(UsageUnitCode::isDistrict('991'));
+    }
+
+    public function testRowsFollowTheNumbersOfTheUnits(): void
+    {
+        $codes = ['neurceno', '900', '620', '621.66', UsageUnitCode::HEADQUARTERS, '110', '621', '621.01', '62A', '210'];
+        usort($codes, UsageUnitCode::compare(...));
+
+        self::assertSame([UsageUnitCode::HEADQUARTERS, '110', '210', '620', '621', '621.01', '621.66', '62A', '900', 'neurceno'], $codes);
     }
 
     public function testLabelsSayWhatARowIs(): void

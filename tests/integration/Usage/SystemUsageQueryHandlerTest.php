@@ -92,8 +92,9 @@ class SystemUsageQueryHandlerTest extends IntegrationTest
         self::assertSame(['Seznam skupin', 'Detail skupiny'], array_map(static fn ($screen) => $screen->label, $payments->screens));
         self::assertSame(2, $payments->screens[0]->sessions->getTotal());
 
-        // Every kraj has a row, the ones without sessions at the end.
-        self::assertSame(['620', '610', UsageUnitCode::HEADQUARTERS, '110'], array_slice($this->codes($usage), 0, 4));
+        // Every kraj has a row, always in the order of the numbers, the headquarters first.
+        self::assertSame([UsageUnitCode::HEADQUARTERS, '110', '210', '310'], array_slice($this->codes($usage), 0, 4));
+        self::assertSame('810', $this->codes($usage)[14]);
         self::assertCount(15, $usage->rows);
         $kraj = $this->row($usage, '620');
         self::assertSame('620 Jihomoravský kraj TGM', $kraj->label);
@@ -161,7 +162,7 @@ class SystemUsageQueryHandlerTest extends IntegrationTest
         $usage = $this->usage(region: '620', district: '621');
 
         self::assertSame(4, $usage->sessions->getTotal());
-        self::assertSame(['621.66', '621', '621.01'], $this->codes($usage));
+        self::assertSame(['621', '621.01', '621.66'], $this->codes($usage));
         self::assertSame('621 (role okresu)', $this->row($usage, '621')->label);
         self::assertSame(1, $this->row($usage, '621.66')->get(UsageSection::TRAVEL)->getTotal());
         self::assertFalse($this->row($usage, '621.66')->hasUnits());

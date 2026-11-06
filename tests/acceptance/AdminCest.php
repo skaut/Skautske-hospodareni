@@ -477,6 +477,11 @@ final class AdminCest extends BaseAcceptanceCest
         $I->seeElement('[data-test="admin-usage-devices-card"]');
         $I->seeElement('[data-test="admin-usage-week-card"]');
         $I->seeElement('[data-test="admin-usage-preferences-card"]');
+        $I->seeNumberOfElements('[data-test="admin-usage-preferences"] .usage-kpi', 4);
+        $I->see('Na pozadí prodlužovat přihlášení ke skautISu', '[data-test="admin-usage-preferences"]');
+        $I->seeNumberOfElements('[data-test="admin-usage-automation"] .usage-kpi', 2);
+        $I->see('Automatické upomínky plateb', '[data-test="admin-usage-automation"]');
+
         // Two of the seeded users switched the theme with the button, the last choice of one was dark.
         $I->seeElement('[data-test="admin-usage-dark-mode-meter"][role="meter"]');
         $I->seeElement('[data-test="admin-usage-monthly-card"]');

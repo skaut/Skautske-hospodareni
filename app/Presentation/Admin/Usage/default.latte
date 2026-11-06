@@ -404,28 +404,26 @@
             <div class="card-body">
                 <h2 class="h5 mb-1">Volitelné funkce</h2>
                 <p class="text-body-secondary small mb-3">
-                    Kolik lidí si funkci nechalo zapnutou. Nápovědy, prodloužené přihlášení a zapamatovanou roli počítáme ze všech,
-                    kdo si nastavení někdy uložili ({$preferences->users|num} uživatelů). Tmavý režim počítáme z uživatelů,
-                    kteří za {$periodLabel} přepnuli režim tlačítkem, podle toho, co zvolili naposledy.
+                    Kolik uživatelů má volbu z uživatelského nastavení zapnutou, počítáno ze všech, kdo si nastavení někdy uložili
+                    ({$preferences->users|num} uživatelů). Tmavý režim počítáme z uživatelů, kteří za {$periodLabel} přepnuli režim tlačítkem,
+                    podle toho, co zvolili naposledy. Automatizace ukazují, kolik otevřených platebních skupin je teď používá.
                 </p>
 
-                {var $darkModeShare = $logins->getDarkModeShare()}
+                {var $preferencesNote = $preferences->users === 0 ? 'nikdo si zatím nastavení neuložil' : 'z ' . ($preferences->users|num) . ' uživatelů'}
 
-                <div class="row g-3">
-                    {if $preferences->users > 0}
-                        {include kpi,
-                            label => 'Zobrazují nápovědy',
-                            value => ($preferences->getShowHelpShare()|number:0, ',', ' ') . ' %',
-                            note => ($preferences->showHelp|num) . ' uživatelů'}
-                        {include kpi,
-                            label => 'Prodloužené přihlášení',
-                            value => ($preferences->getExtendLoginShare()|number:0, ',', ' ') . ' %',
-                            note => ($preferences->extendLogin|num) . ' uživatelů'}
-                        {include kpi,
-                            label => 'Zapamatovaná role',
-                            value => ($preferences->getRememberRoleShare()|number:0, ',', ' ') . ' %',
-                            note => ($preferences->rememberRole|num) . ' uživatelů'}
-                    {/if}
+                <div class="row g-3" data-test="admin-usage-preferences">
+                    {include kpi,
+                        label => 'Automaticky zobrazovat nápovědu u jednotlivých sekcí',
+                        value => ($preferences->showHelp|num),
+                        note => $preferencesNote}
+                    {include kpi,
+                        label => 'Na pozadí prodlužovat přihlášení ke skautISu',
+                        value => ($preferences->extendLogin|num),
+                        note => $preferencesNote}
+                    {include kpi,
+                        label => 'Pamatovat si zvolenou roli ze skautISu',
+                        value => ($preferences->rememberRole|num),
+                        note => $preferencesNote}
                     <div class="col-6 col-lg-3" data-test="admin-usage-dark-mode">
                         <div class="usage-kpi">
                             {include darkModeMeter, dark: $logins->darkModeUsers, users: $logins->themeUsers}
@@ -433,7 +431,18 @@
                     </div>
                 </div>
 
-                <p n:if="$preferences->users === 0" class="text-body-secondary small mb-0 mt-3">Zatím si nikdo neuložil vlastní nastavení.</p>
+                <h3 class="h6 text-body-secondary mt-4 mb-3">Automatizace plateb</h3>
+                {var $groupsNote = $automation->openGroups === 0 ? 'žádná otevřená skupina' : 'z ' . ($automation->openGroups|num) . ' otevřených skupin'}
+                <div class="row g-3" data-test="admin-usage-automation">
+                    {include kpi,
+                        label => 'Párování plateb',
+                        value => ($automation->automaticPairing|num),
+                        note => $groupsNote . ($automation->openGroups === 0 ? '' : ' (' . ($automation->getAutomaticPairingShare()|number:0, ',', ' ') . ' %)')}
+                    {include kpi,
+                        label => 'Automatické upomínky plateb',
+                        value => ($automation->automaticReminders|num),
+                        note => $groupsNote . ($automation->openGroups === 0 ? '' : ' (' . ($automation->getAutomaticRemindersShare()|number:0, ',', ' ') . ' %)')}
+                </div>
             </div>
         </article>
 

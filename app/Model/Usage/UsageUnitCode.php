@@ -9,6 +9,7 @@ use function array_slice;
 use function explode;
 use function implode;
 use function preg_match;
+use function strcmp;
 use function strlen;
 use function substr;
 use function trim;
@@ -86,6 +87,26 @@ final class UsageUnitCode
         }
 
         return $district === self::SPECIAL ? self::SPECIAL : substr($district, 0, 2).'0';
+    }
+
+    /**
+     * Order of rows by the number of the unit: the headquarters first (the association has number 1), then
+     * kraje, okresy and střediska by their numbers, the special units and the roles without a unit last.
+     */
+    public static function compare(string $a, string $b): int
+    {
+        // Numbers have fixed places (621, 621.66, 62A), so plain string order is the order of the numbers.
+        return self::rank($a) <=> self::rank($b) ?: strcmp($a, $b);
+    }
+
+    private static function rank(string $code): int
+    {
+        return match (true) {
+            $code === self::HEADQUARTERS => 0,
+            $code === self::UNKNOWN => 3,
+            self::districtOf($code) === self::SPECIAL => 2,
+            default => 1,
+        };
     }
 
     public static function isRegion(string $code): bool

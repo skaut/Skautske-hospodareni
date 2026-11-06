@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Presentation\Admin\Usage;
 
 use App\Model\Common\Services\KeyedHasher;
+use App\Model\DTO\Stat\AutomationAdoption;
+use App\Model\Payment\ReadModel\Queries\CountAutomaticPairingGroupsQuery;
+use App\Model\Payment\ReadModel\Queries\CountAutomaticReminderGroupsQuery;
+use App\Model\Payment\ReadModel\Queries\CountOpenGroupsQuery;
 use App\Model\Stat\ReadModel\Queries\UsageStatisticsQuery;
 use App\Model\Usage\ReadModel\Queries\SystemUsageQuery;
 use App\Model\Usage\UsageSection;
@@ -122,6 +126,13 @@ final class UsagePresenter extends AdminBasePresenter
             'usage' => $this->queryBus->handle(new SystemUsageQuery($this->year, $month, $this->region, $this->district)),
             'overview' => $this->region === null && $this->district === null
                 ? $this->queryBus->handle(new UsageStatisticsQuery($this->year, $month))
+                : null,
+            'automation' => $this->region === null && $this->district === null
+                ? new AutomationAdoption(
+                    $this->queryBus->handle(new CountOpenGroupsQuery()),
+                    $this->queryBus->handle(new CountAutomaticPairingGroupsQuery()),
+                    $this->queryBus->handle(new CountAutomaticReminderGroupsQuery()),
+                )
                 : null,
         ]);
     }

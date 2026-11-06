@@ -56,7 +56,7 @@ class UsageStatisticsQueryHandlerTest extends IntegrationTest
         self::assertNull($usage->logins->sessionMedianSeconds);
         self::assertSame(0, $usage->logins->getMonthlyPeak());
         self::assertNull($usage->logins->getDarkModeShare());
-        self::assertNull($usage->preferences->getShowHelpShare());
+        self::assertSame(0, $usage->preferences->users);
     }
 
     /** The administration sees the whole system: every unit counts, only the period limits the logins. */
@@ -199,7 +199,6 @@ class UsageStatisticsQueryHandlerTest extends IntegrationTest
         self::assertSame(2, $preferences->showHelp);
         self::assertSame(1, $preferences->extendLogin);
         self::assertSame(1, $preferences->rememberRole);
-        self::assertEqualsWithDelta(50.0, $preferences->getShowHelpShare(), 0.001);
     }
 
     public function testMonthlyLoginsAlwaysCoverTwelveMonths(): void

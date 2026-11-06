@@ -104,7 +104,7 @@ final class SystemUsageQueryHandler
 
     /**
      * The whole system shows a row per kraj (all of them, also without sessions), a kraj a row per okres and an
-     * okres a row per středisko. A unit code is never finer than a středisko, the rest was cut off when counting.
+     * okres a row per středisko, always in the order of their numbers. A unit code is never finer than a středisko, the rest was cut off when counting.
      *
      * @param list<array{unitCode: string, section: string, month: int, sessions: int}> $data
      *
@@ -142,8 +142,7 @@ final class SystemUsageQueryHandler
             $rows[] = $this->row((string) $code, $sessions, $sections[$code] ?? [], $region, $district);
         }
 
-        usort($rows, static fn (UnitUsage $a, UnitUsage $b): int => $b->sessions->getTotal() <=> $a->sessions->getTotal()
-            ?: strcmp($a->code, $b->code));
+        usort($rows, static fn (UnitUsage $a, UnitUsage $b): int => UsageUnitCode::compare($a->code, $b->code));
 
         return [$rows, count($units)];
     }
