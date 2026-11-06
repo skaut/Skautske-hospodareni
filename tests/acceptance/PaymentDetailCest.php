@@ -9,6 +9,7 @@ use Cake\Chronos\ChronosDate;
 use PHPUnit\Framework\Assert;
 
 use function json_encode;
+use function random_int;
 use function rawurlencode;
 use function sprintf;
 use function uniqid;
@@ -291,6 +292,70 @@ JS);
         $I->dontSeeCheckboxIsChecked($toggle);
         $I->dontSeeElement('#unitDropdown + .dropdown-menu.show');
         $I->see('bez členů podjednotek');
+    }
+
+    /** @group payment */
+    public function massAddWithTakenVariableSymbolAddsNothing(): void
+    {
+        $I = $this->I;
+        $dueDate = ChronosDate::today()->addWeekdays(1)->format('Y-m-d');
+        $groupId = $I->haveInDatabase('pa_group', [
+            'groupType' => null,
+            'sisId' => null,
+            'name' => uniqid('Selenium MassAdd taken VS ', true),
+            'amount' => 10000, // 100 Kč v haléřích
+            'due_date' => $dueDate,
+            'constant_symbol' => null,
+            'next_variable_symbol' => null,
+            'state' => 'open',
+            'note' => 'acceptance',
+            'created_at' => '2026-01-01 00:00:00',
+            'last_pairing' => '2026-01-01 00:00:00',
+            'smtp_id' => null,
+            'bank_account_id' => 1,
+            'oauth_id' => null,
+            'is_reminders_enabled' => 0,
+        ]);
+        $I->haveInDatabase('pa_group_unit', ['group_id' => $groupId, 'unit_id' => AcceptanceTester::UNIT_ID]);
+        $takenVs = (string) random_int(800000000, 899999999);
+        $freeVs = (string) random_int(900000000, 999999999);
+        $I->haveInDatabase('pa_payment', [
+            'group_id' => $groupId,
+            'name' => 'Obsazený VS',
+            'amount' => 10000,
+            'due_date' => $dueDate,
+            'variable_symbol' => $takenVs,
+            'constant_symbol' => null,
+            'note' => '',
+            'state' => 'preparing',
+        ]);
+
+        $I->wantTo('add no payment when a variable symbol of one of them is taken');
+
+        $this->openPageAndWaitForElementWithSkautisRetry(
+            $I,
+            sprintf('/platby/skupiny/%d/osoby', $groupId),
+            '[data-test="payment-mass-add-page"]',
+        );
+        // Two people: the first with a free symbol, the second with the taken one.
+        $I->executeJS(
+            <<<'JS'
+                const [free, taken] = arguments;
+                Array.from(document.querySelectorAll('[data-mass-add-person-selection]')).slice(0, 2).forEach((checkbox, index) => {
+                    checkbox.checked = true;
+                    checkbox.dispatchEvent(new Event('change', {bubbles: true}));
+                    checkbox.closest('tr').querySelector('input[name$="[variableSymbol]"]').value = index === 0 ? free : taken;
+                });
+                JS,
+            [$freeVs, $takenVs],
+        );
+        $I->clickStable('[data-test="mass-add-form-submit"]');
+
+        $I->waitForElementVisible('[data-test="mass-add-form-errors"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see('Variabilní symbol '.$takenVs.' je už použitý', '[data-test="mass-add-form-errors"]');
+        $I->see('Žádná platba nebyla přidána.', '[data-test="mass-add-form-errors"]');
+        $I->seeNumRecords(1, 'pa_payment', ['group_id' => $groupId]);
+        $I->dontSeeInDatabase('pa_payment', ['variable_symbol' => $freeVs]);
     }
 
     /** @group payment */

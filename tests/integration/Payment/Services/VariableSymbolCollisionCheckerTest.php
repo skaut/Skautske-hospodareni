@@ -25,6 +25,8 @@ use IntegrationTest;
 use Stubs\BankAccountAccessCheckerStub;
 use Stubs\OAuthsAccessCheckerStub;
 
+use function array_keys;
+
 final class VariableSymbolCollisionCheckerTest extends IntegrationTest
 {
     use BankingFixtures;
@@ -87,6 +89,28 @@ final class VariableSymbolCollisionCheckerTest extends IntegrationTest
         );
 
         $this->checker->assertUniqueForPayment($group, null, new VariableSymbol('123456'));
+    }
+
+    /** Payments added at once are checked all before the first is added, also against each other. */
+    public function testNewPaymentsCollideWithOpenPaymentAndWithEachOther(): void
+    {
+        $bankAccount = $this->createBankAccount();
+        $this->createPayment($this->createGroup($bankAccount), '997007');
+        $group = $this->createGroup($bankAccount);
+
+        $collisions = $this->checker->findCollisionsOfNewPayments($group, [
+            'first' => new VariableSymbol('997001'),
+            'taken' => new VariableSymbol('997007'),
+            'second' => new VariableSymbol('997002'),
+            'repeated' => new VariableSymbol('997001'),
+        ]);
+
+        self::assertSame(['taken', 'repeated'], array_keys($collisions));
+        self::assertSame(
+            'Variabilní symbol 997007 je už použitý u jiné otevřené bankovní platby nebo faktury na stejném účtu.',
+            $collisions['taken']->getMessage(),
+        );
+        self::assertSame('Variabilní symbol 997001 je zadaný u více přidávaných plateb.', $collisions['repeated']->getMessage());
     }
 
     private function createBankAccount(): BankAccount
