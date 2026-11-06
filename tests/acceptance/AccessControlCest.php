@@ -113,6 +113,78 @@ class AccessControlCest extends PaymentAcceptanceCest
     }
 
     /** @group payment */
+    public function sharingOfForeignBankAccountCannotBeChanged(): void
+    {
+        $I = $this->I;
+        $foreignPrivateId = $this->haveBankAccount(self::FOREIGN_UNIT_ID, uniqid('Selenium foreign account ', true));
+        $foreignSharedId = $this->haveBankAccount(self::FOREIGN_UNIT_ID, uniqid('Selenium foreign account ', true), allowedForSubunits: true);
+        $ownAccountId = $this->haveBankAccount(AcceptanceTester::UNIT_ID, uniqid('Selenium own account ', true));
+
+        $I->wantTo('not share or unshare a bank account of a foreign unit with its subunits');
+
+        foreach (['allowForSubunits' => $foreignPrivateId, 'disallowForSubunits' => $foreignSharedId] as $signal => $accountId) {
+            $I->amOnPage(sprintf('/nastaveni/bankovni-ucty?do=%s&id=%d', $signal, $accountId));
+            $I->waitForDocumentReady();
+            $I->seeElement('[data-test="error-403-reason"]');
+        }
+
+        $I->seeInDatabase('pa_bank_account', ['id' => $foreignPrivateId, 'allowed_for_subunits' => 0]);
+        $I->seeInDatabase('pa_bank_account', ['id' => $foreignSharedId, 'allowed_for_subunits' => 1]);
+
+        foreach (['allowForSubunits' => 1, 'disallowForSubunits' => 0] as $signal => $allowed) {
+            $this->openPageAndWaitForElementWithSkautisRetry(
+                $I,
+                sprintf('/nastaveni/bankovni-ucty?do=%s&id=%d', $signal, $ownAccountId),
+                '[data-test="settings-bank-accounts-page"]',
+            );
+            $I->seeInDatabase('pa_bank_account', ['id' => $ownAccountId, 'allowed_for_subunits' => $allowed]);
+        }
+    }
+
+    /**
+     * The own unit is not imported for comparison: it would load the real accounts of the skautIS test
+     * environment into the database shared by the other scenarios.
+     *
+     * @group payment
+     */
+    public function bankAccountsOfForeignUnitCannotBeImported(): void
+    {
+        $I = $this->I;
+        $accountsBefore = $I->grabNumRecords('pa_bank_account', ['unit_id' => self::FOREIGN_UNIT_ID]);
+
+        $I->wantTo('not import bank accounts of a foreign unit from skautIS');
+
+        $I->amOnPage(sprintf('/nastaveni/bankovni-ucty?jednotka=%d&do=import', self::FOREIGN_UNIT_ID));
+        $I->waitForDocumentReady();
+        $I->seeElement('[data-test="error-403-reason"]');
+        $I->dontSeeElement('[data-test="settings-bank-accounts-page"]');
+        $I->seeNumRecords($accountsBefore, 'pa_bank_account', ['unit_id' => self::FOREIGN_UNIT_ID]);
+    }
+
+    /** @group payment */
+    public function transactionsOfForeignBankAccountCannotBePaired(): void
+    {
+        $I = $this->I;
+        $foreignAccountId = $this->haveBankAccount(self::FOREIGN_UNIT_ID, uniqid('Selenium foreign account ', true));
+        $ownAccountId = $this->haveBankAccount(AcceptanceTester::UNIT_ID, uniqid('Selenium own account ', true));
+
+        $I->wantTo('not pair transactions of a bank account of a foreign unit');
+
+        foreach (['pair-transaction-to-payment?paymentId=1', 'pair-transaction-to-invoice?invoiceId=1'] as $action) {
+            $I->amOnPage(sprintf('/nastaveni/bankovni-ucty/%s&accountId=%d&transactionKey=missing', $action, $foreignAccountId));
+            $I->waitForDocumentReady();
+            $I->seeElement('[data-test="error-403-reason"]');
+
+            // On the own account the action runs: it finds no such transaction and returns to the account.
+            $this->openPageAndWaitForElementWithSkautisRetry(
+                $I,
+                sprintf('/nastaveni/bankovni-ucty/%s&accountId=%d&transactionKey=missing', $action, $ownAccountId),
+                '[data-test="settings-bank-account-detail-page"]',
+            );
+        }
+    }
+
+    /** @group payment */
     public function googleCallbackWithoutMatchingStateIsRejected(): void
     {
         $I = $this->I;
@@ -169,7 +241,7 @@ class AccessControlCest extends PaymentAcceptanceCest
         ]);
     }
 
-    private function haveBankAccount(int $unitId, string $name): int
+    private function haveBankAccount(int $unitId, string $name, bool $allowedForSubunits = false): int
     {
         return $this->I->haveInDatabase('pa_bank_account', [
             'unit_id' => $unitId,
@@ -177,7 +249,7 @@ class AccessControlCest extends PaymentAcceptanceCest
             'token' => null,
             'transaction_source' => 'gpc',
             'created_at' => '2026-06-18 12:00:00',
-            'allowed_for_subunits' => 0,
+            'allowed_for_subunits' => $allowedForSubunits ? 1 : 0,
             'number_prefix' => null,
             'number_number' => '1231231230',
             'number_bank_code' => '2010',
