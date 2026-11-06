@@ -15,6 +15,7 @@ use App\Model\DTO\Payment\GroupEmail;
 use App\Model\Google\OAuthId;
 use App\Model\Payment\EmailTemplate;
 use App\Model\Payment\EmailType;
+use App\Model\Payment\Group;
 use App\Model\Payment\Group\PaymentDefaults;
 use App\Model\Payment\Group\SkautisEntity;
 use App\Model\Payment\PaymentService;
@@ -46,6 +47,7 @@ use function array_map;
 use function array_unique;
 use function array_values;
 use function in_array;
+use function is_numeric;
 
 final class GroupForm extends BaseControl
 {
@@ -288,6 +290,7 @@ final class GroupForm extends BaseControl
         $days = $container->addText('reminderDaysAfterDue', 'Počet dní po splatnosti')
             ->setHtmlType('number')
             ->setHtmlAttribute('min', '1')
+            ->setHtmlAttribute('max', (string) Group::MAX_REMINDER_DAYS_AFTER_DUE)
             ->setHtmlAttribute('data-email-field', '1')
             ->setNullable()
             ->setOption('id', $daysId)
@@ -306,12 +309,23 @@ final class GroupForm extends BaseControl
             ->toggle($daysId)
             ->setRequired('Zadejte, kolik dní po splatnosti se má upomínka odeslat.')
             ->addRule($form::INTEGER, 'Počet dní musí být celé číslo.')
-            ->addRule($form::MIN, 'Počet dní musí být alespoň 1.', 1);
+            ->addRule($form::MIN, 'Počet dní musí být alespoň 1.', 1)
+            ->addRule($form::MAX, 'Počet dní může být nejvýš %d.', Group::MAX_REMINDER_DAYS_AFTER_DUE);
     }
 
+    /**
+     * The field is checked only while automatic reminders are on. With them off it may still send anything,
+     * which is then not kept rather than breaking the save.
+     */
     private function reminderDaysAfterDue(mixed $value): ?int
     {
-        return $value === null || $value === '' ? null : (int) $value;
+        if (! is_numeric($value) || (string) (int) $value !== (string) $value) {
+            return null;
+        }
+
+        $days = (int) $value;
+
+        return $days >= 1 && $days <= Group::MAX_REMINDER_DAYS_AFTER_DUE ? $days : null;
     }
 
     private function validateEmailTemplatesRequireBankAccount(BaseForm $form, ArrayHash $values): void

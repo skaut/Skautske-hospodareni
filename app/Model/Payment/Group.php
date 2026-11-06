@@ -87,6 +87,9 @@ class Group
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $pairingDaysBack = null;
 
+    /** A reminder later than a year after the due date makes no sense, and the column is a plain INT. */
+    public const MAX_REMINDER_DAYS_AFTER_DUE = 365;
+
     public const STATE_OPEN = 'open';
     public const STATE_CLOSED = 'closed';
 
@@ -283,8 +286,8 @@ class Group
     /** Automatic reminders need the switch and the number of days after the due date. */
     public function configureAutomaticReminders(bool $enabled, ?int $daysAfterDue): void
     {
-        if ($daysAfterDue !== null && $daysAfterDue < 1) {
-            throw new InvalidArgumentException('Automatic reminder must go out at least one day after the due date.');
+        if ($daysAfterDue !== null && ($daysAfterDue < 1 || $daysAfterDue > self::MAX_REMINDER_DAYS_AFTER_DUE)) {
+            throw new InvalidArgumentException('Automatic reminder must go out 1 to '.self::MAX_REMINDER_DAYS_AFTER_DUE.' days after the due date.');
         }
 
         $this->isRemindersEnabled = $enabled;
