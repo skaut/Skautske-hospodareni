@@ -31,6 +31,8 @@ use App\Model\TaskQueue\TaskQueueProcessor;
 use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Psr7\Request;
 use Helpers;
 use IntegrationTest;
 
@@ -259,6 +261,26 @@ final class PaymentEmailQueueTest extends IntegrationTest
         $this->processQueue();
 
         self::assertCount(1, $this->mailer->messages);
+    }
+
+    /** Google not answering before anything was sent postpones the batch instead of failing it. */
+    public function testUnavailableGoogleBeforeSendingPostponesTheBatch(): void
+    {
+        $this->createGroup();
+        $paymentIds = [$this->createPayment(), $this->createPayment()];
+        $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), $paymentIds);
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(new ConnectException('Timed out', new Request('POST', 'https://oauth2.googleapis.com/token')));
+
+        $this->processQueue();
+
+        self::assertSame([], $this->mailer->messages);
+        self::assertSame(2, (int) $this->tester->grabNumRecords('task_queue_item', ['state' => TaskItemState::PENDING->value]));
+
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(null);
+        $this->entityManager->getConnection()->executeStatement('UPDATE task_queue_item SET available_at = NOW() - INTERVAL 1 MINUTE');
+        $this->processQueue();
+
+        self::assertCount(2, $this->mailer->messages);
     }
 
     public function testGroupWithoutChosenDaysSendsNoAutomaticReminder(): void

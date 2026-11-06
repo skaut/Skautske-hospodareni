@@ -29,6 +29,7 @@ use App\Model\TaskQueue\TaskHandler;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Google\Service\Exception as GoogleServiceException;
+use GuzzleHttp\Exception\GuzzleException;
 use Throwable;
 
 use function in_array;
@@ -49,6 +50,8 @@ final class PaymentEmailTaskHandler implements TaskHandler
     private const GMAIL_LIMIT_REASONS = ['rateLimitExceeded', 'userRateLimitExceeded', 'dailyLimitExceeded'];
     private const GMAIL_LIMIT_RETRY_SECONDS = 3600;
     private const GMAIL_LIMIT_MAX_ATTEMPTS = 26;
+    private const GOOGLE_UNAVAILABLE_RETRY_SECONDS = 600;
+    private const GOOGLE_UNAVAILABLE_MAX_ATTEMPTS = 6;
 
     public function __construct(
         private IPaymentRepository $payments,
@@ -88,6 +91,8 @@ final class PaymentEmailTaskHandler implements TaskHandler
             $mailer = $this->mailerFactory->create($email->sender);
         } catch (InvalidOAuth $exception) {
             throw new TaskFailed($exception->getExplainedMessage(), abortJob: true, previous: $exception);
+        } catch (GuzzleException|GoogleServiceException $exception) {
+            $this->handleUnavailableGoogle($exception);
         }
 
         $context->beginIrreversible();
@@ -211,6 +216,21 @@ final class PaymentEmailTaskHandler implements TaskHandler
         }
 
         throw $exception;
+    }
+
+    /**
+     * Google did not answer the refresh of the token (a lost connection, a timeout, an error on its side).
+     * Nothing was sent yet, so the batch waits a while instead of failing; a refusal of the token stays a failure.
+     */
+    private function handleUnavailableGoogle(GuzzleException|GoogleServiceException $exception): never
+    {
+        $code = $exception->getCode();
+
+        if ($exception instanceof GoogleServiceException && $code !== 429 && $code < 500) {
+            throw $exception;
+        }
+
+        throw new TaskRetryLater('Google je teď nedostupný, e-maily se zkusí odeslat později.', self::GOOGLE_UNAVAILABLE_RETRY_SECONDS, $exception, wholeBatch: true, maxAttempts: self::GOOGLE_UNAVAILABLE_MAX_ATTEMPTS);
     }
 
     private function hasLimitReason(GoogleServiceException $exception): bool
