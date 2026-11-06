@@ -11,6 +11,7 @@ use App\Model\DTO\TaskQueue\TaskJobStatus;
 use App\Model\TaskQueue\ReadModel\Queries\TaskQueueStatusQuery;
 use App\Model\TaskQueue\TaskQueue;
 use App\Model\TaskQueue\TaskScope;
+use Closure;
 use DateTimeImmutable;
 use Nette\Application\BadRequestException;
 use Nette\Http\IResponse;
@@ -22,8 +23,9 @@ use function implode;
 
 /**
  * Progress of background batches of one scope, e.g. e-mails of one payment group. Everyone who may see
- * the scope sees the same progress. The page refreshes only this panel (frontend/ts/taskQueueStatus.ts)
- * while a batch is active.
+ * the scope sees the same progress. While a batch is active, the page refreshes only this panel
+ * (frontend/ts/taskQueueStatus.ts) from the address set by setRefreshLink(), which checks the rights
+ * to the scope itself and runs nothing else.
  */
 final class TaskQueueStatus extends BaseControl
 {
@@ -33,6 +35,9 @@ final class TaskQueueStatus extends BaseControl
     private ?string $finishedActionLabel = null;
 
     private ?string $finishedActionUrl = null;
+
+    /** @var (Closure(string): string)|null address of the refresh for the comma separated followed batches */
+    private ?Closure $refreshLink = null;
 
     public function __construct(
         private TaskScope $scope,
@@ -50,7 +55,14 @@ final class TaskQueueStatus extends BaseControl
         $this->finishedActionUrl = $url;
     }
 
-    public function handleRefresh(string $followed = ''): void
+    /** @param Closure(string): string $link builds the address of the refresh from the followed batches */
+    public function setRefreshLink(Closure $link): void
+    {
+        $this->refreshLink = $link;
+    }
+
+    /** Redraws the panel, also with the batches the page showed as active before, so it shows they finished. */
+    public function refresh(string $followed): void
     {
         $this->followedJobIds = array_map('intval', array_filter(explode(',', $followed), 'is_numeric'));
         $this->redrawControl('status');
@@ -105,7 +117,7 @@ final class TaskQueueStatus extends BaseControl
         $this->template->setParameters([
             'jobs' => $jobs,
             'isActive' => $activeJobIds !== [],
-            'refreshUrl' => $this->link('refresh!', ['followed' => implode(',', $activeJobIds)]),
+            'refreshUrl' => $this->refreshLink === null ? '' : ($this->refreshLink)(implode(',', $activeJobIds)),
             'canManage' => $this->canManage,
             'finishedActionLabel' => $this->finishedActionLabel,
             'finishedActionUrl' => $this->finishedActionUrl,

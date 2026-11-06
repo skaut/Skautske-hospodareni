@@ -454,6 +454,8 @@ final class PaymentPresenter extends PaymentsBasePresenter
         // The scope is the group checked in startup(), so the panel never shows batches of another group.
         $status = $this->taskQueueStatusFactory->create(TaskScope::paymentGroup($this->id), $this->isEditable);
         $status->setFinishedAction('Načíst aktuální seznam plateb', $this->link('refreshPayments!'));
+        // The panel refreshes from its own address, so the poll never runs the action of this page.
+        $status->setRefreshLink(fn (string $followed): string => $this->link('TaskQueueStatus:default', ['id' => $this->id, 'followed' => $followed]));
 
         return $status;
     }

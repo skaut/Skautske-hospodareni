@@ -40,6 +40,14 @@ class AccessControlCest extends PaymentAcceptanceCest
             $I->see('Nemáte oprávnění pracovat s touto platební skupinou.', '[data-test="error-403-reason"]');
         }
 
+        // The panel of e-mails sent in the background has its own address, with the same rights as the group.
+        foreach (['', '?do=taskQueueStatus-cancel&jobId=1'] as $query) {
+            $I->amOnPage(sprintf('/platby/skupiny/%d/odesilani%s', $foreignGroupId, $query));
+            $I->waitForDocumentReady();
+            $I->see('Nemáte oprávnění pracovat s touto platební skupinou.', '[data-test="error-403-reason"]');
+            $I->dontSeeElement('[data-test="task-queue-status"]');
+        }
+
         $I->amOnPage(sprintf('/platby/skupiny/%d/vratky', $foreignGroupId));
         $I->waitForDocumentReady();
         $I->dontSee($foreignGroupName);

@@ -211,6 +211,7 @@ class RouterFactory
             ->addRoute('platby/skupiny/<id [0-9]+>/upravit', 'Group:edit')
             ->addRoute('platby/skupiny/<id [0-9]+>/platby/parovat', 'Payment:pairTransactionToPayment')
             ->addRoute('platby/skupiny/<id [0-9]+>/platby', 'Payment:default')
+            ->addRoute('platby/skupiny/<id [0-9]+>/odesilani', 'TaskQueueStatus:default')
             ->addRoute('platby/skupiny/<id [0-9]+>/ucastnici', 'Participants:default')
             ->addRoute('platby/skupiny/<id [0-9]+>/osoby', 'People:default')
             ->addRoute('platby/skupiny/<groupId [0-9]+>/casopisy', 'Journal:default')
