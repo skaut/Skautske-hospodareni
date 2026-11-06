@@ -48,7 +48,7 @@ Fronta je v cronu poslední a nové úlohy bere jen do 20 sekund od začátku po
 
 ## Co vidí uživatel
 
-Na detailu platební skupiny je panel „Odesílání e-mailů na pozadí“. Vidí ho každý, kdo smí skupinu otevřít, bez ohledu na to, kdo dávku zadal a pod jakou rolí je přihlášen. Každá skupina má vlastní dávky a počty. Panel ukazuje dávky, které se zpracovávají, a dokončené dávky s problémem, dokud je někdo s právem úprav neskryje. Stránka se sama neobnovuje, každých 15 sekund se obnoví jen panel, a to jen když se něco zpracovává a záložka je vidět.
+Na detailu platební skupiny je panel „Odesílání e-mailů na pozadí“. Vidí ho každý, kdo smí skupinu otevřít, bez ohledu na to, kdo dávku zadal a pod jakou rolí je přihlášen. Každá skupina má vlastní dávky a počty. Panel ukazuje dávky, které se zpracovávají, a dokončené dávky s problémem, dokud je někdo s právem úprav neskryje. Kdo smí skupinu upravovat, může u běžící dávky zrušit e-maily, které ještě čekají (tlačítko „Zrušit čekající e-maily“). Co už odešlo nebo se právě odesílá, zůstane. Když uživatel uzavře skupinu nebo vypne automatické upomínky a ve frontě ještě čekají e-maily skupiny, dostane upozornění a rozhodne sám, jestli je nechá odejít, nebo je zruší. Sama od sebe je fronta neruší. Stránka se sama neobnovuje, každých 15 sekund se obnoví jen panel, a to jen když se něco zpracovává a záložka je vidět.
 
 ## Administrace
 

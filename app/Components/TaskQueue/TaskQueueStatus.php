@@ -36,7 +36,7 @@ final class TaskQueueStatus extends BaseControl
 
     public function __construct(
         private TaskScope $scope,
-        private bool $canAcknowledge,
+        private bool $canManage,
         private QueryBus $queryBus,
         private TaskQueue $queue,
         private IUserRepository $users,
@@ -58,11 +58,27 @@ final class TaskQueueStatus extends BaseControl
 
     public function handleAcknowledge(int $jobId): void
     {
-        if (! $this->canAcknowledge) {
-            throw new BadRequestException('Nemáte oprávnění skrýt přehled odesílání.', IResponse::S403_Forbidden);
+        if (! $this->canManage) {
+            throw new BadRequestException('Nemáte oprávnění spravovat odesílání.', IResponse::S403_Forbidden);
         }
 
         $this->queue->acknowledge($jobId, $this->scope, $this->users->findCurrentUser()?->getName());
+
+        if (! $this->getPresenter()->isAjax()) {
+            $this->getPresenter()->redirect('this');
+        }
+
+        $this->redrawControl('status');
+    }
+
+    /** Cancels what still waits in a batch; what went out or is being sent stays. */
+    public function handleCancel(int $jobId): void
+    {
+        if (! $this->canManage) {
+            throw new BadRequestException('Nemáte oprávnění spravovat odesílání.', IResponse::S403_Forbidden);
+        }
+
+        $this->queue->cancelWaiting($jobId, $this->scope, $this->users->findCurrentUser()?->getName());
 
         if (! $this->getPresenter()->isAjax()) {
             $this->getPresenter()->redirect('this');
@@ -90,7 +106,7 @@ final class TaskQueueStatus extends BaseControl
             'jobs' => $jobs,
             'isActive' => $activeJobIds !== [],
             'refreshUrl' => $this->link('refresh!', ['followed' => implode(',', $activeJobIds)]),
-            'canAcknowledge' => $this->canAcknowledge,
+            'canManage' => $this->canManage,
             'finishedActionLabel' => $this->finishedActionLabel,
             'finishedActionUrl' => $this->finishedActionUrl,
         ]);

@@ -388,6 +388,53 @@ final class TaskQueueRepository
         );
     }
 
+    /**
+     * Cancels the tasks of a batch of the scope that still wait; a task being processed right now goes on.
+     * Call it inside a transaction.
+     *
+     * @return list<array{type: string, payload: array<string, mixed>}> the cancelled tasks
+     */
+    public function cancelWaitingOfJob(int $jobId, TaskScope $scope, string $message, DateTimeImmutable $now): array
+    {
+        $rows = $this->connection()->fetchAllAssociative(
+            'SELECT i.id, i.payload, j.type FROM task_queue_item i JOIN task_queue_job j ON j.id = i.job_id
+                WHERE i.job_id = ? AND j.scope_type = ? AND j.scope_id = ? AND i.state = ?
+                FOR UPDATE',
+            [$jobId, $scope->type, $scope->id, TaskItemState::PENDING->value],
+            [Types::INTEGER, Types::STRING, Types::INTEGER, Types::STRING],
+        );
+
+        if ($rows === []) {
+            return [];
+        }
+
+        $this->connection()->executeStatement(
+            'UPDATE task_queue_item SET state = ?, finished_at = ?, dedup_key = NULL, message = ? WHERE id IN (?) AND state = ?',
+            [TaskItemState::SKIPPED->value, $now, $message, array_map('intval', array_column($rows, 'id')), TaskItemState::PENDING->value],
+            [Types::STRING, Types::DATETIME_IMMUTABLE, Types::TEXT, ArrayParameterType::INTEGER, Types::STRING],
+        );
+
+        $cancelled = [];
+
+        foreach ($rows as $row) {
+            $payload = Json::decode((string) $row['payload'], forceArrays: true);
+            $cancelled[] = ['type' => (string) $row['type'], 'payload' => is_array($payload) ? $payload : []];
+        }
+
+        return $cancelled;
+    }
+
+    /** Tasks of the scope that wait or are being processed. */
+    public function countWaiting(TaskScope $scope): int
+    {
+        return (int) $this->connection()->fetchOne(
+            'SELECT COUNT(*) FROM task_queue_item i JOIN task_queue_job j ON j.id = i.job_id
+                WHERE j.scope_type = ? AND j.scope_id = ? AND i.state IN (?)',
+            [$scope->type, $scope->id, $this->activeStates()],
+            [Types::STRING, Types::INTEGER, ArrayParameterType::STRING],
+        );
+    }
+
     /** Hides a finished batch from the overview. Only a batch of the given scope can be hidden. */
     public function acknowledge(int $jobId, TaskScope $scope, ?string $name, DateTimeImmutable $now): bool
     {

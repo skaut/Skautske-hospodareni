@@ -61,10 +61,16 @@
                         </ul>
                     </div>
 
+                    <div n:if="!$job->isFinished() && $canManage" class="d-flex flex-wrap gap-2 mt-2">
+                        <a n:href="cancel! jobId => $job->id" class="btn btn-sm btn-outline-danger ajax"
+                           data-confirm="Zrušit e-maily, které ještě čekají na odeslání? Ty, které už odešly, zůstanou."
+                           data-test="task-queue-job-cancel">Zrušit čekající e-maily</a>
+                    </div>
+
                     <div n:if="$job->isFinished()" class="d-flex flex-wrap gap-2 mt-2">
                         <a n:if="$finishedActionUrl !== null" href="{$finishedActionUrl}" class="btn btn-sm btn-light ajax"
                            data-test="task-queue-finished-action">{$finishedActionLabel}</a>
-                        <a n:if="$job->hasProblems() && $canAcknowledge" n:href="acknowledge! jobId => $job->id"
+                        <a n:if="$job->hasProblems() && $canManage" n:href="acknowledge! jobId => $job->id"
                            class="btn btn-sm btn-light ajax" data-test="task-queue-job-acknowledge">Skrýt přehled</a>
                     </div>
                 </div>

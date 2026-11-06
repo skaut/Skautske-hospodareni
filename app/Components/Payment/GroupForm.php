@@ -23,6 +23,8 @@ use App\Model\Payment\ReadModel\Queries\BankAccount\BankAccountsAccessibleByUnit
 use App\Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use App\Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use App\Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
+use App\Model\TaskQueue\ReadModel\Queries\CountWaitingTasksQuery;
+use App\Model\TaskQueue\TaskScope;
 use App\Model\Unit\ReadModel\Queries\UnitsDetailQuery;
 use App\Model\Unit\Unit;
 use App\Model\Utils\MoneyFactory;
@@ -47,6 +49,7 @@ use function array_map;
 use function array_unique;
 use function array_values;
 use function in_array;
+use function is_array;
 use function is_numeric;
 
 final class GroupForm extends BaseControl
@@ -258,6 +261,7 @@ final class GroupForm extends BaseControl
             );
 
             $this->flashMessage('Skupina byla upravena');
+            $this->warnAboutWaitingReminders($originalGroupData, $remindersEnabled && $reminderDaysAfterDue !== null);
         } else {// ADD
             $this->groupId = $this->model->createGroup(
                 $this->unitId->toInt(),
@@ -277,6 +281,28 @@ final class GroupForm extends BaseControl
         }
 
         $this->getPresenter()->redirect(':Payments:Payment:default', ['id' => $this->groupId]);
+    }
+
+    /**
+     * Turning automatic reminders off does not stop the ones already waiting in the queue; the user decides
+     * whether to let them go out or to cancel them in the panel of the group.
+     *
+     * @param array<string, mixed> $originalGroupData
+     */
+    private function warnAboutWaitingReminders(array $originalGroupData, bool $automaticRemindersOn): void
+    {
+        $original = $originalGroupData['emails'][EmailType::PAYMENT_REMINDER] ?? [];
+        $wereOn = is_array($original) && ($original['remindersEnabled'] ?? false) && ($original['reminderDaysAfterDue'] ?? null) !== null;
+
+        if (! $wereOn || $automaticRemindersOn || $this->groupId === null) {
+            return;
+        }
+
+        $waiting = $this->queryBus->handle(new CountWaitingTasksQuery(TaskScope::paymentGroup($this->groupId)));
+
+        if ($waiting > 0) {
+            $this->flashMessage(PaymentEmailMessages::stillWaiting($waiting), 'warning');
+        }
     }
 
     private function addAutomaticReminderFields(BaseForm $form, Container $container, string $remindersId): void

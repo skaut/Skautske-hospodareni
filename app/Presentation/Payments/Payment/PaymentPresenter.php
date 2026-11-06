@@ -30,6 +30,7 @@ use App\Components\Payment\ImportDialog;
 use App\Components\Payment\MassAddForm;
 use App\Components\Payment\PairButton;
 use App\Components\Payment\PaymentDialog;
+use App\Components\Payment\PaymentEmailMessages;
 use App\Components\Payment\PaymentInfoEmailDialog;
 use App\Components\Payment\PaymentList;
 use App\Components\Payment\PaymentNoteDialog;
@@ -55,6 +56,7 @@ use App\Model\Payment\Payment\State;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
 use App\Model\Payment\ReadModel\Queries\PaymentListQuery;
+use App\Model\TaskQueue\ReadModel\Queries\CountWaitingTasksQuery;
 use App\Model\TaskQueue\TaskScope;
 use App\Model\Unit\UnitService;
 use App\Model\User\Manager\PaymentGroupVisitManager;
@@ -336,7 +338,18 @@ final class PaymentPresenter extends PaymentsBasePresenter
         } catch (GroupNotFound) {
         }
 
+        $this->warnAboutWaitingEmails();
         $this->redirect('this');
+    }
+
+    /** The user decides about e-mails that still wait: let them go out, or cancel them in the panel. */
+    private function warnAboutWaitingEmails(): void
+    {
+        $waiting = $this->queryBus->handle(new CountWaitingTasksQuery(TaskScope::paymentGroup($this->id)));
+
+        if ($waiting > 0) {
+            $this->flashMessage(PaymentEmailMessages::stillWaiting($waiting), 'warning');
+        }
     }
 
     public function handleOpenGroup(): void

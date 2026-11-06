@@ -51,6 +51,18 @@ final class PaymentEmailMessages
         return $messages;
     }
 
+    /** Shown when the user stops something (closes the group, turns automatic reminders off) while e-mails still wait. */
+    public static function stillWaiting(int $count): string
+    {
+        $what = match (true) {
+            $count === 1 => 'čeká 1 e-mail',
+            $count < 5 => sprintf('čekají %d e-maily', $count),
+            default => sprintf('čeká %d e-mailů', $count),
+        };
+
+        return sprintf('Ve frontě ještě %s této skupiny. Pokud nemají odejít, zrušte je v panelu Odesílání e-mailů na pozadí.', $what);
+    }
+
     private static function queued(int $count): string
     {
         $what = match (true) {

@@ -10,8 +10,8 @@ use App\Model\TaskQueue\TaskScope;
 interface ITaskQueueStatusFactory
 {
     /**
-     * @param TaskScope $scope          checked by the presenter; the component never shows another scope
-     * @param bool      $canAcknowledge whether the user may hide a finished batch with problems
+     * @param TaskScope $scope     checked by the presenter; the component never shows another scope
+     * @param bool      $canManage whether the user may cancel what still waits and hide a finished batch with problems
      */
-    public function create(TaskScope $scope, bool $canAcknowledge): TaskQueueStatus;
+    public function create(TaskScope $scope, bool $canManage): TaskQueueStatus;
 }

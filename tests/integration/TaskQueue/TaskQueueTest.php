@@ -48,7 +48,7 @@ final class TaskQueueTest extends IntegrationTest
         $this->handler = new RecordingTaskHandler();
         $this->repository = new TaskQueueRepository($this->entityManager);
         $this->processor = new TaskQueueProcessor($this->repository, $this->entityManager, new NullLogger(), [$this->handler], 20, 600);
-        $this->queue = new TaskQueue($this->repository, $this->entityManager);
+        $this->queue = new TaskQueue($this->repository, $this->entityManager, [$this->handler]);
         $this->statusQuery = new TaskQueueStatusQueryHandler(new TaskJobStatusReader($this->entityManager));
     }
 
@@ -272,6 +272,24 @@ final class TaskQueueTest extends IntegrationTest
         [$job] = $this->overview($scope, [$jobId]);
         self::assertTrue($job->isFinished());
         self::assertSame(100, $job->getProgressPercent());
+    }
+
+    /** The user may cancel what still waits, e.g. reminders after turning them off; only in the own scope. */
+    public function testWaitingTasksCanBeCancelledOnlyWithinTheirScope(): void
+    {
+        $scope = TaskScope::paymentGroup(1);
+        $jobId = (int) $this->enqueue($scope, ['first', 'second'])->jobId;
+
+        self::assertSame(2, $this->repository->countWaiting($scope));
+        self::assertSame(0, $this->queue->cancelWaiting($jobId, TaskScope::paymentGroup(2), 'Cizí'));
+        self::assertSame(2, $this->queue->cancelWaiting($jobId, $scope, 'František Maša'));
+
+        self::assertSame(0, $this->repository->countWaiting($scope));
+        $this->tester->seeInDatabase('task_queue_item', ['label' => 'first', 'state' => TaskItemState::SKIPPED->value, 'message' => 'Zrušil(a) František Maša.']);
+        self::assertSame(['first', 'second'], $this->handler->released);
+
+        $this->processAll();
+        self::assertSame([], $this->handler->handled);
     }
 
     public function testBatchCanBeHiddenOnlyWithinItsScope(): void
