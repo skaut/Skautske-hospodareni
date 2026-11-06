@@ -6,6 +6,7 @@ namespace App\Model\Travel;
 
 use App\Model\Common\FilePath;
 use App\Model\Common\ScanNotFound;
+use App\Model\Travel\Vehicle\FuelType;
 use App\Model\Travel\Vehicle\Metadata;
 use App\Model\Travel\Vehicle\RoadworthyScan;
 use App\Model\Unit\Unit;
@@ -43,6 +44,9 @@ class Vehicle
     #[ORM\Column(type: 'float')]
     private float $consumption;
 
+    #[ORM\Column(type: 'string', length: 16, enumType: FuelType::class, options: ['default' => 'combustion'])]
+    private FuelType $fuelType;
+
     #[ORM\Column(type: 'string', length: 64)]
     private string $note = '';
 
@@ -58,7 +62,7 @@ class Vehicle
     #[ORM\OneToMany(targetEntity: RoadworthyScan::class, mappedBy: 'vehicle', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $roadworthyScans;
 
-    public function __construct(string $type, Unit $unit, ?Unit $subunit, string $registration, float $consumption, Metadata $metadata)
+    public function __construct(string $type, Unit $unit, ?Unit $subunit, string $registration, float $consumption, FuelType $fuelType, Metadata $metadata)
     {
         $this->type = $type;
         $this->unitId = $unit->getId();
@@ -69,6 +73,7 @@ class Vehicle
 
         $this->registration = $registration;
         $this->consumption = $consumption;
+        $this->fuelType = $fuelType;
         $this->metadata = $metadata;
 
         $this->roadworthyScans = new ArrayCollection();
@@ -130,6 +135,11 @@ class Vehicle
     public function getConsumption(): float
     {
         return $this->consumption;
+    }
+
+    public function getFuelType(): FuelType
+    {
+        return $this->fuelType;
     }
 
     public function getNote(): string

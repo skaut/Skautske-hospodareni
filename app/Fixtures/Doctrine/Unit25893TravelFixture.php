@@ -11,6 +11,7 @@ use App\Model\Travel\Contract\Passenger as ContractPassenger;
 use App\Model\Travel\Passenger;
 use App\Model\Travel\Travel\TransportType;
 use App\Model\Travel\Vehicle;
+use App\Model\Travel\Vehicle\FuelType;
 use App\Model\Travel\Vehicle\Metadata;
 use App\Model\Unit\Unit;
 use App\Model\Utils\MoneyFactory;
@@ -58,6 +59,7 @@ final class Unit25893TravelFixture extends AbstractFixture
             null,
             $registration,
             $consumption,
+            FuelType::COMBUSTION,
             new Metadata(new DateTimeImmutable('2026-01-15 10:00:00'), 'Fixture Admin'),
         );
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Travel\Commands\Vehicle;
 
 use App\Model\Travel\Handlers\Vehicle\CreateVehicleHandler;
+use App\Model\Travel\Vehicle\FuelType;
 
 /** @see CreateVehicleHandler */
 final class CreateVehicle
@@ -15,6 +16,7 @@ final class CreateVehicle
         private ?int $subunitId,
         private string $registration,
         private float $consumption,
+        private FuelType $fuelType,
         private int $userId,
     ) {
     }
@@ -42,6 +44,11 @@ final class CreateVehicle
     public function getConsumption(): float
     {
         return $this->consumption;
+    }
+
+    public function getFuelType(): FuelType
+    {
+        return $this->fuelType;
     }
 
     public function getUserId(): int

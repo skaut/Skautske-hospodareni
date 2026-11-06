@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Model\DTO\Travel;
 
+use App\Model\Travel\Vehicle\FuelType;
 use DateTimeImmutable;
 use Nette\SmartObject;
 
@@ -14,6 +15,7 @@ use Nette\SmartObject;
  * @property string            $label
  * @property int|null          $subunitId
  * @property float             $consumption
+ * @property FuelType          $fuelType
  * @property bool              $archived
  * @property DateTimeImmutable $createdAt
  * @property string            $authorName
@@ -30,6 +32,7 @@ class Vehicle
         private string $label,
         private ?int $subunitId,
         private float $consumption,
+        private FuelType $fuelType,
         private bool $archived,
         private DateTimeImmutable $createdAt,
         private string $authorName,
@@ -69,6 +72,11 @@ class Vehicle
     public function getConsumption(): float
     {
         return $this->consumption;
+    }
+
+    public function getFuelType(): FuelType
+    {
+        return $this->fuelType;
     }
 
     public function isArchived(): bool
