@@ -100,20 +100,23 @@ final class SkautisLoginRefresher
     }
 
     /**
-     * Roles loaded by the last background extension, each returned only once.
+     * Roles loaded by the last background extension and not yet applied.
      *
-     * @return stdClass[]|null null when there is nothing new since the last call
+     * @return stdClass[]|null null when there is nothing new since they were last applied
      */
-    public function takeFreshRoles(): ?array
+    public function freshRoles(): ?array
     {
         $loginId = $this->user->getLoginId();
-        $roles = $loginId === null ? null : $this->cache->load('roles.'.$loginId);
-        if ($roles === null) {
-            return null;
+
+        return $loginId === null ? null : $this->cache->load('roles.'.$loginId);
+    }
+
+    /** Call once the fresh roles are applied, so later requests skip them. */
+    public function forgetFreshRoles(): void
+    {
+        $loginId = $this->user->getLoginId();
+        if ($loginId !== null) {
+            $this->cache->remove('roles.'.$loginId);
         }
-
-        $this->cache->remove('roles.'.$loginId);
-
-        return $roles;
     }
 }

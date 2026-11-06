@@ -315,14 +315,19 @@ abstract class BasePresenter extends Presenter
             return;
         }
 
-        $roles = $this->skautisLoginRefresher->takeFreshRoles();
+        $roles = $this->skautisLoginRefresher->freshRoles();
         $identity = $this->getUser()->getIdentity();
         if ($roles !== null && $identity instanceof SimpleIdentity) {
-            $identity->skautisRoles = $roles;
-            $identity->currentRole = $this->userService->getActualRole($roles);
-            if ($identity->currentRole === null) { // the role ended in SkautIS, ErrorPresenter switches to another one
+            $currentRole = $this->userService->getActualRole($roles);
+            if ($currentRole === null) {
+                // The role ended in SkautIS. ErrorPresenter switches to another one; until it does,
+                // the roles stay unapplied, so every request tries again.
                 throw new MissingCurrentRole();
             }
+
+            $identity->skautisRoles = $roles;
+            $identity->currentRole = $currentRole;
+            $this->skautisLoginRefresher->forgetFreshRoles();
         }
 
         $userId = (int) $this->getUser()->getId();

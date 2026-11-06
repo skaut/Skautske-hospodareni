@@ -109,7 +109,7 @@ final class SkautisLoginRefresherTest extends Unit
         self::assertFalse($this->createRefresher()->isLoginDead());
     }
 
-    public function testRolesLoadedWithExtensionAreTakenOnceOnNextRequest(): void
+    public function testRolesLoadedWithExtensionStayUntilForgotten(): void
     {
         $this->logInWithLogoutAt('2026-11-04 12:10:00');
         $roles = [(object) ['ID' => 10], (object) ['ID' => 20]];
@@ -123,8 +123,11 @@ final class SkautisLoginRefresherTest extends Unit
         });
 
         $nextRequest = $this->createRefresher();
-        self::assertEquals($roles, $nextRequest->takeFreshRoles());
-        self::assertNull($nextRequest->takeFreshRoles());
+        self::assertEquals($roles, $nextRequest->freshRoles());
+        self::assertEquals($roles, $nextRequest->freshRoles(), 'Not applied yet, so the next request tries again.');
+
+        $nextRequest->forgetFreshRoles();
+        self::assertNull($nextRequest->freshRoles());
     }
 
     public function testUserWithoutActiveRoleGetsEmptyRoles(): void
@@ -137,7 +140,7 @@ final class SkautisLoginRefresherTest extends Unit
         $this->refresher->extend(self::USER_ID, static function (): void {
         });
 
-        self::assertSame([], $this->createRefresher()->takeFreshRoles());
+        self::assertSame([], $this->createRefresher()->freshRoles());
     }
 
     public function testFailedExtensionLoadsNoRoles(): void
@@ -148,7 +151,7 @@ final class SkautisLoginRefresherTest extends Unit
         $this->refresher->extend(self::USER_ID, static function (): void {
         });
 
-        self::assertNull($this->createRefresher()->takeFreshRoles());
+        self::assertNull($this->createRefresher()->freshRoles());
     }
 
     public function testLoginIsNotDeadWithoutFailedExtension(): void
