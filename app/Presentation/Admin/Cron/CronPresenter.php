@@ -93,7 +93,7 @@ final class CronPresenter extends AdminBasePresenter
     }
 
     /**
-     * The offered intervals; a default or current schedule outside of them stays selectable as well.
+     * The intervals offered for the job; a default or current schedule outside of them stays selectable as well.
      *
      * @return array<string, string>
      */
@@ -101,14 +101,12 @@ final class CronPresenter extends AdminBasePresenter
     {
         $items = [];
 
-        foreach ([$job->defaultSchedule, $job->schedule] as $schedule) {
-            if (CronInterval::tryFrom($schedule) === null) {
-                $items[$schedule] = $schedule;
-            }
+        foreach (CronInterval::availableFor($job->name) as $interval) {
+            $items[$interval->value] = $interval->getLabel();
         }
 
-        foreach (CronInterval::cases() as $interval) {
-            $items[$interval->value] = $interval->getLabel();
+        foreach ([$job->defaultSchedule, $job->schedule] as $schedule) {
+            $items[$schedule] ??= CronInterval::tryFrom($schedule)?->getLabel() ?? $schedule;
         }
 
         $items[$job->defaultSchedule] .= ' (výchozí)';

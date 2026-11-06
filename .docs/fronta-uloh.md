@@ -46,6 +46,8 @@ Každá úloha (např. jeden e-mail) prochází stavy:
 
 Fronta je v cronu poslední a nové úlohy bere jen do 20 sekund od začátku požadavku. Když čas spotřebují úlohy před ní (např. párování), počká na další minutu. Google klient má timeout 8 s. Před odesláním ale může ještě obnovit token odesílatele, což je další volání Googlu. Nevratnou část (předání e-mailu Gmailu) proto úloha začne jen do 21. sekundy, kdy ji ještě stihne dokončit do 30 sekund. Když už to nestihne, nic se nestane, úloha se bez započítání pokusu vrátí do fronty a běh skončí. Úlohy se berou střídavě z jednotlivých dávek, malá dávka jedné skupiny tak nečeká, až doběhne velká dávka jiné.
 
+Interval „každou minutu“ jde v Admin → Cron nastavit jen frontě. Ostatní úlohy běží ve stejném požadavku před ní a při běhu každou minutu by jí mohly vzít všechen čas.
+
 ## Co vidí uživatel
 
 Na detailu platební skupiny je panel „Odesílání e-mailů na pozadí“. Vidí ho každý, kdo smí skupinu otevřít, bez ohledu na to, kdo dávku zadal a pod jakou rolí je přihlášen. Každá skupina má vlastní dávky a počty. Panel ukazuje dávky, které se zpracovávají, a dokončené dávky s problémem, dokud je někdo s právem úprav neskryje. Kdo smí skupinu upravovat, může u běžící dávky zrušit e-maily, které ještě čekají (tlačítko „Zrušit čekající e-maily“). Co už odešlo nebo se právě odesílá, zůstane. Když uživatel uzavře skupinu nebo vypne automatické upomínky a ve frontě ještě čekají e-maily skupiny, dostane upozornění a rozhodne sám, jestli je nechá odejít, nebo je zruší. Sama od sebe je fronta neruší. Stránka se sama neobnovuje, každých 15 sekund se obnoví jen panel, a to jen když se něco zpracovává a záložka je vidět.

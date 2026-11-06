@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace App\Model\Cron;
 
+use App\Model\Cron\Services\CronJobRegistry;
+
+use function array_filter;
+use function array_values;
+
 /**
  * Intervals an administrator can choose for a cron job. A fixed list instead of a free cron expression
  * keeps every schedule describable in plain words.
@@ -19,6 +24,23 @@ enum CronInterval: string
     case EVERY_6_HOURS = '0 */6 * * *';
     case EVERY_12_HOURS = '0 */12 * * *';
     case DAILY = '0 6 * * *';
+
+    /**
+     * Intervals offered for a job. Only the task queue may run every minute: the other jobs share the same
+     * 30 s request before it, and running them every minute could leave the queue no time to send anything.
+     *
+     * @return list<self>
+     */
+    public static function availableFor(string $jobName): array
+    {
+        $intervals = self::cases();
+
+        if ($jobName === CronJobRegistry::TASK_QUEUE) {
+            return $intervals;
+        }
+
+        return array_values(array_filter($intervals, static fn (self $interval): bool => $interval !== self::EVERY_MINUTE));
+    }
 
     public function getLabel(): string
     {
