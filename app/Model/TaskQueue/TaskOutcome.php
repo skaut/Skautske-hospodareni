@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Model\TaskQueue;
 
-/** How one task of a batch run right away ended. */
+/** How one task ended in a run of the queue. */
 final class TaskOutcome
 {
     public function __construct(

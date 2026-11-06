@@ -19,6 +19,7 @@ use Psr\Log\NullLogger;
 
 use function array_map;
 use function microtime;
+use function min;
 
 final class TaskQueueTest extends IntegrationTest
 {
@@ -47,7 +48,7 @@ final class TaskQueueTest extends IntegrationTest
         $this->handler = new RecordingTaskHandler();
         $this->repository = new TaskQueueRepository($this->entityManager);
         $this->processor = new TaskQueueProcessor($this->repository, $this->entityManager, new NullLogger(), [$this->handler], 20, 600);
-        $this->queue = new TaskQueue($this->repository, $this->processor, $this->entityManager);
+        $this->queue = new TaskQueue($this->repository, $this->entityManager);
         $this->statusQuery = new TaskQueueStatusQueryHandler(new TaskJobStatusReader($this->entityManager));
     }
 
@@ -86,7 +87,7 @@ final class TaskQueueTest extends IntegrationTest
     public function testOnlyOneRunTakesTheTask(): void
     {
         $jobId = (int) $this->enqueue(TaskScope::paymentGroup(1), ['x'])->jobId;
-        $itemId = (int) $this->repository->findFirstPendingItemOfJob($jobId, new DateTimeImmutable('+1 second'));
+        $itemId = $this->firstPendingItem($jobId);
 
         self::assertNotNull($this->repository->claim($itemId, 'firstrunfirstrunfirstrunfirstrun', new DateTimeImmutable()));
         self::assertNull($this->repository->claim($itemId, 'secondrunsecondrunsecondrunsecon', new DateTimeImmutable()));
@@ -222,17 +223,6 @@ final class TaskQueueTest extends IntegrationTest
         self::assertSame(100, $job->getProgressPercent());
     }
 
-    public function testBatchRunRightAwayIsHiddenFromOverview(): void
-    {
-        $scope = TaskScope::paymentGroup(1);
-        $jobId = (int) $this->enqueue($scope, ['now'], ['fail'])->jobId;
-
-        $outcomes = $this->queue->runNow($jobId, $scope, 'František Maša');
-
-        self::assertSame([TaskItemState::FAILED], array_map(static fn (TaskOutcome $outcome): TaskItemState => $outcome->state, $outcomes));
-        self::assertSame([], $this->overview($scope, [$jobId]));
-    }
-
     public function testBatchCanBeHiddenOnlyWithinItsScope(): void
     {
         $scope = TaskScope::paymentGroup(1);
@@ -323,7 +313,9 @@ final class TaskQueueTest extends IntegrationTest
 
     private function firstPendingItem(int $jobId): int
     {
-        return (int) $this->repository->findFirstPendingItemOfJob($jobId, new DateTimeImmutable('+1 second'));
+        $ids = array_map('intval', $this->tester->grabColumnFromDatabase('task_queue_item', 'id', ['job_id' => $jobId, 'state' => TaskItemState::PENDING->value]));
+
+        return $ids === [] ? 0 : min($ids);
     }
 
     /**

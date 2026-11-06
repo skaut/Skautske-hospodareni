@@ -121,7 +121,7 @@ final class PaymentInfoEmailDialog extends Dialog
         );
     }
 
-    /** One e-mail goes out right away, more of them wait in the queue (PaymentEmailQueue). */
+    /** The e-mails wait in the queue (PaymentEmailQueue). */
     private function sendPaymentInfoEmails(): void
     {
         $type = EmailType::get(EmailType::PAYMENT_INFO);

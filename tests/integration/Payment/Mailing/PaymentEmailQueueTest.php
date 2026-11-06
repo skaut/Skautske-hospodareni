@@ -36,8 +36,8 @@ use IntegrationTest;
 use function microtime;
 
 /**
- * E-mails of payments go through the task queue: one right away, more in the background, each at most
- * once, recorded under the name of who sent them.
+ * E-mails of payments go through the task queue, each at most once, recorded under the name of who
+ * sent them.
  */
 final class PaymentEmailQueueTest extends IntegrationTest
 {
@@ -76,14 +76,20 @@ final class PaymentEmailQueueTest extends IntegrationTest
         $this->createOAuth();
     }
 
-    public function testOneEmailGoesOutRightAway(): void
+    /** Even a single e-mail waits for the cron, so it can never run next to the same e-mail in the queue. */
+    public function testOneEmailAlsoWaitsInQueue(): void
     {
         $this->createGroup();
         $paymentId = $this->createPayment();
 
         $dispatch = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), [$paymentId]);
 
-        self::assertSame(TaskItemState::DONE, $dispatch->sentNow?->state);
+        self::assertSame(1, $dispatch->queued);
+        self::assertSame([], $this->mailer->messages);
+
+        $this->users->setUser(null);
+        $this->processQueue();
+
         self::assertCount(1, $this->mailer->messages);
         $this->tester->seeInDatabase('pa_payment_sent_emails', [
             'payment_id' => $paymentId,
@@ -99,7 +105,6 @@ final class PaymentEmailQueueTest extends IntegrationTest
 
         $dispatch = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), $paymentIds);
 
-        self::assertNull($dispatch->sentNow);
         self::assertSame(3, $dispatch->queued);
         self::assertSame([], $this->mailer->messages);
 
@@ -118,12 +123,11 @@ final class PaymentEmailQueueTest extends IntegrationTest
 
         $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), $paymentIds);
         $again = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), $paymentIds);
-        // A single e-mail sent by hand cannot overtake the same e-mail waiting in the queue either.
         $single = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), [$paymentIds[0]]);
         $this->processQueue();
 
         self::assertSame(2, $again->alreadyQueued);
-        self::assertNull($single->sentNow);
+        self::assertSame(0, $single->queued);
         self::assertSame(1, $single->alreadyQueued);
         self::assertCount(2, $this->mailer->messages);
     }
@@ -136,9 +140,40 @@ final class PaymentEmailQueueTest extends IntegrationTest
 
         $dispatch = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), [$foreignPaymentId]);
 
-        self::assertNull($dispatch->sentNow);
         self::assertSame(0, $dispatch->queued);
         self::assertSame([], $this->mailer->messages);
+    }
+
+    public function testReminderOfPaymentThatCannotGetOneIsNotQueued(): void
+    {
+        $this->createGroup();
+        $overdueId = $this->createPayment();
+        $notDueYetId = $this->createPayment(ChronosDate::today()->addDays(10));
+
+        $dispatch = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_REMINDER), [$overdueId, $notDueYetId]);
+
+        self::assertSame(1, $dispatch->queued);
+        self::assertSame(1, $dispatch->reminderNotAllowed);
+        $this->tester->dontSeeInDatabase('task_queue_item', ['label' => 'Platba '.$notDueYetId]);
+    }
+
+    /** A reminder sent by hand and an automatic one are the same e-mail: only one of them may wait or run. */
+    public function testReminderByHandAndAutomaticReminderNeverWaitTogether(): void
+    {
+        $this->createGroup(reminderDaysAfterDue: 3);
+        $paymentId = $this->createPayment(ChronosDate::today()->subDays(5));
+
+        $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_REMINDER), [$paymentId]);
+        $this->queueAutomaticReminders();
+
+        self::assertSame(1, (int) $this->tester->grabNumRecords('task_queue_item', ['label' => 'Platba '.$paymentId]));
+
+        $this->processQueue();
+        $this->queueAutomaticReminders();
+        $this->processQueue();
+
+        self::assertCount(1, $this->mailer->messages);
+        $this->tester->seeInDatabase('pa_payment_sent_emails', ['payment_id' => $paymentId, 'sender_name' => self::USER_NAME]);
     }
 
     public function testReminderOfPaymentPaidMeanwhileIsLeftOut(): void
@@ -163,6 +198,7 @@ final class PaymentEmailQueueTest extends IntegrationTest
         $dueRecently = $this->createPayment(ChronosDate::today()->subDays(1));
         $remindedByHand = $this->createPayment(ChronosDate::today()->subDays(10));
         $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_REMINDER), [$remindedByHand]);
+        $this->processQueue();
         $this->mailer->messages = [];
 
         $this->queueAutomaticReminders();

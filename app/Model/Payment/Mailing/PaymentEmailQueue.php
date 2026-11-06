@@ -19,12 +19,11 @@ use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 
 use function array_unique;
-use function count;
 
 /**
- * The only way e-mails of payments are sent. One e-mail sent by hand goes out right away, more e-mails
- * wait in the task queue, which the cron works through. Either way the e-mail goes through a queued
- * task, so the same e-mail of a payment cannot be sent twice at the same time.
+ * The only way e-mails of payments are sent: every e-mail waits in the task queue, which the cron works
+ * through. A queued e-mail cannot be queued again until it finishes, so the same e-mail of a payment
+ * cannot be sent twice at the same time.
  */
 final class PaymentEmailQueue
 {
@@ -42,30 +41,43 @@ final class PaymentEmailQueue
     ) {
     }
 
-    /** @param int[] $paymentIds payments of other groups are left out */
+    /**
+     * Queues the e-mails. Payments of other groups are left out, and so are reminders of payments
+     * that cannot get one now (not overdue, closed, or reminded today).
+     *
+     * @param int[] $paymentIds
+     */
     public function send(int $groupId, EmailType $type, array $paymentIds): PaymentEmailDispatch
     {
         $tasks = [];
+        $reminderNotAllowed = 0;
+        $isReminder = $type->equalsValue(EmailType::PAYMENT_REMINDER);
 
         foreach (array_unique($paymentIds) as $paymentId) {
             $payment = $this->findPayment((int) $paymentId);
 
-            if ($payment !== null && $payment->getGroupId() === $groupId) {
-                $tasks[] = $this->task(new PaymentEmailTask($payment->getId(), $type), $payment);
+            if ($payment === null || $payment->getGroupId() !== $groupId) {
+                continue;
             }
+
+            if ($isReminder && ! $payment->canSendReminder()) {
+                ++$reminderNotAllowed;
+
+                continue;
+            }
+
+            $tasks[] = $this->task(new PaymentEmailTask($payment->getId(), $type), $payment);
         }
 
-        $senderName = $this->users->findCurrentUser()?->getName();
-        $scope = TaskScope::paymentGroup($groupId);
-        $result = $this->queue->enqueue(PaymentEmailTaskHandler::TYPE, $scope, self::label($type), $senderName, $tasks);
+        $result = $this->queue->enqueue(
+            PaymentEmailTaskHandler::TYPE,
+            TaskScope::paymentGroup($groupId),
+            self::label($type),
+            $this->users->findCurrentUser()?->getName(),
+            $tasks,
+        );
 
-        if ($result->jobId !== null && count($tasks) === 1) {
-            foreach ($this->queue->runNow($result->jobId, $scope, $senderName) as $outcome) {
-                return PaymentEmailDispatch::sentNow($outcome);
-            }
-        }
-
-        return PaymentEmailDispatch::queued($result);
+        return PaymentEmailDispatch::fromResult($result, $reminderNotAllowed);
     }
 
     /**
@@ -113,7 +125,8 @@ final class PaymentEmailQueue
 
     /**
      * Marks the payments and queues their automatic reminder in one transaction, so each payment gets it
-     * exactly once.
+     * exactly once. A payment whose reminder sent by hand still waits in the queue is left for a later
+     * day: when that reminder goes out, the payment no longer gets the automatic one.
      *
      * @param Payment[] $payments
      */
@@ -121,12 +134,17 @@ final class PaymentEmailQueue
     {
         return $this->entityManager->wrapInTransaction(function () use ($group, $payments): EnqueueResult {
             $now = new DateTimeImmutable();
+            $type = EmailType::get(EmailType::PAYMENT_REMINDER);
             $tasks = [];
 
             foreach ($payments as $payment) {
+                if ($this->isQueued($payment->getId(), $type)) {
+                    continue;
+                }
+
                 $payment->markAutomaticReminderQueued($now);
                 $this->payments->save($payment);
-                $tasks[] = $this->task(new PaymentEmailTask($payment->getId(), EmailType::get(EmailType::PAYMENT_REMINDER), automatic: true), $payment);
+                $tasks[] = $this->task(new PaymentEmailTask($payment->getId(), $type, automatic: true), $payment);
             }
 
             return $this->queue->enqueue(

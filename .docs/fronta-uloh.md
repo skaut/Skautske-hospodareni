@@ -4,18 +4,17 @@ Hosting neumí pustit proces na pozadí ani příkaz v konzoli s přístupem do 
 
 ## Kdy se pošta posílá přes frontu
 
-Platí jedno pravidlo: **jeden e-mail odejde hned, víc e-mailů najednou odchází přes frontu**.
+Platí jedno pravidlo: **každý e-mail plateb odchází přes frontu**, i jeden jediný. Odejde do minuty, až ho vezme cron. Mimo frontu jde jen testovací e-mail na vlastní adresu.
 
-| Odkud | E-mail | Jak odejde |
-| --- | --- | --- |
-| Obálka nebo zvonek u jedné platby | platební údaje, upomínka | hned |
-| Menu E-mail → Rozeslat e-maily, hromadná akce Odeslat email | platební údaje | fronta (jedna vybraná platba odejde hned) |
-| Menu E-mail → Rozeslat upomínky, hromadná akce Odeslat upomínku | upomínka | fronta (jedna vybraná platba odejde hned) |
-| Dokončení platby (Zaplaceno, párování s bankou, import výpisu) | potvrzení o úhradě | vždy fronta |
-| Automatické upomínky (cron) | upomínka | fronta |
-| Testovací e-mail | test na vlastní adresu | hned, mimo frontu |
+| Odkud | E-mail |
+| --- | --- |
+| Obálka nebo zvonek u jedné platby | platební údaje, upomínka |
+| Menu E-mail → Rozeslat e-maily, hromadná akce Odeslat email | platební údaje |
+| Menu E-mail → Rozeslat upomínky, hromadná akce Odeslat upomínku | upomínka |
+| Dokončení platby (Zaplaceno, párování s bankou, import výpisu) | potvrzení o úhradě |
+| Automatické upomínky (cron) | upomínka |
 
-I e-mail, který odejde hned, projde záznamem ve frontě. Díky tomu nejde poslat ručně e-mail, který už ve frontě čeká, a naopak.
+Upomínka poslaná ručně a automatická upomínka jsou pro frontu stejný e-mail. Ve frontě tak může čekat nebo běžet jen jedna z nich. Když čeká ruční upomínka, automatická se ten den nezařadí, a když ruční upomínka odejde, automatická už se nepošle. Upomínky plateb, které ji teď dostat nemohou (nejsou po splatnosti, jsou uzavřené nebo už dnes upomínku dostaly), se do fronty vůbec nezařadí a uživatel se dozví, u kolika plateb to bylo.
 
 Co se nemění: typy e-mailů, šablony, záznam o odeslání u platby (počet obálek v seznamu) a jméno odesílatele. Do záznamu i do šablony se dosadí jméno toho, kdo e-maily zadal. U automatických úloh je to „AUTOMAT“, jako dřív. Údaje platby (částka, VS, příjemci) se berou až v okamžiku odeslání. Když se platba mezitím zaplatí nebo zruší, upomínka se vynechá.
 
@@ -72,5 +71,5 @@ Postup převedení:
 - Nový typ úlohy `invoice_email`, rozsah fakturační řada (`invoice_sequence` + id), klíč proti duplicitě `invoice_email:<typ>:<id faktury>`.
 - `InvoiceMailingService` rozdělit stejně jako u plateb na sestavení e-mailu a odeslání. Záznam o pokusu (`recordEmailAttempt`) zůstane. Nejisté odeslání se zapíše jako neúspěšný pokus s poznámkou.
 - Render PDF má timeout 60 s, což se do rozpočtu fronty nevejde. Pro frontu timeout zkrátit (při překročení se úloha vrátí do fronty, nic neodešlo), nebo PDF vyrenderovat už při zařazení.
-- Hromadné odeslání, automatické upomínky po splatnosti a potvrzení po spárování pak půjdou podle stejného pravidla: jeden e-mail hned, víc přes frontu.
+- Hromadné odeslání, automatické upomínky po splatnosti a potvrzení po spárování pak půjdou podle stejného pravidla jako platby: všechno přes frontu.
 - Panel stavu (`TaskQueueStatus`) dát na seznam faktur dané řady.

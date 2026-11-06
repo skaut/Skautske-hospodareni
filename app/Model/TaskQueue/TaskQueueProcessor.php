@@ -103,32 +103,6 @@ final class TaskQueueProcessor
         }
     }
 
-    /**
-     * Runs the waiting tasks of one batch right away, e.g. a single e-mail sent with a button.
-     *
-     * @return list<TaskOutcome>
-     */
-    public function processJob(int $jobId): array
-    {
-        $outcomes = [];
-
-        while ($this->entityManager->isOpen()) {
-            $itemId = $this->repository->findFirstPendingItemOfJob($jobId, new DateTimeImmutable());
-
-            if ($itemId === null) {
-                break;
-            }
-
-            $outcome = $this->processItem($itemId);
-
-            if ($outcome !== null) {
-                $outcomes[] = $outcome;
-            }
-        }
-
-        return $outcomes;
-    }
-
     /** @return TaskOutcome|null null when another run took the task */
     private function processItem(int $itemId): ?TaskOutcome
     {

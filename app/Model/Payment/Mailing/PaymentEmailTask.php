@@ -43,9 +43,12 @@ final class PaymentEmailTask
         ];
     }
 
-    /** The same e-mail of the same payment never waits in the queue twice. */
+    /**
+     * The same e-mail of the same payment never waits in the queue twice. An automatic reminder and
+     * a reminder sent by hand are the same e-mail, so only one of them can wait or run at a time.
+     */
     public function dedupKey(): string
     {
-        return PaymentEmailTaskHandler::TYPE.':'.($this->automatic ? 'automatic_reminder' : $this->emailType->getValue()).':'.$this->paymentId;
+        return PaymentEmailTaskHandler::TYPE.':'.$this->emailType->getValue().':'.$this->paymentId;
     }
 }

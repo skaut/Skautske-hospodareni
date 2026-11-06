@@ -122,17 +122,6 @@ final class TaskQueueRepository
         return array_map('intval', array_column($rows, 'id', 'job_id'));
     }
 
-    public function findFirstPendingItemOfJob(int $jobId, DateTimeImmutable $now): ?int
-    {
-        $id = $this->connection()->fetchOne(
-            'SELECT MIN(id) FROM task_queue_item WHERE job_id = ? AND state = ? AND available_at <= ?',
-            [$jobId, TaskItemState::PENDING->value, $now],
-            [Types::INTEGER, Types::STRING, Types::DATETIME_IMMUTABLE],
-        );
-
-        return $id === null || $id === false ? null : (int) $id;
-    }
-
     /** @return ClaimedTask|null null when another run took the task first */
     public function claim(int $itemId, string $token, DateTimeImmutable $now): ?ClaimedTask
     {

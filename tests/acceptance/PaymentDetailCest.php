@@ -575,8 +575,9 @@ JS);
         $I->seeElement($selector.'.ui--sendEmail');
         $I->dontSeeElement('[data-test="payment-bank-transaction-action-'.$paymentId.'"]');
         $I->clickStable($selector);
-        // One e-mail goes out right away, the queue is only for more of them.
-        $I->waitForText('E-mail byl odeslán.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        // Even one e-mail waits in the queue, the cron sends it.
+        $I->waitForText('1 e-mail byl zařazen k odeslání.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->runCronJob('taskQueue');
         $I->seeInDatabase('pa_payment_sent_emails', ['payment_id' => $paymentId, 'type' => 'payment_info']);
     }
 

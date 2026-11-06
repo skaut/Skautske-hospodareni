@@ -13,14 +13,13 @@ use function count;
 /**
  * Queue of tasks run in the background by the cron, see {@see TaskQueueProcessor}.
  *
- * Whenever more than one e-mail is sent at once, it goes through this queue, so a request never
- * waits for many slow calls and no e-mail is sent twice.
+ * E-mails of payments go through this queue, so a request never waits for slow calls and no e-mail
+ * is sent twice.
  */
 final class TaskQueue
 {
     public function __construct(
         private TaskQueueRepository $repository,
-        private TaskQueueProcessor $processor,
         private EntityManagerInterface $entityManager,
     ) {
     }
@@ -70,28 +69,6 @@ final class TaskQueue
     public function addToJob(int $jobId, NewTask $task): bool
     {
         return $this->repository->addItemToExistingJob($jobId, $task, new DateTimeImmutable());
-    }
-
-    /**
-     * Runs a batch right away in this request, e.g. one e-mail sent with a button. The result is
-     * reported to the user directly, so a finished batch is hidden from the overview, unless it was
-     * interrupted and nobody knows whether it ran.
-     *
-     * @return list<TaskOutcome>
-     */
-    public function runNow(int $jobId, TaskScope $scope, ?string $userName): array
-    {
-        $outcomes = $this->processor->processJob($jobId);
-
-        foreach ($outcomes as $outcome) {
-            if ($outcome->state === TaskItemState::UNCERTAIN) {
-                return $outcomes;
-            }
-        }
-
-        $this->repository->acknowledge($jobId, $scope, $userName, new DateTimeImmutable());
-
-        return $outcomes;
     }
 
     /** Hides a finished batch of the scope from the overview. */

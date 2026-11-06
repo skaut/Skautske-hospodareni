@@ -242,7 +242,7 @@ final class PaymentList extends BaseControl
     }
 
     /**
-     * One reminder goes out right away, more of them wait in the queue (PaymentEmailQueue).
+     * Reminders wait in the queue (PaymentEmailQueue), payments that cannot get one now are left out.
      *
      * @param array<int,int> $ids
      */
