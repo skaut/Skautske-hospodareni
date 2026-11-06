@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace App\Model\TaskQueue;
 
 use App\Model\TaskQueue\Exception\TaskLost;
+use App\Model\TaskQueue\Exception\TaskOutOfTime;
 use App\Model\TaskQueue\Repository\TaskQueueRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+
+use function microtime;
+
+use const PHP_FLOAT_MAX;
 
 /** What a handler gets for one task, and the two moments it reports back to the queue. */
 final class TaskContext
@@ -16,10 +21,12 @@ final class TaskContext
 
     private bool $completed = false;
 
+    /** @param float $irreversibleBefore Unix time after which an irreversible step would not finish within the request */
     public function __construct(
         private ClaimedTask $task,
         private TaskQueueRepository $repository,
         private EntityManagerInterface $entityManager,
+        private float $irreversibleBefore = PHP_FLOAT_MAX,
     ) {
     }
 
@@ -39,10 +46,15 @@ final class TaskContext
      * Call right before the effect that cannot be taken back. When the run dies after this point,
      * the task is never run again.
      *
-     * @throws TaskLost when another run took the task over meanwhile; nothing may happen then
+     * @throws TaskOutOfTime when the effect would not finish within the request; it waits for the next run
+     * @throws TaskLost      when another run took the task over meanwhile; nothing may happen then
      */
     public function beginIrreversible(): void
     {
+        if (microtime(true) > $this->irreversibleBefore) {
+            throw new TaskOutOfTime('No time left for the irreversible step in this run.');
+        }
+
         if (! $this->repository->markRunning($this->task, new DateTimeImmutable())) {
             throw new TaskLost('The task was taken over by another run.');
         }

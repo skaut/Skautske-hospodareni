@@ -6,6 +6,7 @@ namespace App\Model\TaskQueue;
 
 use App\Model\TaskQueue\Exception\TaskFailed;
 use App\Model\TaskQueue\Exception\TaskLost;
+use App\Model\TaskQueue\Exception\TaskOutOfTime;
 use App\Model\TaskQueue\Exception\TaskRetryLater;
 use App\Model\TaskQueue\Exception\TaskSkipped;
 use App\Model\TaskQueue\Repository\TaskQueueRepository;
@@ -38,9 +39,11 @@ final class TaskQueueProcessor
 
     /**
      * @param TaskHandler[] $handlers
-     * @param int           $budgetSeconds how long after the start of the request new tasks may be taken
-     * @param int           $leaseSeconds  after this time a task of a run that did not finish counts as abandoned;
-     *                                     it must be longer than any request can run
+     * @param int           $budgetSeconds       how long after the start of the request new tasks may be taken
+     * @param int           $leaseSeconds        after this time a task of a run that did not finish counts as abandoned;
+     *                                           it must be longer than any request can run
+     * @param int           $requestLimitSeconds how long the hosting lets a request run
+     * @param int           $irreversibleSeconds the longest irreversible step of a task, e.g. one call to Gmail
      */
     public function __construct(
         private TaskQueueRepository $repository,
@@ -49,6 +52,8 @@ final class TaskQueueProcessor
         array $handlers,
         private int $budgetSeconds,
         private int $leaseSeconds,
+        private int $requestLimitSeconds = 30,
+        private int $irreversibleSeconds = 9,
     ) {
         foreach ($handlers as $handler) {
             $this->handlers[$handler->getType()] = $handler;
@@ -63,6 +68,9 @@ final class TaskQueueProcessor
     public function processDue(?float $deadline = null): void
     {
         $deadline ??= $this->requestStartedAt() + $this->budgetSeconds;
+        // A task taken just before the deadline may spend time before its irreversible step (e.g. refreshing
+        // the token of Google), so the step itself may only begin while it can still end within the request.
+        $irreversibleBefore = $deadline - $this->budgetSeconds + $this->requestLimitSeconds - $this->irreversibleSeconds;
         $now = new DateTimeImmutable();
 
         $this->repository->deleteFinishedJobsCreatedBefore($now->modify(self::RETENTION));
@@ -95,7 +103,12 @@ final class TaskQueueProcessor
             $jobId = $this->leastServedJob($candidates, $servedByJob);
             $servedByJob[$jobId] = ($servedByJob[$jobId] ?? 0) + 1;
 
-            $stats->record($this->processItem($candidates[$jobId]));
+            try {
+                $stats->record($this->processItem($candidates[$jobId], $irreversibleBefore));
+            } catch (TaskOutOfTime) {
+                // A task had no time left for its irreversible step, so the run takes no more.
+                break;
+            }
         }
 
         if ($runId !== null) {
@@ -103,8 +116,12 @@ final class TaskQueueProcessor
         }
     }
 
-    /** @return TaskOutcome|null null when another run took the task */
-    private function processItem(int $itemId): ?TaskOutcome
+    /**
+     * @return TaskOutcome|null null when another run took the task
+     *
+     * @throws TaskOutOfTime when no time was left for the task; it is back in the queue
+     */
+    private function processItem(int $itemId, float $irreversibleBefore): ?TaskOutcome
     {
         $task = $this->repository->claim($itemId, bin2hex(random_bytes(16)), new DateTimeImmutable());
 
@@ -121,7 +138,7 @@ final class TaskQueueProcessor
             return new TaskOutcome(TaskItemState::FAILED, self::UNEXPECTED_FAILURE_MESSAGE);
         }
 
-        $context = new TaskContext($task, $this->repository, $this->entityManager);
+        $context = new TaskContext($task, $this->repository, $this->entityManager, $irreversibleBefore);
 
         try {
             $handler->handle($context);
@@ -133,6 +150,10 @@ final class TaskQueueProcessor
             return new TaskOutcome(TaskItemState::DONE);
         } catch (TaskLost) {
             return null;
+        } catch (TaskOutOfTime $exception) {
+            $this->repository->returnUnstarted($task);
+
+            throw $exception;
         } catch (TaskSkipped $exception) {
             return $this->endWithoutEffect($handler, $task, TaskItemState::SKIPPED, $exception->getMessage());
         } catch (TaskFailed $exception) {

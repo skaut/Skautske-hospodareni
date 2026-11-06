@@ -43,7 +43,7 @@ Každá úloha (např. jeden e-mail) prochází stavy:
 
 ## Časový rozpočet
 
-Fronta je v cronu poslední a nové úlohy bere jen do 20 sekund od začátku požadavku. Když čas spotřebují úlohy před ní (např. párování), počká na další minutu. Google klient má timeout 8 s, takže i poslední odeslání doběhne do 30 sekund. Úlohy se berou střídavě z jednotlivých dávek, malá dávka jedné skupiny tak nečeká, až doběhne velká dávka jiné.
+Fronta je v cronu poslední a nové úlohy bere jen do 20 sekund od začátku požadavku. Když čas spotřebují úlohy před ní (např. párování), počká na další minutu. Google klient má timeout 8 s. Před odesláním ale může ještě obnovit token odesílatele, což je další volání Googlu. Nevratnou část (předání e-mailu Gmailu) proto úloha začne jen do 21. sekundy, kdy ji ještě stihne dokončit do 30 sekund. Když už to nestihne, nic se nestane, úloha se bez započítání pokusu vrátí do fronty a běh skončí. Úlohy se berou střídavě z jednotlivých dávek, malá dávka jedné skupiny tak nečeká, až doběhne velká dávka jiné.
 
 ## Co vidí uživatel
 

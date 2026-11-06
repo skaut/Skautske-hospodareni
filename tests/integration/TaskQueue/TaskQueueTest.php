@@ -196,6 +196,23 @@ final class TaskQueueTest extends IntegrationTest
         $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::FAILED->value, 'attempts' => 3]);
     }
 
+    /** A step that would not finish within the request is not begun; the task waits for the next run. */
+    public function testTaskWithoutTimeForItsIrreversibleStepWaitsForTheNextRun(): void
+    {
+        $this->enqueue(TaskScope::paymentGroup(1), ['late', 'next']);
+        // Any irreversible step would end after the limit of the request.
+        $processor = new TaskQueueProcessor($this->repository, $this->entityManager, new NullLogger(), [$this->handler], 20, 600, 30, 100);
+
+        $processor->processDue(microtime(true) + 60);
+
+        self::assertSame(['late'], $this->handler->handled, 'Run takes no more tasks once it is out of time');
+        self::assertSame(2, (int) $this->tester->grabNumRecords('task_queue_item', ['state' => TaskItemState::PENDING->value, 'attempts' => 0]));
+
+        $this->processAll();
+
+        self::assertSame(2, (int) $this->tester->grabNumRecords('task_queue_item', ['state' => TaskItemState::DONE->value]));
+    }
+
     public function testOverviewShowsOnlyBatchesOfTheScope(): void
     {
         $group1 = TaskScope::paymentGroup(1);

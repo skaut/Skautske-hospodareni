@@ -221,6 +221,17 @@ final class TaskQueueRepository
         ) === 1;
     }
 
+    /** Gives back a task whose run had no time left for it; nothing happened, so the attempt does not count. */
+    public function returnUnstarted(ClaimedTask $task): void
+    {
+        $this->connection()->executeStatement(
+            'UPDATE task_queue_item SET state = ?, claim_token = NULL, claimed_at = NULL, attempts = GREATEST(attempts - 1, 0)
+                WHERE id = ? AND claim_token = ? AND state = ?',
+            [TaskItemState::PENDING->value, $task->itemId, $task->token, TaskItemState::CLAIMED->value],
+            [Types::STRING, Types::INTEGER, Types::STRING, Types::STRING],
+        );
+    }
+
     /**
      * Fails the tasks of a batch that still wait. Call it inside a transaction.
      *
