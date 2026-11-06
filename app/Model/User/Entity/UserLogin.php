@@ -15,33 +15,24 @@ use Doctrine\ORM\Mapping\Table;
 use InvalidArgumentException;
 
 use function max;
+use function preg_match;
 
 /**
- * One row per skautIS login, kept for usage statistics.
+ * One row per skautIS login, kept for the general overview of the usage statistics.
  *
- * No IP address and no raw User-Agent: every question the administration asks
- * is answered by the parsed triple, so the identifying form is never stored.
+ * Nothing that leads to a person: instead of the user only a keyed hash (see KeyedHasher) that lets the
+ * overview count distinct users, no unit, no role, no IP address and no raw User-Agent.
  */
 #[Entity(repositoryClass: \App\Model\User\Repository\UserLoginRepository::class)]
 #[Table(name: 'user_login')]
 #[Index(name: 'user_login_logged_in_idx', columns: ['logged_in_at'])]
-#[Index(name: 'user_login_user_idx', columns: ['user_id', 'logged_in_at'])]
-#[Index(name: 'user_login_unit_idx', columns: ['unit_id', 'logged_in_at'])]
+#[Index(name: 'user_login_user_idx', columns: ['user_hash', 'logged_in_at'])]
 class UserLogin extends AbstractIdEntity
 {
     public const END_REASON_LOGOUT = 'logout';
 
-    #[Column(name: 'user_id', type: Types::INTEGER, options: ['unsigned' => true])]
-    private int $userId;
-
-    #[Column(name: 'unit_id', type: Types::INTEGER, nullable: true, options: ['unsigned' => true])]
-    private ?int $unitId;
-
-    #[Column(name: 'role_id', type: Types::INTEGER, nullable: true, options: ['unsigned' => true])]
-    private ?int $roleId;
-
-    #[Column(name: 'role_key', type: Types::STRING, length: 64, nullable: true)]
-    private ?string $roleKey;
+    #[Column(name: 'user_hash', type: Types::STRING, length: 64, options: ['fixed' => true])]
+    private string $userHash;
 
     #[Column(name: 'logged_in_at', type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $loggedInAt;
@@ -69,22 +60,17 @@ class UserLogin extends AbstractIdEntity
     #[Column(name: 'platform', type: Types::STRING, length: 32)]
     private string $platform;
 
-    public function __construct(
-        int $userId,
-        ?int $unitId,
-        ?int $roleId,
-        ?string $roleKey,
-        DeviceInfo $device,
-        ?DateTimeImmutable $loggedInAt = null,
-    ) {
-        if ($userId < 1) {
-            throw new InvalidArgumentException('User login user_id must be a positive integer.');
+    /** Whether the pages showed dark, as the browser reported once per login. Null until it reports. */
+    #[Column(name: 'dark_mode', type: Types::BOOLEAN, nullable: true)]
+    private ?bool $darkMode = null;
+
+    public function __construct(string $userHash, DeviceInfo $device, ?DateTimeImmutable $loggedInAt = null)
+    {
+        if (preg_match('~^[0-9a-f]{64}$~', $userHash) !== 1) {
+            throw new InvalidArgumentException('User login user_hash must be a SHA-256 hash in hex.');
         }
 
-        $this->userId = $userId;
-        $this->unitId = $unitId !== null && $unitId > 0 ? $unitId : null;
-        $this->roleId = $roleId !== null && $roleId > 0 ? $roleId : null;
-        $this->roleKey = $roleKey !== null && $roleKey !== '' ? $roleKey : null;
+        $this->userHash = $userHash;
         $this->loggedInAt = $loggedInAt ?? new DateTimeImmutable();
         $this->lastSeenAt = $this->loggedInAt;
         $this->deviceType = $device->getType();
@@ -113,24 +99,14 @@ class UserLogin extends AbstractIdEntity
         $this->touch($loggedOutAt);
     }
 
-    public function getUserId(): int
+    public function reportTheme(bool $darkMode): void
     {
-        return $this->userId;
+        $this->darkMode = $darkMode;
     }
 
-    public function getUnitId(): ?int
+    public function getUserHash(): string
     {
-        return $this->unitId;
-    }
-
-    public function getRoleId(): ?int
-    {
-        return $this->roleId;
-    }
-
-    public function getRoleKey(): ?string
-    {
-        return $this->roleKey;
+        return $this->userHash;
     }
 
     public function getLoggedInAt(): DateTimeImmutable
@@ -176,6 +152,11 @@ class UserLogin extends AbstractIdEntity
     public function getPlatform(): string
     {
         return $this->platform;
+    }
+
+    public function isDarkMode(): ?bool
+    {
+        return $this->darkMode;
     }
 
     /** Time between the first and the last real request, not the token lifetime. */

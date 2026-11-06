@@ -15,8 +15,8 @@ use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\NotificationsCollector;
 use App\Model\Common\Services\QueryBus;
 use App\Model\Help\Manager\PageHelpManager;
-use App\Model\PageView\Services\PageViewTracker;
 use App\Model\Unit\UnitService;
+use App\Model\Usage\Services\UsageTracker;
 use App\Model\User\Services\LoginTracker;
 use App\Model\User\UserPreferencesService;
 use App\Model\User\UserService;
@@ -95,7 +95,7 @@ abstract class BasePresenter extends Presenter
 
     protected LoginTracker $loginTracker;
 
-    private PageViewTracker $pageViewTracker;
+    private UsageTracker $usageTracker;
 
     public function injectAll(
         UserService $userService,
@@ -114,7 +114,7 @@ abstract class BasePresenter extends Presenter
         UserPreferencesService $userPreferences,
         PageHelpManager $pageHelp,
         LoginTracker $loginTracker,
-        PageViewTracker $pageViewTracker,
+        UsageTracker $usageTracker,
     ): void {
         $this->userService = $userService;
         $this->unitService = $unitService;
@@ -132,7 +132,7 @@ abstract class BasePresenter extends Presenter
         $this->userPreferences = $userPreferences;
         $this->pageHelp = $pageHelp;
         $this->loginTracker = $loginTracker;
-        $this->pageViewTracker = $pageViewTracker;
+        $this->usageTracker = $usageTracker;
     }
 
     protected function startup(): void
@@ -173,17 +173,16 @@ abstract class BasePresenter extends Presenter
     }
 
     /**
-     * Counts the page for the usage statistics. Only a plain page load counts:
-     * an AJAX snippet redraw is one page being used further, not another view,
-     * and a form submission is counted by the page it lands on.
+     * Counts the page for the usage statistics, only for a signed-in user. Only a page load counts: an AJAX
+     * snippet redraw is one page being used further, and a background refresh of a panel must not count as work.
      */
-    private function recordPageView(): void
+    private function recordUsage(): void
     {
-        if ($this->isAjax() || ! $this->getHttpRequest()->isMethod('GET')) {
+        if (! $this->getUser()->isLoggedIn() || $this->isAjax()) {
             return;
         }
 
-        $this->pageViewTracker->record($this->getPageHelpKey());
+        $this->usageTracker->record((string) $this->getName(), $this->getAction());
     }
 
     /**
@@ -200,7 +199,7 @@ abstract class BasePresenter extends Presenter
     {
         parent::beforeRender();
 
-        $this->recordPageView();
+        $this->recordUsage();
 
         [$module, $presenterName] = $this->resolveTemplateSection();
         $sessionKeepAliveEnabled = $this->getUser()->isLoggedIn()

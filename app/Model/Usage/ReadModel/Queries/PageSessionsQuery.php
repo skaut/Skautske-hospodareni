@@ -2,13 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Model\PageView\ReadModel\Queries;
+namespace App\Model\Usage\ReadModel\Queries;
 
-use App\Model\PageView\ReadModel\QueryHandlers\PageViewSummaryQueryHandler;
+use App\Model\Usage\ReadModel\QueryHandlers\PageSessionsQueryHandler;
 use DateTimeImmutable;
 
-/** @see PageViewSummaryQueryHandler */
-final class PageViewSummaryQuery
+/**
+ * Sessions per page (`Presenter:action`) over a closed range of days, for the page list of Admin:Help.
+ *
+ * @see PageSessionsQueryHandler
+ */
+final class PageSessionsQuery
 {
     public function __construct(private DateTimeImmutable $from, private DateTimeImmutable $to)
     {

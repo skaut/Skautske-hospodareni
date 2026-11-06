@@ -8,13 +8,19 @@ use AcceptanceTester;
 use PHPUnit\Framework\Assert;
 
 use function date;
+use function hash;
 use function implode;
 use function sprintf;
+use function strtotime;
 
 final class AdminCest extends BaseAcceptanceCest
 {
     private const ACCEPTANCE_ADMIN_USER_ID = 2465;
     private const NEW_ADMIN_USER_ID = 9999;
+
+    /** Jihomoravský kraj and in it an okres no real login produces, see haveSessions(). */
+    private const USAGE_REGION = '620';
+    private const USAGE_DISTRICT = '62Z';
 
     protected AcceptanceTester $I;
 
@@ -56,7 +62,7 @@ final class AdminCest extends BaseAcceptanceCest
         $I->seeInCurrentUrl('/');
         $I->dontSeeElement('[data-test="admin-bug-reports-page"]');
 
-        $I->amOnPage('/admin/usage?unitId='.AcceptanceTester::UNIT_ID);
+        $I->amOnPage('/admin/usage');
         $I->waitForElement('.alert-danger', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeInCurrentUrl('/');
         $I->dontSeeElement('[data-test="admin-usage-page"]');
@@ -424,83 +430,160 @@ final class AdminCest extends BaseAcceptanceCest
     // ─── Usage Page ──────────────────────────────────────────────
 
     /**
-     * Renders the page with real rows in `user_login`. Without them the template
-     * stops at the "no data yet" notice and never reaches the tiles, breakdowns
-     * and heat map — which is exactly where it used to fall over.
+     * Renders the page with real rows in `user_login` and `usage_session_daily`. Without them the template
+     * stops at the "no data yet" notices and never reaches the tables, breakdowns and heat map.
      *
      * @group admin
      */
-    public function adminUsagePageRendersEveryCardWhenLoginsExist(): void
+    public function adminUsagePageShowsTheWholeSystemWithItsKraje(): void
     {
         $I = $this->I;
         $this->becomeAdmin();
         $this->haveLogins();
+        $this->haveSessions();
 
-        $I->wantTo('verify admin usage page renders all cards from recorded logins');
+        $I->wantTo('verify admin usage page shows sections and kraje of the whole system');
 
-        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/usage?unitId='.AcceptanceTester::UNIT_ID, '[data-test="admin-usage-page"]');
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/usage', '[data-test="admin-usage-page"]');
 
         // A Latte runtime error renders as a Tracy page, not as our markup.
         $I->dontSeeElement('#tracy-bs');
         $I->dontSee('Undefined variable');
         $I->dontSee('incompatible content type');
 
-        // Filters
-        $I->seeElement('[data-test="admin-usage-page"] select[name="unitId"]');
+        // The administrator always sees the whole system: no unit to pick.
+        $I->dontSeeElement('[data-test="admin-usage-page"] select[name="unitId"]');
         $I->seeElement('[data-test="admin-usage-page"] select[name="year"]');
+        $I->seeElement('[data-test="admin-usage-page"] select[name="period"]');
+        $I->see('Celý systém', '[data-test="admin-usage-scope"]');
 
-        // Every card
+        $I->seeNumberOfElements('[data-test="admin-usage-headline"] .usage-kpi', 4);
+        $headline = $I->grabTextFrom('[data-test="admin-usage-headline"]');
+        Assert::assertStringContainsString('Sezení', $headline);
+        Assert::assertStringContainsString('Uživatelé', $headline);
+
+        // Sections with their screens, kraje with a link to their units.
+        $I->seeElement('[data-test="admin-usage-section-payments"]');
+        $I->seeElement('[data-test="admin-usage-row-'.self::USAGE_REGION.'"]');
+        $I->seeElement('[data-test="admin-usage-row-ustredi"]');
+        $I->dontSeeElement('[data-test="admin-usage-open-ustredi"]');
+        $I->clickStable('[data-test="admin-usage-section-toggle-payments"]');
+        $I->waitForElementVisible('#usage-screens-payments', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see('Seznam skupin', '#usage-screens-payments');
+
+        // The general overview of logins.
+        $I->dontSeeElement('[data-test="admin-usage-no-data"]');
         $I->seeElement('[data-test="admin-usage-logins-card"]');
         $I->seeElement('[data-test="admin-usage-devices-card"]');
         $I->seeElement('[data-test="admin-usage-week-card"]');
         $I->seeElement('[data-test="admin-usage-preferences-card"]');
-        $I->seeElement('[data-test="admin-usage-engagement-card"]');
+        // Two of the seeded users switched the theme with the button, the last choice of one was dark.
+        $I->seeElement('[data-test="admin-usage-dark-mode-meter"][role="meter"]');
         $I->seeElement('[data-test="admin-usage-monthly-card"]');
-
-        // Data branch, not the empty-state notice
-        $I->dontSeeElement('[data-test="admin-usage-no-data"]');
-        $I->dontSeeElement('[data-test="admin-usage-tracking-unavailable"]');
-
-        // The tiles that used to blow up on the |num filter
-        $I->seeElement('[data-test="admin-usage-headline"] .usage-kpi__value');
-        $I->seeNumberOfElements('[data-test="admin-usage-headline"] .usage-kpi', 4);
-
-        // Formatted numbers actually made it into the markup
-        $headline = $I->grabTextFrom('[data-test="admin-usage-headline"]');
-        Assert::assertStringContainsString('Přihlášení', $headline);
-        Assert::assertStringContainsString('Uživatelé', $headline);
-
-        // Breakdown bars and the 7 x 24 heat map
+        $I->dontSeeElement('[data-test="admin-usage-engagement-card"]');
         $I->seeElement('[data-test="admin-usage-devices-card"] .usage-bar__fill');
-
-        // Twelve months of logins — not the domain counts Admin:Statistics owns.
         $I->seeNumberOfElements('[data-test="admin-usage-monthly-card"] .usage-bar', 12);
         $I->seeNumberOfElements('[data-test="admin-usage-week-card"] .usage-heatmap tbody tr', 7);
         $I->seeNumberOfElements('[data-test="admin-usage-week-card"] .usage-heatmap tbody tr:first-child td', 24);
     }
 
     /** @group admin */
-    public function adminUsagePageExplainsItselfWithoutRecordedLogins(): void
+    public function adminUsagePageOpensAKrajAndItsOkres(): void
     {
         $I = $this->I;
         $this->becomeAdmin();
-        $I->deleteFromDatabase('user_login', ['unit_id' => AcceptanceTester::UNIT_ID]);
+        $this->haveSessions();
 
-        $I->wantTo('verify admin usage page stays readable before any login is recorded');
+        $I->wantTo('open a kraj with its okresy and an okres with its střediska');
 
-        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/usage?unitId='.AcceptanceTester::UNIT_ID, '[data-test="admin-usage-page"]');
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/usage', '[data-test="admin-usage-page"]');
+        $I->clickStable('[data-test="admin-usage-open-'.self::USAGE_REGION.'"]');
+        $I->waitForElementVisible('[data-test="admin-usage-breadcrumbs"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+
+        // Kraj: its okresy.
+        $I->see('Jihomoravský kraj TGM', '[data-test="admin-usage-scope"]');
+        $I->seeElement('[data-test="admin-usage-open-'.self::USAGE_DISTRICT.'"]');
+        $I->dontSeeElement('[data-test="admin-usage-row-ustredi"]');
+        $I->seeNumberOfElements('[data-test="admin-usage-headline"] .usage-kpi', 2);
+
+        // The general overview belongs to the whole system only.
+        $I->dontSeeElement('[data-test="admin-usage-logins-card"]');
+        $I->dontSeeElement('[data-test="admin-usage-preferences-card"]');
+
+        // Okres: its střediska and the roles of the okres itself.
+        $I->clickStable('[data-test="admin-usage-open-'.self::USAGE_DISTRICT.'"]');
+        $I->waitForText('Okres '.self::USAGE_DISTRICT, AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '[data-test="admin-usage-scope"]');
+        $I->seeElement('[data-test="admin-usage-row-'.self::USAGE_DISTRICT.'.99"]');
+        $I->see(self::USAGE_DISTRICT.' (role okresu)', '[data-test="admin-usage-row-'.self::USAGE_DISTRICT.'"]');
+
+        // Back to the kraj, then to the whole system.
+        $I->clickStable('[data-test="admin-usage-back-2"]');
+        $I->waitForElementVisible('[data-test="admin-usage-open-'.self::USAGE_DISTRICT.'"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->clickStable('[data-test="admin-usage-back-1"]');
+        $I->waitForElementVisible('[data-test="admin-usage-logins-card"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+    }
+
+    /** @group admin */
+    public function adminUsagePageShowsTheYearByMonths(): void
+    {
+        $I = $this->I;
+        $this->becomeAdmin();
+        $this->haveSessions();
+
+        $I->wantTo('see the year by months with a thirteenth column for the total');
+
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/usage', '[data-test="admin-usage-page"]');
+        $I->selectOption('[data-test="admin-usage-filter"] select[name="period"]', 'months');
+        $I->waitForElementVisible('[data-test="admin-usage-filter"] select[name="section"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->selectOption('[data-test="admin-usage-filter"] select[name="section"]', 'payments');
+        $I->clickStable('[data-test="admin-usage-filter"] input[type="submit"]');
+        $I->waitForText('po měsících', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '[data-test="admin-usage-scope"]');
+
+        $I->seeNumberOfElements('[data-test="admin-usage-sections-card"] thead th', 14);
+        $I->seeNumberOfElements('[data-test="admin-usage-rows-card"] thead th', 14);
+        $I->see('Platby', '[data-test="admin-usage-rows-card"]');
+    }
+
+    /** @group admin */
+    public function adminUsagePageExplainsAnEmptyMonth(): void
+    {
+        $I = $this->I;
+        $this->becomeAdmin();
+
+        $year = (int) date('Y');
+        $month = (int) date('n') % 12 + 1;
+        $from = sprintf('%04d-%02d-01', $year, $month);
+        $to = date('Y-m-d', (int) strtotime($from.' +1 month'));
+        $I->deleteFromDatabase('user_login', ['logged_in_at >=' => $from, 'logged_in_at <' => $to]);
+        $I->deleteFromDatabase('usage_session_daily', ['day >=' => $from, 'day <' => $to]);
+
+        $I->wantTo('verify admin usage page stays readable for a month without data');
+
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/usage?period=month&month='.$month, '[data-test="admin-usage-page"]');
 
         $I->dontSeeElement('#tracy-bs');
         $I->seeElement('[data-test="admin-usage-no-data"]');
-
-        // Cards that do not depend on login tracking still render.
+        $I->seeElement('[data-test="admin-usage-no-logins"]');
         $I->seeElement('[data-test="admin-usage-preferences-card"]');
-        $I->seeElement('[data-test="admin-usage-engagement-card"]');
 
-        // The login-only cards are hidden rather than shown empty.
+        // Tables and login-only cards are hidden rather than shown empty.
+        $I->dontSeeElement('[data-test="admin-usage-sections-card"]');
+        $I->dontSeeElement('[data-test="admin-usage-rows-card"]');
         $I->dontSeeElement('[data-test="admin-usage-devices-card"]');
         $I->dontSeeElement('[data-test="admin-usage-week-card"]');
         $I->dontSeeElement('[data-test="admin-usage-monthly-card"]');
+    }
+
+    /** @group admin */
+    public function adminUsagePageRejectsAnUnknownKraj(): void
+    {
+        $I = $this->I;
+        $this->becomeAdmin();
+
+        $I->wantTo('get a 404 for a kraj that is not a Junák kraj');
+
+        $I->amOnPage('/admin/usage?region=621');
+        $I->waitForText('404', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
     }
 
     /** @group admin */
@@ -509,13 +592,14 @@ final class AdminCest extends BaseAcceptanceCest
         $I = $this->I;
         $this->becomeAdmin();
         $this->haveLogins();
+        $this->haveSessions();
 
         $I->wantTo('verify the usage page does not overflow sideways on a phone');
 
         $I->resizeWindow(375, 900);
-        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/usage?unitId='.AcceptanceTester::UNIT_ID, '[data-test="admin-usage-page"]');
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/usage', '[data-test="admin-usage-page"]');
 
-        // The heat map and the month table have to scroll inside their own
+        // The heat map and the wide tables have to scroll inside their own
         // container. Naming the widest element turns a failure here into a
         // pointer instead of a hunt.
         $measured = $I->executeJS(<<<'JS'
@@ -573,7 +657,8 @@ JS);
 
         $I->seeElement('[data-test="admin-card-usage"].navigation-card');
         $usageHref = $I->grabAttributeFrom('[data-test="admin-link-usage"]', 'href');
-        Assert::assertStringContainsString('/admin/usage?unitId='.AcceptanceTester::UNIT_ID, (string) $usageHref);
+        Assert::assertStringContainsString('/admin/usage', (string) $usageHref);
+        Assert::assertStringNotContainsString('unitId', (string) $usageHref);
 
         $I->clickStable('[data-test="admin-nav-usage"]');
         $I->waitForElementVisible('[data-test="admin-usage-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
@@ -659,22 +744,20 @@ JS);
         $I = $this->I;
         $year = (int) date('Y');
 
-        $I->deleteFromDatabase('user_login', ['unit_id' => AcceptanceTester::UNIT_ID]);
-
+        // Users made up for the scenario: the hashes no real login produces.
         $rows = [
             // Monday morning, desktop, ended by logout
-            [1, $year.'-01-05 09:00:00', $year.'-01-05 09:42:00', 'logout', 'desktop', 'Chrome', '130', 'Windows'],
-            [1, $year.'-01-05 14:00:00', $year.'-01-05 14:05:00', null, 'desktop', 'Chrome', '130', 'Windows'],
-            [2, $year.'-01-06 20:00:00', $year.'-01-06 20:30:00', null, 'mobile', 'Safari', null, 'iOS'],
-            [3, $year.'-01-06 21:00:00', $year.'-01-06 21:10:00', null, 'tablet', 'Firefox', '131', 'Android'],
+            [1, $year.'-01-05 09:00:00', $year.'-01-05 09:42:00', 'logout', 'desktop', 'Chrome', '130', 'Windows', 0],
+            [1, $year.'-01-05 14:00:00', $year.'-01-05 14:05:00', null, 'desktop', 'Chrome', '130', 'Windows', 1],
+            [2, $year.'-01-06 20:00:00', $year.'-01-06 20:30:00', null, 'mobile', 'Safari', null, 'iOS', null],
+            [3, $year.'-01-06 21:00:00', $year.'-01-06 21:10:00', null, 'tablet', 'Firefox', '131', 'Android', 0],
         ];
 
-        foreach ($rows as [$userId, $loggedInAt, $lastSeenAt, $endReason, $deviceType, $browser, $browserVersion, $platform]) {
+        foreach ($rows as [$userId, $loggedInAt, $lastSeenAt, $endReason, $deviceType, $browser, $browserVersion, $platform, $darkMode]) {
+            $userHash = hash('sha256', 'acceptance-user:'.$userId);
+            $I->deleteFromDatabase('user_login', ['user_hash' => $userHash, 'logged_in_at' => $loggedInAt]);
             $I->haveInDatabase('user_login', [
-                'user_id' => $userId,
-                'unit_id' => AcceptanceTester::UNIT_ID,
-                'role_id' => 1,
-                'role_key' => 'vedouciStredisko',
+                'user_hash' => $userHash,
                 'logged_in_at' => $loggedInAt,
                 'last_seen_at' => $lastSeenAt,
                 'logged_out_at' => $endReason === null ? null : $lastSeenAt,
@@ -683,6 +766,56 @@ JS);
                 'browser' => $browser,
                 'browser_version' => $browserVersion,
                 'platform' => $platform,
+                'dark_mode' => $darkMode,
+            ]);
+        }
+    }
+
+    /**
+     * Sessions under a kraj no real login produces, on a day of this year the tracker does not write to while
+     * the tests run, so the scenario never collides with what it counts for the test user.
+     */
+    private function haveSessions(): void
+    {
+        $I = $this->I;
+        $year = date('Y');
+        $day = $year.'-01-02' === date('Y-m-d') ? $year.'-01-03' : $year.'-01-02';
+        $I->deleteFromDatabase('usage_session_daily', ['day' => $day]);
+
+        // The whole system: each login once, down to the page.
+        $this->haveSessionRows($day, '', [
+            ['', '', '', 6],
+            ['payments', '', '', 4],
+            ['payments', 'Payments:GroupList', '', 4],
+            ['payments', 'Payments:GroupList', 'Payments:GroupList:default', 4],
+            ['travel', '', '', 3],
+            ['travel', 'Travel:Command', '', 3],
+            ['travel', 'Travel:Command', 'Travel:Command:detail', 3],
+        ]);
+
+        // Units of the roles, down to the screen.
+        foreach ([self::USAGE_DISTRICT, self::USAGE_DISTRICT.'.99', 'ustredi'] as $unitCode) {
+            $this->haveSessionRows($day, $unitCode, [
+                ['', '', '', 2],
+                ['payments', '', '', 2],
+                ['payments', 'Payments:GroupList', '', 2],
+                ['travel', '', '', 1],
+                ['travel', 'Travel:Command', '', 1],
+            ]);
+        }
+    }
+
+    /** @param list<array{string, string, string, int}> $rows section, screen, page, sessions */
+    private function haveSessionRows(string $day, string $unitCode, array $rows): void
+    {
+        foreach ($rows as [$section, $screen, $page, $sessions]) {
+            $this->I->haveInDatabase('usage_session_daily', [
+                'day' => $day,
+                'unit_code' => $unitCode,
+                'section' => $section,
+                'screen' => $screen,
+                'page' => $page,
+                'sessions' => $sessions,
             ]);
         }
     }
