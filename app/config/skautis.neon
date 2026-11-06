@@ -19,7 +19,8 @@ services:
     skautis.webservice.user: App\Model\Skautis\WebserviceFactory::createCached('user')
     skautis.cached.event: App\Model\Skautis\WebserviceFactory::createCached('event')
     skautis.cached.grants: App\Model\Skautis\WebserviceFactory::createCached('Grants')
-    - App\Model\Skautis\SkautisLoginRefresher(userWebService: App\Model\Skautis\WebserviceFactory::create('user'))
+    # No retries: it runs after the response, and the next extension a minute later is the retry.
+    - App\Model\Skautis\SkautisLoginRefresher(userWebService: App\Model\Infrastructure\Skautis\LazyWebService('user'))
 
     # Skautis repositories
     unitRepository:

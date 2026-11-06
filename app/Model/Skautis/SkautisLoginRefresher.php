@@ -74,10 +74,10 @@ final class SkautisLoginRefresher
                 return;
             }
 
-            $this->logger->warning('SkautIS login extension failed.', ['exception' => $exception]);
+            $this->logger->error('SkautIS login extension failed.', ['exception' => $exception]);
         } catch (Throwable $exception) {
-            // The next due extension, a minute later, tries again.
-            $this->logger->warning('SkautIS login extension failed.', ['exception' => $exception]);
+            // The optimistic logout time stays (the session is closed); the next due extension, a minute later, tries again.
+            $this->logger->error('SkautIS login extension failed.', ['exception' => $exception]);
         }
     }
 
