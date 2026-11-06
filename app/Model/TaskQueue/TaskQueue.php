@@ -8,6 +8,7 @@ use App\Model\TaskQueue\Repository\TaskQueueRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 
+use function array_values;
 use function count;
 
 /**
@@ -50,21 +51,21 @@ final class TaskQueue
         return $this->entityManager->wrapInTransaction(function () use ($type, $scope, $label, $createdByName, $tasks): EnqueueResult {
             $now = new DateTimeImmutable();
             $jobId = $this->repository->createJob($type, $scope, $label, $createdByName, $now);
-            $queued = 0;
+            $added = [];
 
-            foreach ($tasks as $task) {
+            foreach (array_values($tasks) as $index => $task) {
                 if ($this->repository->addItem($jobId, $task, $now)) {
-                    ++$queued;
+                    $added[] = $index;
                 }
             }
 
-            if ($queued === 0) {
+            if ($added === []) {
                 $this->repository->deleteJob($jobId);
 
                 return new EnqueueResult(null, 0, count($tasks));
             }
 
-            return new EnqueueResult($jobId, $queued, count($tasks) - $queued);
+            return new EnqueueResult($jobId, count($added), count($tasks) - count($added), $added);
         });
     }
 
@@ -103,10 +104,5 @@ final class TaskQueue
     public function acknowledge(int $jobId, TaskScope $scope, ?string $userName): bool
     {
         return $this->repository->acknowledge($jobId, $scope, $userName, new DateTimeImmutable());
-    }
-
-    public function isQueued(string $dedupKey): bool
-    {
-        return $this->repository->hasActiveItem($dedupKey);
     }
 }

@@ -19,7 +19,10 @@ use App\Model\TaskQueue\TaskScope;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 
+use function array_filter;
+use function array_map;
 use function array_unique;
+use function array_values;
 
 /**
  * The only way e-mails of payments are sent: every e-mail waits in the task queue, which the cron works
@@ -133,43 +136,40 @@ final class PaymentEmailQueue
     }
 
     /**
-     * Marks the payments and queues their automatic reminder in one transaction, so each payment gets it
-     * exactly once. A payment whose reminder sent by hand still waits in the queue is left for a later
-     * day: when that reminder goes out, the payment no longer gets the automatic one.
+     * Queues the automatic reminders and marks the payments in one transaction, so each payment gets it
+     * exactly once. Only a payment whose reminder really got into the queue is marked: when a reminder sent
+     * by hand already waits, the automatic one is left out as the same e-mail and the payment is decided
+     * again on a later day (no automatic reminder when the one sent by hand went out).
      *
      * @param Payment[] $payments
      */
     public function queueAutomaticReminders(Group $group, array $payments): EnqueueResult
     {
         return $this->entityManager->wrapInTransaction(function () use ($group, $payments): EnqueueResult {
-            $now = new DateTimeImmutable();
             $type = EmailType::get(EmailType::PAYMENT_REMINDER);
-            $tasks = [];
+            $payments = array_values(array_filter($payments, static fn (Payment $payment): bool => $payment->getEmailRecipients() !== []));
+            $tasks = array_map(
+                fn (Payment $payment): NewTask => $this->task(new PaymentEmailTask($payment->getId(), $type, automatic: true), $payment),
+                $payments,
+            );
 
-            foreach ($payments as $payment) {
-                if ($payment->getEmailRecipients() === [] || $this->isQueued($payment->getId(), $type)) {
-                    continue;
-                }
-
-                $payment->markAutomaticReminderQueued($now);
-                $this->payments->save($payment);
-                $tasks[] = $this->task(new PaymentEmailTask($payment->getId(), $type, automatic: true), $payment);
-            }
-
-            return $this->queue->enqueue(
+            $result = $this->queue->enqueue(
                 PaymentEmailTaskHandler::TYPE,
                 TaskScope::paymentGroup((int) $group->getId()),
                 self::LABEL_AUTOMATIC_REMINDERS,
                 null,
                 $tasks,
             );
-        });
-    }
 
-    /** Whether the e-mail of the payment already waits in the queue. */
-    public function isQueued(int $paymentId, EmailType $type): bool
-    {
-        return $this->queue->isQueued((new PaymentEmailTask($paymentId, $type))->dedupKey());
+            $now = new DateTimeImmutable();
+
+            foreach ($result->addedIndexes as $index) {
+                $payments[$index]->markAutomaticReminderQueued($now);
+                $this->payments->save($payments[$index]);
+            }
+
+            return $result;
+        });
     }
 
     public static function label(EmailType $type): string

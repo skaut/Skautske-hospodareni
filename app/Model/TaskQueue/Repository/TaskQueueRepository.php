@@ -102,11 +102,6 @@ final class TaskQueueRepository
         $this->connection()->executeStatement('DELETE FROM task_queue_job WHERE id = ?', [$jobId]);
     }
 
-    public function hasActiveItem(string $dedupKey): bool
-    {
-        return $this->connection()->fetchOne('SELECT 1 FROM task_queue_item WHERE dedup_key = ?', [$dedupKey]) !== false;
-    }
-
     /** @return array<int, int> the first pending task of each batch, by batch id */
     public function findFirstPendingItemPerJob(DateTimeImmutable $now): array
     {
