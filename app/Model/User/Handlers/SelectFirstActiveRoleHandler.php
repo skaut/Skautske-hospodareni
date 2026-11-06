@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Cashbook\Handlers\Cashbook;
 
 use App\Model\Cashbook\Commands\Cashbook\SelectFirstActiveRole;
+use App\Model\Unit\UnitService;
 use App\Model\User\Exception\UserHasNoRole;
 use App\Model\User\UserService;
 use Nette\Security\SimpleIdentity;
@@ -14,7 +15,7 @@ use function count;
 
 final class SelectFirstActiveRoleHandler
 {
-    public function __construct(private UserService $userService, private User $user)
+    public function __construct(private UserService $userService, private UnitService $unitService, private User $user)
     {
     }
 
@@ -35,5 +36,7 @@ final class SelectFirstActiveRoleHandler
 
         $identity->currentRole = $this->userService->getActualRole($roles);
         $identity->skautisRoles = $roles;
+        // The ended role's units must not stay editable.
+        $identity->access = $this->userService->getAccessArrays($this->unitService, $roles);
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Cashbook\Handlers\Cashbook;
 
 use App\Model\Cashbook\Commands\Cashbook\SelectFirstActiveRole;
+use App\Model\Unit\UnitService;
 use App\Model\User\SkautisRole;
 use App\Model\User\UserService;
 use Codeception\Test\Unit;
@@ -25,14 +26,18 @@ final class SelectFirstActiveRoleHandlerTest extends Unit
         $userService->shouldReceive('getAllSkautisRoles')->once()->andReturn($roles);
         $userService->shouldReceive('updateSkautISRole')->once()->with(10);
         $userService->shouldReceive('getRoleId')->andReturn(10);
+        $unitService = m::mock(UnitService::class);
+        $access = [UserService::ACCESS_READ => [], UserService::ACCESS_EDIT => []];
+        $userService->shouldReceive('getAccessArrays')->once()->with($unitService, $roles)->andReturn($access);
 
         $identity = new SimpleIdentity(1);
         $storage = m::mock(UserStorage::class);
         $storage->shouldReceive('getState')->andReturn([true, $identity, null]);
 
-        (new SelectFirstActiveRoleHandler($userService, new User($storage)))(new SelectFirstActiveRole());
+        (new SelectFirstActiveRoleHandler($userService, $unitService, new User($storage)))(new SelectFirstActiveRole());
 
         self::assertEquals(new SkautisRole('hospodarStredisko', 'Hospodář - Středisko', 100, 'Středisko'), $identity->currentRole);
         self::assertSame($roles, $identity->skautisRoles);
+        self::assertSame($access, $identity->access);
     }
 }

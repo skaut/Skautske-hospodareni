@@ -17,10 +17,12 @@ use Skautis\Wsdl\AuthenticationException;
 use Skautis\Wsdl\WebServiceInterface;
 use Skautis\Wsdl\WsdlException;
 use Skautis\Wsdl\WsdlManager;
+use stdClass;
 
 final class SkautisLoginRefresherTest extends Unit
 {
     private const LOGIN_ID = 'login-id';
+    private const USER_ID = 7;
     private const NOW = '2026-11-04 12:00:00';
 
     private User $user;
@@ -44,7 +46,7 @@ final class SkautisLoginRefresherTest extends Unit
         $this->logInWithLogoutAt('2026-11-04 12:29:30');
         $this->webService->shouldNotReceive('call');
 
-        $this->refresher->extend(static function (): void {
+        $this->refresher->extend(self::USER_ID, static function (): void {
         });
 
         self::assertEquals(new DateTime('2026-11-04 12:29:30'), $this->user->getLogoutDate());
@@ -62,8 +64,9 @@ final class SkautisLoginRefresherTest extends Unit
 
                 return (object) ['DateLogout' => '2026-11-04T12:30:00.123'];
             });
+        $this->webService->shouldReceive('call')->with('UserRoleAll', Mockery::any())->andReturn([]);
 
-        $this->refresher->extend(function () use (&$steps): void {
+        $this->refresher->extend(self::USER_ID, function () use (&$steps): void {
             $steps[] = 'session closed, logout at '.$this->user->getLogoutDate()->format('Y-m-d H:i:s');
         });
 
@@ -75,7 +78,7 @@ final class SkautisLoginRefresherTest extends Unit
         $this->logInWithLogoutAt('2026-11-04 12:10:00');
         $this->webService->shouldReceive('call')->once()->andThrow(new AuthenticationException());
 
-        $this->refresher->extend(static function (): void {
+        $this->refresher->extend(self::USER_ID, static function (): void {
         });
 
         self::assertTrue($this->createRefresher()->isLoginDead());
@@ -89,7 +92,7 @@ final class SkautisLoginRefresherTest extends Unit
             "Server was unable to process request. ---> Neplatný login\nPři editaci objektu UM_Login nastala chyba",
         ));
 
-        $this->refresher->extend(static function (): void {
+        $this->refresher->extend(self::USER_ID, static function (): void {
         });
 
         self::assertTrue($this->createRefresher()->isLoginDead());
@@ -100,10 +103,52 @@ final class SkautisLoginRefresherTest extends Unit
         $this->logInWithLogoutAt('2026-11-04 12:10:00');
         $this->webService->shouldReceive('call')->once()->andThrow(new WsdlException('Could not connect to host'));
 
-        $this->refresher->extend(static function (): void {
+        $this->refresher->extend(self::USER_ID, static function (): void {
         });
 
         self::assertFalse($this->createRefresher()->isLoginDead());
+    }
+
+    public function testRolesLoadedWithExtensionAreTakenOnceOnNextRequest(): void
+    {
+        $this->logInWithLogoutAt('2026-11-04 12:10:00');
+        $roles = [(object) ['ID' => 10], (object) ['ID' => 20]];
+        $this->webService->shouldReceive('call')->once()->with('LoginUpdateRefresh', Mockery::any());
+        $this->webService->shouldReceive('call')
+            ->once()
+            ->with('UserRoleAll', [['ID_User' => self::USER_ID, 'IsActive' => true]])
+            ->andReturn($roles);
+
+        $this->refresher->extend(self::USER_ID, static function (): void {
+        });
+
+        $nextRequest = $this->createRefresher();
+        self::assertEquals($roles, $nextRequest->takeFreshRoles());
+        self::assertNull($nextRequest->takeFreshRoles());
+    }
+
+    public function testUserWithoutActiveRoleGetsEmptyRoles(): void
+    {
+        $this->logInWithLogoutAt('2026-11-04 12:10:00');
+        $this->webService->shouldReceive('call')->once()->with('LoginUpdateRefresh', Mockery::any());
+        // SkautIS returns the bare result object instead of a list when there is no role.
+        $this->webService->shouldReceive('call')->once()->with('UserRoleAll', Mockery::any())->andReturn(new stdClass());
+
+        $this->refresher->extend(self::USER_ID, static function (): void {
+        });
+
+        self::assertSame([], $this->createRefresher()->takeFreshRoles());
+    }
+
+    public function testFailedExtensionLoadsNoRoles(): void
+    {
+        $this->logInWithLogoutAt('2026-11-04 12:10:00');
+        $this->webService->shouldReceive('call')->once()->andThrow(new WsdlException('Could not connect to host'));
+
+        $this->refresher->extend(self::USER_ID, static function (): void {
+        });
+
+        self::assertNull($this->createRefresher()->takeFreshRoles());
     }
 
     public function testLoginIsNotDeadWithoutFailedExtension(): void
@@ -118,7 +163,7 @@ final class SkautisLoginRefresherTest extends Unit
         $this->logInWithLogoutAt('2026-11-04 12:29:00');
         $this->webService->shouldNotReceive('call');
 
-        $this->refresher->extend(static function (): void {
+        $this->refresher->extend(self::USER_ID, static function (): void {
         });
 
         self::assertEquals(new DateTime('2026-11-04 12:29:00'), $this->user->getLogoutDate());
@@ -129,7 +174,7 @@ final class SkautisLoginRefresherTest extends Unit
         $this->webService->shouldNotReceive('call');
         $closed = false;
 
-        $this->refresher->extend(static function () use (&$closed): void {
+        $this->refresher->extend(self::USER_ID, static function () use (&$closed): void {
             $closed = true;
         });
 

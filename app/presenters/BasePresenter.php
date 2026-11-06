@@ -16,6 +16,8 @@ use App\Model\Common\Services\NotificationsCollector;
 use App\Model\Common\Services\QueryBus;
 use App\Model\Help\Manager\PageHelpManager;
 use App\Model\PageView\Services\PageViewTracker;
+use App\Model\Skautis\Exception\MissingCurrentRole;
+use App\Model\Skautis\SkautisLoginRefresher;
 use App\Model\Unit\UnitService;
 use App\Model\User\Services\LoginTracker;
 use App\Model\User\UserPreferencesService;
@@ -39,10 +41,14 @@ use Skautis\Wsdl\AuthenticationException;
 use function array_key_last;
 use function dirname;
 use function explode;
+use function fastcgi_finish_request;
+use function function_exists;
+use function ignore_user_abort;
 use function in_array;
 use function is_file;
 use function is_numeric;
 use function preg_match;
+use function register_shutdown_function;
 use function sprintf;
 use function str_contains;
 use function str_replace;
@@ -97,6 +103,8 @@ abstract class BasePresenter extends Presenter
 
     private PageViewTracker $pageViewTracker;
 
+    private SkautisLoginRefresher $skautisLoginRefresher;
+
     public function injectAll(
         UserService $userService,
         UnitService $unitService,
@@ -135,6 +143,11 @@ abstract class BasePresenter extends Presenter
         $this->pageViewTracker = $pageViewTracker;
     }
 
+    public function injectSkautisLoginRefresher(SkautisLoginRefresher $refresher): void
+    {
+        $this->skautisLoginRefresher = $refresher;
+    }
+
     protected function startup(): void
     {
         parent::startup();
@@ -164,6 +177,7 @@ abstract class BasePresenter extends Presenter
         }
 
         if ($this->getUser()->isLoggedIn() && ! $this->isSessionKeepAliveRequest()) {
+            $this->syncSkautisLogin();
             $this->loginTracker->touch();
         }
 
@@ -289,6 +303,40 @@ abstract class BasePresenter extends Presenter
         return (int) $identity->getId();
     }
 
+    /**
+     * Applies what the previous background extension learned from SkautIS and schedules the next one,
+     * so pages show current SkautIS state without waiting for SkautIS.
+     */
+    private function syncSkautisLogin(): void
+    {
+        if ($this->skautisLoginRefresher->isLoginDead()) {
+            $this->logoutInvalidUser();
+
+            return;
+        }
+
+        $roles = $this->skautisLoginRefresher->takeFreshRoles();
+        $identity = $this->getUser()->getIdentity();
+        if ($roles !== null && $identity instanceof SimpleIdentity) {
+            $identity->skautisRoles = $roles;
+            $identity->currentRole = $this->userService->getActualRole($roles);
+            if ($identity->currentRole === null) { // the role ended in SkautIS, ErrorPresenter switches to another one
+                throw new MissingCurrentRole();
+            }
+        }
+
+        $userId = (int) $this->getUser()->getId();
+        // Registered at runtime, so it runs after Tracy's shutdown handler has written the bar.
+        register_shutdown_function(fn () => $this->skautisLoginRefresher->extend($userId, function (): void {
+            $this->getSession()->close();
+            if (function_exists('fastcgi_finish_request')) { // without PHP-FPM the extension runs before the response ends
+                fastcgi_finish_request();
+            }
+
+            ignore_user_abort(true);
+        }));
+    }
+
     private function validateCurrentLogin(): void
     {
         if (! $this->isValidUserIdentity($this->getUser()->getIdentity())) {
@@ -310,7 +358,7 @@ abstract class BasePresenter extends Presenter
         $this->logoutInvalidUser();
     }
 
-    protected function logoutInvalidUser(): void
+    private function logoutInvalidUser(): void
     {
         $this->getUser()->logout(true);
         if ($this->isPublicRequest()) {
