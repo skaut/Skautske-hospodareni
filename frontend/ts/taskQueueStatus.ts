@@ -48,7 +48,8 @@ function refresh(naja: Naja): void {
         return;
     }
 
-    naja.makeRequest('GET', url, null, {history: false, background: true})
+    // Not unique: a background refresh must never abort a request the user started.
+    naja.makeRequest('GET', url, null, {history: false, background: true, unique: false})
         .then(() => schedule(naja))
         .catch(() => {
             // The panel stays as it is; reloading the page shows the current state.
