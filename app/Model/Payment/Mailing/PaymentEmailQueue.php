@@ -7,6 +7,7 @@ namespace App\Model\Payment\Mailing;
 use App\Model\Common\Repositories\IUserRepository;
 use App\Model\Payment\EmailType;
 use App\Model\Payment\Group;
+use App\Model\Payment\GroupNotFound;
 use App\Model\Payment\Payment;
 use App\Model\Payment\PaymentNotFound;
 use App\Model\Payment\Repositories\IGroupRepository;
@@ -42,16 +43,22 @@ final class PaymentEmailQueue
     }
 
     /**
-     * Queues the e-mails. Payments of other groups are left out, and so are reminders of payments
-     * that cannot get one now (not overdue, closed, or reminded today).
+     * Queues the e-mails. Nothing that would surely fail gets into the queue: no e-mail of a group without
+     * a sender or with the template switched off, and no e-mail of a payment without a recipient, of a closed
+     * payment, or a reminder of a payment that cannot get one now. Payments of other groups are left out.
      *
      * @param int[] $paymentIds
      */
     public function send(int $groupId, EmailType $type, array $paymentIds): PaymentEmailDispatch
     {
+        $blocked = $this->groupBlocks($groupId, $type);
+
+        if ($blocked !== null) {
+            return PaymentEmailDispatch::blocked($blocked);
+        }
+
         $tasks = [];
-        $reminderNotAllowed = 0;
-        $isReminder = $type->equalsValue(EmailType::PAYMENT_REMINDER);
+        $leftOut = [];
 
         foreach (array_unique($paymentIds) as $paymentId) {
             $payment = $this->findPayment((int) $paymentId);
@@ -60,8 +67,10 @@ final class PaymentEmailQueue
                 continue;
             }
 
-            if ($isReminder && ! $payment->canSendReminder()) {
-                ++$reminderNotAllowed;
+            $reason = $this->leftOutReason($payment, $type);
+
+            if ($reason !== null) {
+                $leftOut[$reason] = ($leftOut[$reason] ?? 0) + 1;
 
                 continue;
             }
@@ -77,7 +86,7 @@ final class PaymentEmailQueue
             $tasks,
         );
 
-        return PaymentEmailDispatch::fromResult($result, $reminderNotAllowed);
+        return PaymentEmailDispatch::fromResult($result, $leftOut);
     }
 
     /**
@@ -138,7 +147,7 @@ final class PaymentEmailQueue
             $tasks = [];
 
             foreach ($payments as $payment) {
-                if ($this->isQueued($payment->getId(), $type)) {
+                if ($payment->getEmailRecipients() === [] || $this->isQueued($payment->getId(), $type)) {
                     continue;
                 }
 
@@ -171,6 +180,39 @@ final class PaymentEmailQueue
             EmailType::PAYMENT_COMPLETED => 'Potvrzení o úhradě',
             default => 'E-maily',
         };
+    }
+
+    /** Why no e-mail of this type of the group can go out at all, or null when it can. */
+    private function groupBlocks(int $groupId, EmailType $type): ?string
+    {
+        try {
+            $group = $this->groups->find($groupId);
+        } catch (GroupNotFound) {
+            return 'Platební skupina neexistuje.';
+        }
+
+        if ($group->getOauthId() === null) {
+            return 'Skupina nemá nastavený e-mail odesílatele. Nastavte ho v úpravě skupiny.';
+        }
+
+        if (! $group->isEmailEnabled($type)) {
+            return 'Skupina nemá zapnutou šablonu tohoto e-mailu. Zapněte ji v úpravě skupiny.';
+        }
+
+        return null;
+    }
+
+    private function leftOutReason(Payment $payment, EmailType $type): ?string
+    {
+        if ($payment->getEmailRecipients() === []) {
+            return PaymentEmailDispatch::NO_RECIPIENT;
+        }
+
+        if ($type->equalsValue(EmailType::PAYMENT_REMINDER)) {
+            return $payment->canSendReminder() ? null : PaymentEmailDispatch::REMINDER_NOT_ALLOWED;
+        }
+
+        return $payment->isClosed() ? PaymentEmailDispatch::PAYMENT_CLOSED : null;
     }
 
     private function task(PaymentEmailTask $task, Payment $payment): NewTask

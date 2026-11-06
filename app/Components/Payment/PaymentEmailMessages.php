@@ -12,9 +12,19 @@ use function sprintf;
 /** Flash messages about e-mails of payments, the same wherever they are sent from. */
 final class PaymentEmailMessages
 {
+    private const LEFT_OUT_REASONS = [
+        PaymentEmailDispatch::NO_RECIPIENT => 'platba nemá vyplněný e-mail',
+        PaymentEmailDispatch::PAYMENT_CLOSED => 'platba je uzavřená',
+        PaymentEmailDispatch::REMINDER_NOT_ALLOWED => 'platba není po splatnosti, je uzavřená, nebo už dnes upomínku dostala',
+    ];
+
     /** @return list<array{string, string}> message and flash type */
     public static function forDispatch(PaymentEmailDispatch $dispatch, EmailType $type): array
     {
+        if ($dispatch->blocked !== null) {
+            return [[$dispatch->blocked, 'danger']];
+        }
+
         $messages = [];
 
         if ($dispatch->queued > 0) {
@@ -25,8 +35,13 @@ final class PaymentEmailMessages
             $messages[] = [sprintf('E-maily, které už čekaly ve frontě, se znovu nepřidaly (celkem %d).', $dispatch->alreadyQueued), 'info'];
         }
 
-        if ($dispatch->reminderNotAllowed > 0) {
-            $messages[] = [self::reminderNotAllowed($dispatch->reminderNotAllowed), 'warning'];
+        $what = $type->equalsValue(EmailType::PAYMENT_REMINDER) ? 'Upomínku' : 'E-mail';
+
+        foreach ($dispatch->leftOut as $reason => $count) {
+            $messages[] = [
+                sprintf('%s nejde poslat %s: %s.', $what, $count === 1 ? 'u 1 platby' : sprintf('u %d plateb', $count), self::LEFT_OUT_REASONS[$reason] ?? $reason),
+                'warning',
+            ];
         }
 
         if ($messages === []) {
@@ -34,14 +49,6 @@ final class PaymentEmailMessages
         }
 
         return $messages;
-    }
-
-    private static function reminderNotAllowed(int $count): string
-    {
-        return sprintf(
-            'Upomínku nejde poslat %s: platba není po splatnosti, je uzavřená, nebo už dnes upomínku dostala.',
-            $count === 1 ? 'u 1 platby' : sprintf('u %d plateb', $count),
-        );
     }
 
     private static function queued(int $count): string

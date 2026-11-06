@@ -42,7 +42,7 @@ final class PaymentEmailMessagesTest extends Unit
         self::assertSame([['E-maily, které už čekaly ve frontě, se znovu nepřidaly (celkem 2).', 'info']], $messages);
     }
 
-    public function testRemindersThatCannotGoOutAreReported(): void
+    public function testPaymentsLeftOutAreReportedWithTheirReason(): void
     {
         $reminder = EmailType::get(EmailType::PAYMENT_REMINDER);
 
@@ -50,12 +50,27 @@ final class PaymentEmailMessagesTest extends Unit
             [
                 ['1 e-mail byl zařazen k odeslání. Odchází na pozadí, průběh uvidíte na této stránce.', 'success'],
                 ['Upomínku nejde poslat u 25 plateb: platba není po splatnosti, je uzavřená, nebo už dnes upomínku dostala.', 'warning'],
+                ['Upomínku nejde poslat u 1 platby: platba nemá vyplněný e-mail.', 'warning'],
             ],
-            PaymentEmailMessages::forDispatch(new PaymentEmailDispatch(1, 0, 25), $reminder),
+            PaymentEmailMessages::forDispatch(new PaymentEmailDispatch(1, 0, [
+                PaymentEmailDispatch::REMINDER_NOT_ALLOWED => 25,
+                PaymentEmailDispatch::NO_RECIPIENT => 1,
+            ]), $reminder),
         );
         self::assertSame(
-            [['Upomínku nejde poslat u 1 platby: platba není po splatnosti, je uzavřená, nebo už dnes upomínku dostala.', 'warning']],
-            PaymentEmailMessages::forDispatch(new PaymentEmailDispatch(0, 0, 1), $reminder),
+            [['E-mail nejde poslat u 2 plateb: platba nemá vyplněný e-mail.', 'warning']],
+            PaymentEmailMessages::forDispatch(new PaymentEmailDispatch(0, 0, [PaymentEmailDispatch::NO_RECIPIENT => 2]), EmailType::get(EmailType::PAYMENT_INFO)),
+        );
+    }
+
+    public function testGroupThatCannotSendIsReportedAlone(): void
+    {
+        self::assertSame(
+            [['Skupina nemá nastavený e-mail odesílatele. Nastavte ho v úpravě skupiny.', 'danger']],
+            PaymentEmailMessages::forDispatch(
+                PaymentEmailDispatch::blocked('Skupina nemá nastavený e-mail odesílatele. Nastavte ho v úpravě skupiny.'),
+                EmailType::get(EmailType::PAYMENT_INFO),
+            ),
         );
     }
 }

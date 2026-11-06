@@ -17,6 +17,7 @@ use App\Model\Payment\EmailType;
 use App\Model\Payment\Group;
 use App\Model\Payment\MailerFactoryStub;
 use App\Model\Payment\Mailing\AutomaticPaymentReminders;
+use App\Model\Payment\Mailing\PaymentEmailDispatch;
 use App\Model\Payment\Mailing\PaymentEmailQueue;
 use App\Model\Payment\Payment;
 use App\Model\Payment\PaymentService;
@@ -153,8 +154,34 @@ final class PaymentEmailQueueTest extends IntegrationTest
         $dispatch = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_REMINDER), [$overdueId, $notDueYetId]);
 
         self::assertSame(1, $dispatch->queued);
-        self::assertSame(1, $dispatch->reminderNotAllowed);
+        self::assertSame([PaymentEmailDispatch::REMINDER_NOT_ALLOWED => 1], $dispatch->leftOut);
         $this->tester->dontSeeInDatabase('task_queue_item', ['label' => 'Platba '.$notDueYetId]);
+    }
+
+    /** A payment without an e-mail has nothing to do in the queue. */
+    public function testPaymentWithoutEmailIsNotQueued(): void
+    {
+        $this->createGroup();
+        $withEmailId = $this->createPayment();
+        $withoutEmailId = $this->createPayment(withEmail: false);
+
+        $dispatch = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), [$withEmailId, $withoutEmailId]);
+
+        self::assertSame(1, $dispatch->queued);
+        self::assertSame([PaymentEmailDispatch::NO_RECIPIENT => 1], $dispatch->leftOut);
+        $this->tester->dontSeeInDatabase('task_queue_item', ['label' => 'Platba '.$withoutEmailId]);
+    }
+
+    public function testGroupWithoutSenderQueuesNothing(): void
+    {
+        $this->createGroup(withSender: false);
+        $paymentId = $this->createPayment();
+
+        $dispatch = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), [$paymentId]);
+
+        self::assertSame(0, $dispatch->queued);
+        self::assertNotNull($dispatch->blocked);
+        $this->tester->dontSeeInDatabase('task_queue_item', []);
     }
 
     /** A reminder sent by hand and an automatic one are the same e-mail: only one of them may wait or run. */
@@ -254,7 +281,7 @@ final class PaymentEmailQueueTest extends IntegrationTest
         self::assertSame(1, $this->tester->grabService(QueryBus::class)->handle(new CountAutomaticReminderGroupsQuery()));
     }
 
-    private function createGroup(?int $reminderDaysAfterDue = null): void
+    private function createGroup(?int $reminderDaysAfterDue = null, bool $withSender = true): void
     {
         $this->groupId = $this->paymentService->createGroup(
             11,
@@ -265,19 +292,19 @@ final class PaymentEmailQueueTest extends IntegrationTest
                 EmailType::PAYMENT_INFO => new EmailTemplate('Platba %name%', 'Zaplaťte prosím %amount%.'),
                 EmailType::PAYMENT_REMINDER => new EmailTemplate('Upomínka %name%', 'Připomínáme platbu.'),
             ],
-            OAuthId::fromString(self::OAUTH_ID),
+            $withSender ? OAuthId::fromString(self::OAUTH_ID) : null,
             null,
             remindersEnabled: true,
             reminderDaysAfterDue: $reminderDaysAfterDue,
         );
     }
 
-    private function createPayment(?ChronosDate $dueDate = null): int
+    private function createPayment(?ChronosDate $dueDate = null, bool $withEmail = true): int
     {
         $this->tester->grabService(CommandBus::class)->handle(new CreatePayment(
             $this->groupId,
             'Platba',
-            [new EmailAddress(self::EMAIL)],
+            $withEmail ? [new EmailAddress(self::EMAIL)] : [],
             MoneyFactory::fromDecimal('100.00'),
             $dueDate ?? Helpers::getValidDueDate(),
             null,

@@ -14,7 +14,7 @@ Platí jedno pravidlo: **každý e-mail plateb odchází přes frontu**, i jeden
 | Dokončení platby (Zaplaceno, párování s bankou, import výpisu) | potvrzení o úhradě |
 | Automatické upomínky (cron) | upomínka |
 
-Upomínka poslaná ručně a automatická upomínka jsou pro frontu stejný e-mail. Ve frontě tak může čekat nebo běžet jen jedna z nich. Když čeká ruční upomínka, automatická se ten den nezařadí, a když ruční upomínka odejde, automatická už se nepošle. Upomínky plateb, které ji teď dostat nemohou (nejsou po splatnosti, jsou uzavřené nebo už dnes upomínku dostaly), se do fronty vůbec nezařadí a uživatel se dozví, u kolika plateb to bylo.
+Upomínka poslaná ručně a automatická upomínka jsou pro frontu stejný e-mail. Ve frontě tak může čekat nebo běžet jen jedna z nich. Když čeká ruční upomínka, automatická se ten den nezařadí, a když ruční upomínka odejde, automatická už se nepošle. Do fronty se dostane jen e-mail, který může odejít. Když skupina nemá odesílatele nebo má šablonu e-mailu vypnutou, nezařadí se nic. Nezařadí se ani e-mail platby bez e-mailové adresy, uzavřené platby a upomínka platby, která ji teď dostat nemůže (není po splatnosti nebo už dnes upomínku dostala). Uživatel se hned dozví, u kolika plateb a proč.
 
 Co se nemění: typy e-mailů, šablony, záznam o odeslání u platby (počet obálek v seznamu) a jméno odesílatele. Do záznamu i do šablony se dosadí jméno toho, kdo e-maily zadal. U automatických úloh je to „AUTOMAT“, jako dřív. Údaje platby (částka, VS, příjemci) se berou až v okamžiku odeslání. Když se platba mezitím zaplatí nebo zruší, upomínka se vynechá.
 
