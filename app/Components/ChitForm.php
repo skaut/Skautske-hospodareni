@@ -216,8 +216,11 @@ final class ChitForm extends BaseControl
 
         $items = $form->addDynamic('items', function (Container $container) use ($typePicker): void {
             ++$this->itemsCount;
-            $container->addText('purpose')
+            // Textarea wraps long purposes on phones; it stays single-line text.
+            $container->addTextArea('purpose', null, null, 1)
+                ->addFilter(static fn (string $purpose): string => str_replace(["\r\n", "\r", "\n"], ' ', $purpose))
                 ->setMaxLength(120)
+                ->setHtmlAttribute('data-autogrow', true)
                 ->setRequired('Zadejte účel výplaty')
                 ->setHtmlAttribute('placeholder', 'Účel')
                 ->setHtmlAttribute('class', 'form-control input-sm required');
