@@ -48,6 +48,7 @@ final class PaymentEmailTaskHandler implements TaskHandler
 
     private const GMAIL_LIMIT_REASONS = ['rateLimitExceeded', 'userRateLimitExceeded', 'dailyLimitExceeded'];
     private const GMAIL_LIMIT_RETRY_SECONDS = 3600;
+    private const GMAIL_LIMIT_MAX_ATTEMPTS = 26;
 
     public function __construct(
         private IPaymentRepository $payments,
@@ -200,7 +201,9 @@ final class PaymentEmailTaskHandler implements TaskHandler
         $code = $exception->getCode();
 
         if ($code === 429 || ($code === 403 && $this->hasLimitReason($exception))) {
-            throw new TaskRetryLater('Gmail dočasně neodesílá další e-maily kvůli limitu odesílání.', self::GMAIL_LIMIT_RETRY_SECONDS, $exception);
+            // The limit is the sender's: the rest of the batch would only be refused too, so all of it waits.
+            // A daily limit lasts up to a day, so the batch keeps trying for a bit longer than that.
+            throw new TaskRetryLater('Gmail dočasně neodesílá další e-maily kvůli limitu odesílání.', self::GMAIL_LIMIT_RETRY_SECONDS, $exception, wholeBatch: true, maxAttempts: self::GMAIL_LIMIT_MAX_ATTEMPTS);
         }
 
         if ($code >= 400 && $code < 500) {

@@ -196,6 +196,24 @@ final class TaskQueueTest extends IntegrationTest
         $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::FAILED->value, 'attempts' => 3]);
     }
 
+    /** A limit of the sender postpones the whole batch at once, and only the refused task uses up an attempt. */
+    public function testLimitOfTheSenderPostponesTheWholeBatch(): void
+    {
+        $scope = TaskScope::paymentGroup(1);
+        $jobId = (int) $this->enqueue($scope, ['first', 'second', 'third'], ['retryBatch'])->jobId;
+
+        $this->processAll();
+
+        self::assertSame(['first'], $this->handler->handled);
+        self::assertSame(3, (int) $this->tester->grabNumRecords('task_queue_item', ['state' => TaskItemState::PENDING->value, 'available_at >' => (new DateTimeImmutable('+50 minutes'))->format('Y-m-d H:i:s')]));
+        $this->tester->seeInDatabase('task_queue_item', ['label' => 'second', 'attempts' => 0]);
+
+        // Waiting on purpose is not a stalled batch; the panel says until when it waits.
+        $status = $this->overview($scope, [$jobId])[0];
+        self::assertFalse($status->stalled);
+        self::assertNotNull($status->postponedUntil);
+    }
+
     /** A step that would not finish within the request is not begun; the task waits for the next run. */
     public function testTaskWithoutTimeForItsIrreversibleStepWaitsForTheNextRun(): void
     {

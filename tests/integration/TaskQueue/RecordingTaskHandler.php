@@ -44,6 +44,8 @@ final class RecordingTaskHandler implements TaskHandler
                 throw new TaskFailed('Nejde nic.', abortJob: true);
             case 'retry':
                 throw new TaskRetryLater('Později.', 60);
+            case 'retryBatch':
+                throw new TaskRetryLater('Limit odesílatele.', 3600, wholeBatch: true, maxAttempts: 26);
             case 'crash':
                 throw new RuntimeException('Crash before the irreversible part.');
             case 'crashAfterIrreversible':

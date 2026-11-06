@@ -37,7 +37,7 @@ Každá úloha (např. jeden e-mail) prochází stavy:
 - Úlohu převezme jen ten běh, kterému se podaří podmíněně přepsat její stav. Souběžné běhy (překryv cronu, víc serverů) si ji nemohou vzít oba.
 - Úloha, kterou převzal běh, jenž zemřel (timeout PHP, limit 30 s), se po 10 minutách vrátí do fronty. Nevratná část ještě nezačala, takže se nic neopakuje.
 - Úloha ve stavu „běží“ se po 10 minutách označí jako nejistá a **automaticky se už nikdy nespustí**. Gmail máme jen s oprávněním odesílat, odeslanou poštu ověřit nejde. Uživatel to uvidí v přehledu a rozhodne sám.
-- Když Gmail odmítne e-mail kvůli limitu odesílání, úloha se odloží o hodinu, nejvýš na 3 pokusy.
+- Když Gmail odmítne e-mail kvůli limitu odesílání, odloží se o hodinu celá dávka, protože by Gmail odmítl i další e-maily téhož odesílatele. Pokus se počítá jen odmítnutému e-mailu. Denní limit Gmailu trvá až den, proto se e-mail zkouší až 26krát (déle než den). Panel mezitím ukazuje, do kdy je odesílání odložené, a dávku nehlásí jako zastavenou.
 - Když nejde poslat nic z dávky (např. neplatný Google účet odesílatele, chybí šablona), zbytek dávky se hned označí jako neproběhlý se stejným důvodem.
 - Stejná úloha (stejný e-mail stejné platby) nemůže čekat ve frontě dvakrát. Hlídá to unikátní klíč, který se po dokončení úlohy uvolní.
 

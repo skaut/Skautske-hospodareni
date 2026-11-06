@@ -232,6 +232,16 @@ final class TaskQueueRepository
         );
     }
 
+    /** Lets the waiting tasks of a batch wait until the given time as well, without using up their attempts. */
+    public function postponeWaitingOfJob(int $jobId, DateTimeImmutable $availableAt, string $message): void
+    {
+        $this->connection()->executeStatement(
+            'UPDATE task_queue_item SET available_at = ?, message = ? WHERE job_id = ? AND state = ? AND available_at < ?',
+            [$availableAt, $message, $jobId, TaskItemState::PENDING->value, $availableAt],
+            [Types::DATETIME_IMMUTABLE, Types::TEXT, Types::INTEGER, Types::STRING, Types::DATETIME_IMMUTABLE],
+        );
+    }
+
     /**
      * Fails the tasks of a batch that still wait. Call it inside a transaction.
      *

@@ -31,7 +31,6 @@ final class TaskQueueProcessor
     public const UNCERTAIN_MESSAGE = 'Zpracování se přerušilo uprostřed, a tak nevíme, jestli proběhlo.';
 
     private const UNEXPECTED_FAILURE_MESSAGE = 'Při zpracování došlo k neočekávané chybě.';
-    private const MAX_ATTEMPTS = 3;
     private const RETENTION = '-30 days';
 
     /** @var array<string, TaskHandler> */
@@ -165,7 +164,7 @@ final class TaskQueueProcessor
 
             return $outcome;
         } catch (TaskRetryLater $exception) {
-            if ($task->attempts >= self::MAX_ATTEMPTS) {
+            if ($task->attempts >= $exception->maxAttempts) {
                 return $this->endWithoutEffect($handler, $task, TaskItemState::FAILED, $exception->getMessage());
             }
 
@@ -174,6 +173,10 @@ final class TaskQueueProcessor
 
                 if ($this->repository->postpone($task, $availableAt, $exception->getMessage())) {
                     $handler->release($task->payload);
+                }
+
+                if ($exception->wholeBatch) {
+                    $this->repository->postponeWaitingOfJob($task->jobId, $availableAt, $exception->getMessage());
                 }
             });
 
