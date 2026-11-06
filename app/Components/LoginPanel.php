@@ -23,6 +23,8 @@ final class LoginPanel extends BaseControl
 
     public function handleChangeRole(int $roleId): void
     {
+        // Loaded before the switch: if it fails, the role stays unchanged both here and in SkautIS.
+        $roles = $this->userService->getAllSkautisRoles();
         $this->userService->updateSkautISRole($roleId);
         $currentRoleId = $this->userService->getRoleId();
         if ($currentRoleId !== null) {
@@ -34,10 +36,10 @@ final class LoginPanel extends BaseControl
         if (! $identity instanceof SimpleIdentity) {
             throw new LogicException('Assertion failed.');
         }
-        $roles = $this->userService->getAllSkautisRoles();
-        $identity->access = $this->userService->getAccessArrays($this->unitService, $roles);
+        // Stored before access, which calls SkautIS again: the active role then matches SkautIS even when that call fails.
         $identity->currentRole = $this->userService->getActualRole($roles);
         $identity->skautisRoles = $roles;
+        $identity->access = $this->userService->getAccessArrays($this->unitService, $roles);
 
         $this->redirect('this');
     }
