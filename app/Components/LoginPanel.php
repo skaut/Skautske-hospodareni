@@ -10,6 +10,8 @@ use App\Model\User\UserService;
 use LogicException;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
+use Skautis\Wsdl\AuthenticationException;
+use Skautis\Wsdl\WsdlException;
 
 final class LoginPanel extends BaseControl
 {
@@ -23,7 +25,16 @@ final class LoginPanel extends BaseControl
 
     public function handleChangeRole(int $roleId): void
     {
-        $this->userService->updateSkautISRole($roleId);
+        try {
+            $this->userService->updateSkautISRole($roleId);
+        } catch (AuthenticationException $exception) {
+            throw $exception; // an expired login goes to the sign-in page
+        } catch (WsdlException) {
+            // skautIS refuses a role the user no longer has, e.g. one that expired, or a link from an older page.
+            $this->flashMessage('Na vybranou roli se nepodařilo přepnout, skautIS ji odmítl. Možná už neplatí, vyberte prosím jinou.', 'warning');
+            $this->redirect('this');
+        }
+
         $currentRoleId = $this->userService->getRoleId();
         if ($currentRoleId !== null) {
             $this->preferences->rememberCurrentSkautisRole($currentRoleId);
