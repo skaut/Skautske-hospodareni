@@ -72,6 +72,7 @@ search:
                 - App\Model\Bank\Services\CiFioTokenValidator
                 - App\Model\Bank\Services\FioTokenValidator
                 - App\Model\Bank\Services\ParsedGpcFile
+                - App\Model\Common\Services\KeyedHasher
 
 services:
     # Messenger buses
@@ -82,6 +83,7 @@ services:
     # Auth
     - factory: App\Model\Admin\Services\AdminAccessChecker(@Nette\Security\User, @App\Model\User\Repository\SystemUserRoleRepository, %adminAllowedUserIds%)
     - factory: App\Model\Invoice\InvoiceAccessChecker(@Nette\Security\User, @App\Model\User\Repository\InvoiceAccessUserRepository, %invoiceAccessAllowedUserIds%)
+    - App\Model\Common\Services\KeyedHasher(%appKey%)
     - App\Model\Auth\CompositeAuthorizator(@skautisAuthorizator, @App\Model\Admin\Services\AdminAccessChecker, @App\Model\Invoice\InvoiceAccessChecker)
     - App\Presentation\Accessory\Navigation\NavigationAuthorizator
     - App\Presentation\Accessory\Navigation\PreservingLinkGenerator
