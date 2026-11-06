@@ -276,6 +276,43 @@ final class TaskQueueRepository
     }
 
     /**
+     * Fails claimed tasks whose run died again and again before their irreversible part, e.g. on running out
+     * of memory. Returning them once more would only kill the next run. Call it inside a transaction.
+     *
+     * @return list<array{type: string, payload: array<string, mixed>}> the failed tasks
+     */
+    public function failRepeatedlyAbandoned(DateTimeImmutable $claimedBefore, int $maxAttempts, DateTimeImmutable $now, string $message): array
+    {
+        $rows = $this->connection()->fetchAllAssociative(
+            'SELECT i.id, i.payload, j.type FROM task_queue_item i JOIN task_queue_job j ON j.id = i.job_id
+                WHERE i.state = ? AND i.claimed_at < ? AND i.attempts >= ?
+                FOR UPDATE',
+            [TaskItemState::CLAIMED->value, $claimedBefore, $maxAttempts],
+            [Types::STRING, Types::DATETIME_IMMUTABLE, Types::INTEGER],
+        );
+
+        if ($rows === []) {
+            return [];
+        }
+
+        $this->connection()->executeStatement(
+            'UPDATE task_queue_item SET state = ?, finished_at = ?, dedup_key = NULL, claim_token = NULL, message = ?
+                WHERE id IN (?) AND state = ?',
+            [TaskItemState::FAILED->value, $now, $message, array_map('intval', array_column($rows, 'id')), TaskItemState::CLAIMED->value],
+            [Types::STRING, Types::DATETIME_IMMUTABLE, Types::TEXT, ArrayParameterType::INTEGER, Types::STRING],
+        );
+
+        $failed = [];
+
+        foreach ($rows as $row) {
+            $payload = Json::decode((string) $row['payload'], forceArrays: true);
+            $failed[] = ['type' => (string) $row['type'], 'payload' => is_array($payload) ? $payload : []];
+        }
+
+        return $failed;
+    }
+
+    /**
      * A run that died leaves its task CLAIMED or RUNNING. A claimed task did nothing yet, so it waits
      * again. A running one may have had its effect, so it becomes UNCERTAIN and never runs again.
      *

@@ -16,6 +16,7 @@ use Psr\Log\LoggerInterface;
 use Throwable;
 
 use function bin2hex;
+use function count;
 use function is_numeric;
 use function microtime;
 use function random_bytes;
@@ -31,6 +32,10 @@ final class TaskQueueProcessor
     public const UNCERTAIN_MESSAGE = 'Zpracování se přerušilo uprostřed, a tak nevíme, jestli proběhlo.';
 
     private const UNEXPECTED_FAILURE_MESSAGE = 'Při zpracování došlo k neočekávané chybě.';
+    private const ABANDONED_MESSAGE = 'Úloha opakovaně nedoběhla, zpracování se přerušilo dřív, než mohla proběhnout.';
+
+    /** A task whose run died this many times is not returned to the queue again. */
+    private const MAX_ABANDONED_ATTEMPTS = 3;
     private const RETENTION = '-30 days';
 
     /** @var array<string, TaskHandler> */
@@ -76,7 +81,9 @@ final class TaskQueueProcessor
         $this->repository->deleteRunsStartedBefore($now->modify(self::RETENTION));
 
         $stats = new TaskQueueRunStats();
-        $stats->recovered = $this->repository->recoverStale($now->modify(sprintf('-%d seconds', $this->leaseSeconds)), $now, self::UNCERTAIN_MESSAGE);
+        $claimedBefore = $now->modify(sprintf('-%d seconds', $this->leaseSeconds));
+        $stats->recovered = $this->failRepeatedlyAbandoned($claimedBefore, $now)
+            + $this->repository->recoverStale($claimedBefore, $now, self::UNCERTAIN_MESSAGE);
         // Only runs that did something are kept; the row exists before the first task, so a run cut off
         // by the hosting stays visible without its finish time.
         $runId = $stats->recovered > 0 ? $this->repository->startRun($now) : null;
@@ -210,6 +217,20 @@ final class TaskQueueProcessor
         });
 
         return new TaskOutcome($state, $message);
+    }
+
+    private function failRepeatedlyAbandoned(DateTimeImmutable $claimedBefore, DateTimeImmutable $now): int
+    {
+        return $this->repository->connection()->transactional(function () use ($claimedBefore, $now): int {
+            $failed = $this->repository->failRepeatedlyAbandoned($claimedBefore, self::MAX_ABANDONED_ATTEMPTS, $now, self::ABANDONED_MESSAGE);
+
+            foreach ($failed as $task) {
+                $this->logger->error(sprintf('Task of type "%s" was abandoned %d times and failed.', $task['type'], self::MAX_ABANDONED_ATTEMPTS));
+                ($this->handlers[$task['type']] ?? null)?->release($task['payload']);
+            }
+
+            return count($failed);
+        });
     }
 
     private function failRestOfJob(TaskHandler $handler, ClaimedTask $task, string $message): void

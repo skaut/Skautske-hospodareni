@@ -117,6 +117,22 @@ final class TaskQueueTest extends IntegrationTest
         self::assertSame('interrupted', $job->getProblems(TaskItemState::UNCERTAIN)[0]->label);
     }
 
+    /** A task that kills its run again and again before its irreversible part stops coming back. */
+    public function testTaskAbandonedRepeatedlyFailsInsteadOfReturning(): void
+    {
+        $jobId = (int) $this->enqueue(TaskScope::paymentGroup(1), ['deadly', 'fine'])->jobId;
+        $deadly = $this->firstPendingItem($jobId);
+        $this->entityManager->getConnection()->executeStatement('UPDATE task_queue_item SET attempts = 2 WHERE id = ?', [$deadly]);
+        // The third run that took it died as well.
+        self::assertNotNull($this->repository->claim($deadly, 'deadrun3deadrun3deadrun3deadrun3', new DateTimeImmutable('-1 hour')));
+
+        $this->processAll();
+
+        self::assertSame(['fine'], $this->handler->handled);
+        $this->tester->seeInDatabase('task_queue_item', ['id' => $deadly, 'state' => TaskItemState::FAILED->value]);
+        self::assertSame(['deadly'], $this->handler->released);
+    }
+
     public function testNoTaskStartsAfterTheDeadline(): void
     {
         $this->enqueue(TaskScope::paymentGroup(1), ['late']);
