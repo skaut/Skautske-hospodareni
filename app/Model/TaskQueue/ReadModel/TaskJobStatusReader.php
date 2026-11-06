@@ -50,7 +50,14 @@ final class TaskJobStatusReader
                     SUM(i.state = :skipped) AS skipped,
                     SUM(i.state = :failed) AS failed,
                     SUM(i.state = :uncertain) AS uncertain,
-                    GREATEST(j.created_at, COALESCE(MAX(i.claimed_at), j.created_at), COALESCE(MAX(i.finished_at), j.created_at)) AS last_activity
+                    SUM(i.state IN (:active) AND (i.state <> :pending OR i.available_at <= :now)) AS due,
+                    MIN(CASE WHEN i.state = :pending AND i.available_at > :now THEN i.available_at END) AS postponed_until,
+                    GREATEST(
+                        j.created_at,
+                        COALESCE(MAX(i.claimed_at), j.created_at),
+                        COALESCE(MAX(i.finished_at), j.created_at),
+                        COALESCE(MAX(CASE WHEN i.available_at <= :now THEN i.available_at END), j.created_at)
+                    ) AS last_activity
                 FROM task_queue_job j
                 JOIN task_queue_item i ON i.job_id = j.id
                 WHERE (:allScopes = 1 OR (j.scope_type = :scopeType AND j.scope_id = :scopeId)) AND j.acknowledged_at IS NULL
@@ -63,6 +70,8 @@ final class TaskJobStatusReader
                 'skipped' => TaskItemState::SKIPPED->value,
                 'failed' => TaskItemState::FAILED->value,
                 'uncertain' => TaskItemState::UNCERTAIN->value,
+                'pending' => TaskItemState::PENDING->value,
+                'now' => $now,
                 'allScopes' => $scope === null ? 1 : 0,
                 'scopeType' => $scope->type ?? '',
                 'scopeId' => $scope->id ?? 0,
@@ -71,6 +80,7 @@ final class TaskJobStatusReader
             ],
             [
                 'active' => ArrayParameterType::STRING,
+                'now' => Types::DATETIME_IMMUTABLE,
                 'allScopes' => Types::INTEGER,
                 'scopeId' => Types::INTEGER,
                 'followed' => ArrayParameterType::INTEGER,
@@ -102,8 +112,10 @@ final class TaskJobStatusReader
                     (int) $row['skipped'],
                     (int) $row['failed'],
                     (int) $row['uncertain'],
-                    $active > 0 && new DateTimeImmutable((string) $row['last_activity']) < $stalledBefore,
+                    // Tasks postponed to later (e.g. a limit of Gmail) are waiting on purpose, not stalled.
+                    (int) $row['due'] > 0 && new DateTimeImmutable((string) $row['last_activity']) < $stalledBefore,
                     $problems[(int) $row['id']] ?? [],
+                    (int) $row['due'] === 0 && $row['postponed_until'] !== null ? new DateTimeImmutable((string) $row['postponed_until']) : null,
                 );
             },
             $rows,

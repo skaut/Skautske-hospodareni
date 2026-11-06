@@ -13,7 +13,10 @@ use function intdiv;
 
 final class TaskJobStatus
 {
-    /** @param list<TaskProblem> $problems */
+    /**
+     * @param list<TaskProblem>      $problems
+     * @param DateTimeImmutable|null $postponedUntil when all waiting tasks were postponed, e.g. by a limit of Gmail
+     */
     public function __construct(
         public readonly int $id,
         public readonly string $type,
@@ -30,6 +33,7 @@ final class TaskJobStatus
         public readonly int $uncertain,
         public readonly bool $stalled,
         public readonly array $problems,
+        public readonly ?DateTimeImmutable $postponedUntil = null,
     ) {
     }
 

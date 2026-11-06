@@ -32,6 +32,9 @@
                     <div n:if="$job->stalled" class="alert alert-warning small mt-2 mb-0" data-test="task-queue-job-stalled">
                         Odesílání se zastavilo. Dejte prosím vědět správci aplikace.
                     </div>
+                    <div n:if="$job->postponedUntil !== null" class="alert alert-info small mt-2 mb-0" data-test="task-queue-job-postponed">
+                        Odesílání je odložené do {$job->postponedUntil|date:'j. n. H:i'}, pak ho fronta zkusí znovu sama.
+                    </div>
 
                     {var $failed = $job->getProblems(\App\Model\TaskQueue\TaskItemState::FAILED)}
                     <div n:if="$failed !== []" class="small mt-2" data-test="task-queue-job-failed">

@@ -85,6 +85,8 @@
                                 <td>
                                     {if $job->stalled}
                                         <span class="badge text-bg-warning">Stojí</span>
+                                    {elseif $job->postponedUntil !== null}
+                                        <span class="badge text-bg-info" title="Odloženo do {$job->postponedUntil|date:'j. n. H:i'}">Odloženo</span>
                                     {elseif !$job->isFinished()}
                                         <span class="badge text-bg-info">Zpracovává se</span>
                                     {else}
