@@ -533,6 +533,15 @@ JS);
      * Prvek je vidět ve viewportu a nic jiného na stránce ho nepřekrývá – typicky položka
      * rozbalovacího menu, která by jinak mohla skončit pod následujícím obsahem.
      */
+    /** Waits until the element matching the CSS selector has keyboard focus. */
+    public function seeFocusOn(string $selector): void
+    {
+        $this->waitForJS(
+            'return document.activeElement !== null && document.activeElement === document.querySelector('.json_encode($selector).');',
+            self::ELEMENT_LOAD_TIMEOUT,
+        );
+    }
+
     public function seeElementNotCovered(string $selector): void
     {
         $this->waitForElementVisible($selector, self::ELEMENT_LOAD_TIMEOUT);

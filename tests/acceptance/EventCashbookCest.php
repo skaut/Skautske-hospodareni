@@ -64,6 +64,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->createTwoLineExpenseChit();
         $this->removeChits();
         $this->checkRemoveSecondLineExpenseChit();
+        $this->createChitWithoutRemovedMiddleLine();
         $this->editImportedParticipantIncomeChit();
         $this->cancelEvent();
     }
@@ -223,10 +224,53 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->clickStable('input[name="items[addItem]"]');
         $this->I->expect('Odebrat položku');
         $this->I->seeElement('input[name="items[0][remove]"]');
-        $this->I->click('input[name="items[0][remove]"]');
+        $this->I->clickStable('input[name="items[0][remove]"]');
         $this->I->waitForElementNotVisible('input[name="items[0][remove]"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
-        $this->I->dontSeeElement('//input[@type="submit" and @value="Odebrat položku"]');
+        $this->I->dontSeeElement('//input[@value="Odebrat položku"]');
         $this->I->seeElement('//input[@type="submit" and @value="Uložit"]');
+    }
+
+    private function createChitWithoutRemovedMiddleLine(): void
+    {
+        $this->goToCashbookPage();
+
+        $this->I->click('Nový doklad');
+        $this->I->amGoingTo('create chit from three lines with the middle one removed');
+        $this->fillChitForm(new ChronosDate(), 'Rohlíky', Operation::EXPENSE(), 'Potraviny', 'Testovací skaut', '10');
+        $this->addChitItem(1);
+        // Same category as the first line: saving would fail unless the line is really removed.
+        $this->fillChitItem(1, 'Odebraná položka', 'Potraviny', '200');
+        $this->addChitItem(2);
+        $this->fillChitItem(2, 'Hřebíky', 'Materiál', '30');
+        $this->I->seeNoHorizontalOverflowOnPhone('evidence plateb – doklad s více položkami');
+
+        $this->I->clickStable('input[name="items[1][remove]"]');
+        $this->I->dontSeeElement('input[name="items[1][purpose]"]');
+        $this->I->seeFocusOn('input[name="items[addItem]"]');
+
+        $this->I->scrollTo('input[name="send"]');
+        $this->I->clickStable('input[name="send"]');
+        $this->waitForBalance('-40,00');
+
+        $this->I->scrollTo('h4[id="chitList-payment"]');
+        $this->removeChit(1);
+        $this->I->waitForText(self::NO_CHITS_MESSAGE, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+    }
+
+    private function addChitItem(int $index): void
+    {
+        $this->I->clickStable('input[name="items[addItem]"]');
+        $this->I->waitForElementVisible(sprintf('input[name="items[%d][purpose]"]', $index), AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->I->seeInField(sprintf('input[name="items[%d][purpose]"]', $index), '');
+        $this->I->seeInField(sprintf('input[name="items[%d][price]"]', $index), '');
+        $this->I->seeFocusOn(sprintf('input[name="items[%d][purpose]"]', $index));
+    }
+
+    private function fillChitItem(int $index, string $purpose, string $expenseCategory, string $amount): void
+    {
+        $this->I->fillFieldStable(sprintf('input[name="items[%d][purpose]"]', $index), $purpose);
+        $this->I->selectOption(sprintf('items[%d][expenseCategories]', $index), $expenseCategory);
+        $this->I->fillFieldStable(sprintf('input[name="items[%d][price]"]', $index), $amount);
     }
 
     private function removeChits(): void
@@ -330,6 +374,19 @@ class EventCashbookCest extends BaseAcceptanceCest
         if ($selectedCategory !== (string) ICategory::CATEGORY_HPD_ID) {
             throw new RuntimeException('Imported participant income chit does not retain the HPD category in the edit form.');
         }
+
+        $this->seeOnlyCategorySelectOf(Operation::INCOME());
+    }
+
+    private function seeOnlyCategorySelectOf(Operation $type): void
+    {
+        $this->I->waitForElementVisible(sprintf('select[name="%s"]', $this->categorySelectName(0, $type)), AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $this->I->waitForElementNotVisible(sprintf('select[name="%s"]', $this->categorySelectName(0, $type->getInverseOperation())), AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+    }
+
+    private function categorySelectName(int $index, Operation $type): string
+    {
+        return sprintf('items[%d][%sCategories]', $index, $type->equals(Operation::EXPENSE()) ? 'expense' : 'income');
     }
 
     private function cleanupEvent(AcceptanceTester $I): void
@@ -376,7 +433,8 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->pressKey('body', [WebDriverKeys::ESCAPE]); // close datepicker
         $this->I->fillFieldStable('input[name="items[0][purpose]"]', $purpose);
         $this->I->selectOption('#chit-type', $type->equals(Operation::EXPENSE()) ? 'Výdaje' : 'Příjmy');
-        $this->I->selectOption(sprintf('items[0][%sCategories]', $type->equals(Operation::EXPENSE()) ? 'expense' : 'income'), $category);
+        $this->seeOnlyCategorySelectOf($type);
+        $this->I->selectOption($this->categorySelectName(0, $type), $category);
         $this->I->fillFieldStable('input[name="recipient"]', $recipient);
         $this->I->fillFieldStable('input[name="items[0][price]"]', $amount);
     }
@@ -385,7 +443,7 @@ class EventCashbookCest extends BaseAcceptanceCest
     {
         $this->I->wantToTest('Uložit');
         $this->I->fillFieldStable('input[name="items[1][purpose]"]', $purpose);
-        $this->I->selectOption(sprintf('items[1][%sCategories]', $type->equals(Operation::EXPENSE()) ? 'expense' : 'income'), $category);
+        $this->I->selectOption($this->categorySelectName(1, $type), $category);
         $this->I->fillFieldStable('input[name="recipient"]', $recipient);
         $this->I->fillFieldStable('input[name="items[1][price]"]', $amount);
     }
