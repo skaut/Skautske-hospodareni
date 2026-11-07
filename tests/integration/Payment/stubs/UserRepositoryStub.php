@@ -7,10 +7,19 @@ namespace App\Model\Payment;
 use App\Model\Common\Repositories\IUserRepository;
 use App\Model\Common\User;
 use App\Model\Common\UserNotFound;
+use Throwable;
 
 class UserRepositoryStub implements IUserRepository
 {
     private ?User $user = null;
+
+    private ?Throwable $failure = null;
+
+    /** Simulates skautIS failing to tell who is logged in; null stops it. */
+    public function failWith(?Throwable $failure): void
+    {
+        $this->failure = $failure;
+    }
 
     public function find(int $id): User
     {
@@ -30,6 +39,10 @@ class UserRepositoryStub implements IUserRepository
 
     public function findCurrentUser(): ?User
     {
+        if ($this->failure !== null) {
+            throw $this->failure;
+        }
+
         return $this->user;
     }
 }

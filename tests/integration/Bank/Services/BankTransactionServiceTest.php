@@ -113,7 +113,7 @@ final class BankTransactionServiceTest extends IntegrationTest
         $this->entityManager->persist(new BankTransaction($account, $legacyTransaction, new DateTimeImmutable()));
         $this->entityManager->flush();
 
-        $batch = $this->service->importGpcTransactions($account->getId(), 'sample.gpc', $contents, 'Tester');
+        $batch = $this->service->importGpcTransactions($account->getId(), 'sample.gpc', $contents, 'Tester')->batch;
 
         self::assertSame(1, $batch->getTransactionCount());
         self::assertSame(0, $batch->getNewTransactionCount(), 'transakce pod starým klíčem se nesmí naimportovat znovu');
@@ -147,17 +147,21 @@ final class BankTransactionServiceTest extends IntegrationTest
             (string) file_get_contents(__DIR__.'/../../../_data/bank/sample.gpc'),
         );
         self::assertNotSame('', $contents);
-        self::assertCount(
-            1,
-            (new GpcParser())->parse(
-                $account->getNumber()->getNumberWithPrefixAndBankCode(),
-                $contents,
-                new BankTransactionKeyGenerator(),
-            ),
+        $parsed = (new GpcParser())->parse(
+            $account->getNumber()->getNumberWithPrefixAndBankCode(),
+            $contents,
+            new BankTransactionKeyGenerator(),
         );
+        self::assertCount(1, $parsed);
 
-        $firstBatch = $this->service->importGpcTransactions($account->getId(), 'sample.gpc', $contents, 'Tester');
-        $secondBatch = $this->service->importGpcTransactions($account->getId(), 'sample.gpc', $contents, 'Tester');
+        $firstImport = $this->service->importGpcTransactions($account->getId(), 'sample.gpc', $contents, 'Tester');
+        $secondImport = $this->service->importGpcTransactions($account->getId(), 'sample.gpc', $contents, 'Tester');
+        $firstBatch = $firstImport->batch;
+        $secondBatch = $secondImport->batch;
+
+        // A repeated import brings no new transaction, but the statement still covers the same days.
+        self::assertSame($parsed[0]->getDate()->format('Y-m-d'), $firstImport->statementStart?->format('Y-m-d'));
+        self::assertSame($parsed[0]->getDate()->format('Y-m-d'), $secondImport->statementStart?->format('Y-m-d'));
 
         self::assertSame(1, $firstBatch->getTransactionCount());
         self::assertSame(1, $firstBatch->getNewTransactionCount());

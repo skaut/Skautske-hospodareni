@@ -8,6 +8,7 @@ use App\Model\Bank\BankService;
 use App\Model\Bank\Entity\BankAccount;
 use App\Model\Bank\Entity\BankTransaction;
 use App\Model\Bank\Entity\BankTransactionPairing;
+use App\Model\Bank\Enum\BankTransactionSource;
 use App\Model\Bank\Transaction;
 use App\Model\DTO\Payment\PairingResult;
 use App\Model\Payment\FioClientStub;
@@ -155,9 +156,59 @@ class BankServiceTest extends IntegrationTest
 
         $pairingResults = $this->bankService->pairAllGroups([(int) $group->getId()], 7);
 
-        self::assertCount(1, $pairingResults);
-        self::assertSame(0, $pairingResults[0]->getCount());
+        // Nothing can be paired, so the account is skipped without asking the bank.
+        self::assertSame([], $pairingResults);
         self::assertSame([], $this->activePairedPaymentIds());
+    }
+
+    public function testImportedStatementIsPairedWithOpenGroupsFromItsFirstDay(): void
+    {
+        $bankAccount = $this->createBankAccountFixture('GPC', null, BankTransactionSource::GPC);
+        $this->bankAccounts->save($bankAccount);
+
+        $openGroup = $this->addGroup($bankAccount);
+        $closedGroup = $this->addGroup($bankAccount);
+        $closedGroup->close('');
+        $this->groups->save($closedGroup);
+
+        $this->addPayment($openGroup, 200, '123'); // ID: 1
+        $this->addPayment($openGroup, 300, '456'); // ID: 2
+        $this->addPayment($closedGroup, 400, '789'); // ID: 3
+
+        $this->storeTransaction($bankAccount, 200, '123', new DateTimeImmutable('- 20 days'));
+        $this->storeTransaction($bankAccount, 300, '456', new DateTimeImmutable('- 40 days'));
+        $this->storeTransaction($bankAccount, 400, '789', new DateTimeImmutable('- 20 days'));
+
+        $pairingResults = $this->bankService->pairImportedStatement(
+            $bankAccount->getId(),
+            ChronosDate::today()->subDays(20),
+            [(int) $openGroup->getId(), (int) $closedGroup->getId()],
+        );
+
+        self::assertCount(1, $pairingResults);
+        self::assertSame(1, $pairingResults[0]->getCount());
+        // The payment of the closed group and the transaction older than the statement stay unpaired.
+        self::assertSame([1], $this->activePairedPaymentIds());
+    }
+
+    /** Pairing completes payments, so a statement imported on a shared account leaves groups the user may not edit. */
+    public function testImportedStatementPairsOnlyGroupsTheUserMayEdit(): void
+    {
+        $bankAccount = $this->createBankAccountFixture('GPC', null, BankTransactionSource::GPC);
+        $this->bankAccounts->save($bankAccount);
+
+        $editableGroup = $this->addGroup($bankAccount);
+        $otherGroup = $this->addGroup($bankAccount);
+
+        $this->addPayment($editableGroup, 200, '123'); // ID: 1
+        $this->addPayment($otherGroup, 300, '456'); // ID: 2
+
+        $this->storeTransaction($bankAccount, 200, '123', new DateTimeImmutable('- 5 days'));
+        $this->storeTransaction($bankAccount, 300, '456', new DateTimeImmutable('- 5 days'));
+
+        $this->bankService->pairImportedStatement($bankAccount->getId(), ChronosDate::today()->subDays(10), [(int) $editableGroup->getId()]);
+
+        self::assertSame([1], $this->activePairedPaymentIds());
     }
 
     private function addPayment(Group $group, float $amount, ?string $variableSymbol): void
@@ -187,6 +238,18 @@ class BankServiceTest extends IntegrationTest
     private function createTransaction(float $amount, ?string $variableSymbol): Transaction
     {
         return $this->createFioTransactionFixture($this->nextTransactionId++, $amount, $variableSymbol, '');
+    }
+
+    private function storeTransaction(BankAccount $bankAccount, float $amount, string $variableSymbol, DateTimeImmutable $date): void
+    {
+        $id = (string) $this->nextTransactionId++;
+
+        $this->entityManager->persist(new BankTransaction(
+            $bankAccount,
+            new Transaction($id, BankTransactionSource::GPC, $date, MoneyFactory::fromDecimal((string) $amount), '', 'Payer', (int) $variableSymbol, null, '', $id),
+            new DateTimeImmutable(),
+        ));
+        $this->entityManager->flush();
     }
 
     /** @return int[] */

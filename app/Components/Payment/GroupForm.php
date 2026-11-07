@@ -6,6 +6,7 @@ namespace App\Components\Payment;
 
 use App\Components\BaseControl;
 use App\Model\Bank\BankService;
+use App\Model\Bank\Enum\BankTransactionSource;
 use App\Model\Common\Services\QueryBus;
 use App\Model\Common\UnitId;
 use App\Model\DTO\Google\OAuth;
@@ -14,6 +15,7 @@ use App\Model\DTO\Payment\GroupEmail;
 use App\Model\Google\OAuthId;
 use App\Model\Payment\EmailTemplate;
 use App\Model\Payment\EmailType;
+use App\Model\Payment\Group;
 use App\Model\Payment\Group\PaymentDefaults;
 use App\Model\Payment\Group\SkautisEntity;
 use App\Model\Payment\PaymentService;
@@ -21,6 +23,8 @@ use App\Model\Payment\ReadModel\Queries\BankAccount\BankAccountsAccessibleByUnit
 use App\Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use App\Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use App\Model\Payment\ReadModel\Queries\OAuthsAccessibleByGroupsQuery;
+use App\Model\TaskQueue\ReadModel\Queries\CountWaitingTasksQuery;
+use App\Model\TaskQueue\TaskScope;
 use App\Model\Unit\ReadModel\Queries\UnitsDetailQuery;
 use App\Model\Unit\Unit;
 use App\Model\Utils\MoneyFactory;
@@ -31,18 +35,30 @@ use Component\Forms\DateControl;
 use DateTimeImmutable;
 use LogicException;
 use Nette\Application\UI\Form;
+use Nette\Forms\Container;
+use Nette\Forms\Controls\Checkbox;
 use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Controls\TextBase;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\FileSystem;
+use Nette\Utils\Json;
 
 use function array_filter;
 use function array_key_exists;
 use function array_map;
 use function array_unique;
+use function array_values;
+use function in_array;
+use function is_array;
+use function is_numeric;
 
 final class GroupForm extends BaseControl
 {
+    private const FIO_ONLY_PAIRING_MESSAGE = 'Automatické párování je dostupné pouze pro účet napojený na FIO. U účtu s importem GPC se páruje jen ručně.';
+
+    /** @var list<BankAccount>|null */
+    private ?array $accessibleBankAccounts = null;
+
     public function __construct(
         private UnitId $unitId,
         private ?SkautisEntity $skautisEntity,
@@ -132,6 +148,8 @@ final class GroupForm extends BaseControl
             ->setRequired(false)
             ->setPrompt('Vyberte bankovní účet');
 
+        $bankAccount->setHtmlAttribute('data-gpc-bank-accounts', Json::encode($this->gpcBankAccountIds()));
+
         if ($this->groupId !== null) {
             $bankAccount->setHtmlAttribute('data-original-value', (string) ($defaults['bankAccount'] ?? ''));
             $bankAccount->setHtmlAttribute(
@@ -144,7 +162,8 @@ final class GroupForm extends BaseControl
         $form->setCurrentGroup($pairingGroup);
         $form->addCheckbox('automaticPairingEnabled', 'Automaticky párovat úhrady v cronu')
             ->setOption('description', 'Cron páruje jen skupiny, které mají tuto volbu výslovně zapnutou.')
-            ->setHtmlAttribute('data-bank-pairing-field', '1');
+            ->setHtmlAttribute('data-bank-pairing-field', '1')
+            ->setHtmlAttribute('data-fio-only-message', self::FIO_ONLY_PAIRING_MESSAGE);
         $form->addText('pairingDaysBack', 'Rozšířit hledání zpětně o dnů')
             ->setDefaultValue((string) BankService::DAYS_BACK_DEFAULT)
             ->setRequired(false)
@@ -176,6 +195,7 @@ final class GroupForm extends BaseControl
 
         $form->onValidate[] = function (BaseForm $form, ArrayHash $values): void {
             $this->validateEmailTemplatesRequireBankAccount($form, $values);
+            $this->validateAutomaticPairingRequiresFio($form, $values);
         };
 
         $form->onSuccess[] = function (BaseForm $form): void {
@@ -214,11 +234,15 @@ final class GroupForm extends BaseControl
         $emails = array_filter($emails);
         $oAuthId = OAuthId::fromStringOrNull($v->oAuthId);
         $remindersEnabled = $v->emails[EmailType::PAYMENT_REMINDER]?->remindersEnabled ?? false;
+        $reminderDaysAfterDue = $this->reminderDaysAfterDue($v->emails[EmailType::PAYMENT_REMINDER]?->reminderDaysAfterDue ?? null);
 
         if ($this->cloneSourceGroupId !== null && $oAuthId === null) {
             $emails = $this->buildEmailTemplatesFromDefaults($originalGroupData['emails'] ?? []);
             $remindersEnabled = (bool) (
                 $originalGroupData['emails'][EmailType::PAYMENT_REMINDER]['remindersEnabled'] ?? false
+            );
+            $reminderDaysAfterDue = $this->reminderDaysAfterDue(
+                $originalGroupData['emails'][EmailType::PAYMENT_REMINDER]['reminderDaysAfterDue'] ?? null,
             );
         }
 
@@ -233,9 +257,11 @@ final class GroupForm extends BaseControl
                 $remindersEnabled,
                 (bool) $v->automaticPairingEnabled,
                 $v->pairingDaysBack !== null && $v->pairingDaysBack !== '' ? (int) $v->pairingDaysBack : null,
+                $reminderDaysAfterDue,
             );
 
             $this->flashMessage('Skupina byla upravena');
+            $this->warnAboutWaitingReminders($originalGroupData, $remindersEnabled && $reminderDaysAfterDue !== null);
         } else {// ADD
             $this->groupId = $this->model->createGroup(
                 $this->unitId->toInt(),
@@ -248,12 +274,84 @@ final class GroupForm extends BaseControl
                 $remindersEnabled,
                 (bool) $v->automaticPairingEnabled,
                 $v->pairingDaysBack !== null && $v->pairingDaysBack !== '' ? (int) $v->pairingDaysBack : null,
+                $reminderDaysAfterDue,
             );
 
             $this->flashMessage('Skupina byla založena');
         }
 
         $this->getPresenter()->redirect(':Payments:Payment:default', ['id' => $this->groupId]);
+    }
+
+    /**
+     * Turning automatic reminders off does not stop the ones already waiting in the queue; the user decides
+     * whether to let them go out or to cancel them in the panel of the group.
+     *
+     * @param array<string, mixed> $originalGroupData
+     */
+    private function warnAboutWaitingReminders(array $originalGroupData, bool $automaticRemindersOn): void
+    {
+        $original = $originalGroupData['emails'][EmailType::PAYMENT_REMINDER] ?? [];
+        $wereOn = is_array($original) && ($original['remindersEnabled'] ?? false) && ($original['reminderDaysAfterDue'] ?? null) !== null;
+
+        if (! $wereOn || $automaticRemindersOn || $this->groupId === null) {
+            return;
+        }
+
+        $waiting = $this->queryBus->handle(new CountWaitingTasksQuery(TaskScope::paymentGroup($this->groupId)));
+
+        if ($waiting > 0) {
+            $this->flashMessage(PaymentEmailMessages::stillWaiting($waiting), 'warning');
+        }
+    }
+
+    private function addAutomaticReminderFields(BaseForm $form, Container $container, string $remindersId): void
+    {
+        $daysId = $remindersId.'_days';
+
+        $remindersEnabled = $container->addCheckbox('remindersEnabled', 'Automaticky odeslat upomínku po splatnosti')
+            ->setOption('id', $remindersId)
+            ->setHtmlAttribute('data-email-field', '1');
+
+        $days = $container->addText('reminderDaysAfterDue', 'Počet dní po splatnosti')
+            ->setHtmlType('number')
+            ->setHtmlAttribute('min', '1')
+            ->setHtmlAttribute('max', (string) Group::MAX_REMINDER_DAYS_AFTER_DUE)
+            ->setHtmlAttribute('data-email-field', '1')
+            ->setNullable()
+            ->setOption('id', $daysId)
+            ->setOption(
+                'description',
+                'Upomínka odejde automaticky jen jednou, až od splatnosti uplyne zadaný počet dní. Platby, které jsou po splatnosti už déle, ji dostanou při nejbližším automatickém odeslání. Platbě, které už upomínka odešla ručně, automatická neodejde.',
+            );
+
+        $enabled = $container['enabled'];
+        if (! $enabled instanceof Checkbox) {
+            throw new LogicException('Assertion failed.');
+        }
+
+        $days->addConditionOn($enabled, $form::FILLED)
+            ->addConditionOn($remindersEnabled, $form::FILLED)
+            ->toggle($daysId)
+            ->setRequired('Zadejte, kolik dní po splatnosti se má upomínka odeslat.')
+            ->addRule($form::INTEGER, 'Počet dní musí být celé číslo.')
+            ->addRule($form::MIN, 'Počet dní musí být alespoň 1.', 1)
+            ->addRule($form::MAX, 'Počet dní může být nejvýš %d.', Group::MAX_REMINDER_DAYS_AFTER_DUE);
+    }
+
+    /**
+     * The field is checked only while automatic reminders are on. With them off it may still send anything,
+     * which is then not kept rather than breaking the save.
+     */
+    private function reminderDaysAfterDue(mixed $value): ?int
+    {
+        if (! is_numeric($value) || (string) (int) $value !== (string) $value) {
+            return null;
+        }
+
+        $days = (int) $value;
+
+        return $days >= 1 && $days <= Group::MAX_REMINDER_DAYS_AFTER_DUE ? $days : null;
     }
 
     private function validateEmailTemplatesRequireBankAccount(BaseForm $form, ArrayHash $values): void
@@ -282,6 +380,21 @@ final class GroupForm extends BaseControl
                 return;
             }
         }
+    }
+
+    /** The cron pairs only FIO accounts, a GPC statement is paired when it is imported. */
+    private function validateAutomaticPairingRequiresFio(BaseForm $form, ArrayHash $values): void
+    {
+        if (! $values->automaticPairingEnabled || ! in_array($values->bankAccount, $this->gpcBankAccountIds(), true)) {
+            return;
+        }
+
+        $automaticPairing = $form['automaticPairingEnabled'];
+        if (! $automaticPairing instanceof Checkbox) {
+            throw new LogicException('Assertion failed.');
+        }
+
+        $automaticPairing->addError(self::FIO_ONLY_PAIRING_MESSAGE);
     }
 
     private function getDefaultEmailBody(string $name): string
@@ -315,7 +428,9 @@ final class GroupForm extends BaseControl
                 continue;
             }
 
-            $emails[$emailType->toString()]['remindersEnabled'] = $group->isRemindersEnabled();
+            // Without the chosen days the automatic reminder does not go out, so the switch shows as off.
+            $emails[$emailType->toString()]['remindersEnabled'] = $group->isRemindersEnabled() && $group->getReminderDaysAfterDue() !== null;
+            $emails[$emailType->toString()]['reminderDaysAfterDue'] = $group->getReminderDaysAfterDue();
         }
 
         $defaults = [
@@ -375,9 +490,7 @@ final class GroupForm extends BaseControl
             }
 
             if ($type === EmailType::PAYMENT_REMINDER) {
-                $container->addCheckbox('remindersEnabled', 'Automaticky odeslat email po splatnosti')
-                    ->setOption('id', $remindersId)
-                    ->setHtmlAttribute('data-email-field', '1');
+                $this->addAutomaticReminderFields($form, $container, $remindersId);
             }
 
             $defaultSubjects = [
@@ -462,18 +575,45 @@ final class GroupForm extends BaseControl
     /** @return array<int, string> */
     private function bankAccountItems(): array
     {
-        $bankAccounts = $this->queryBus->handle(new BankAccountsAccessibleByUnitsQuery($this->groupUnitIds()));
-
         $items = [];
 
-        foreach ($bankAccounts as $bankAccount) {
-            if (! $bankAccount instanceof BankAccount) {
-                throw new LogicException('Assertion failed.');
-            }
+        foreach ($this->accessibleBankAccounts() as $bankAccount) {
             $items[$bankAccount->getId()] = $bankAccount->getName();
         }
 
         return $items;
+    }
+
+    /** @return list<int> */
+    private function gpcBankAccountIds(): array
+    {
+        return array_values(array_map(
+            static fn (BankAccount $bankAccount): int => $bankAccount->getId(),
+            array_filter(
+                $this->accessibleBankAccounts(),
+                static fn (BankAccount $bankAccount): bool => $bankAccount->getTransactionSource() === BankTransactionSource::GPC,
+            ),
+        ));
+    }
+
+    /** @return list<BankAccount> */
+    private function accessibleBankAccounts(): array
+    {
+        if ($this->accessibleBankAccounts !== null) {
+            return $this->accessibleBankAccounts;
+        }
+
+        $this->accessibleBankAccounts = [];
+
+        foreach ($this->queryBus->handle(new BankAccountsAccessibleByUnitsQuery($this->groupUnitIds())) as $bankAccount) {
+            if (! $bankAccount instanceof BankAccount) {
+                throw new LogicException('Assertion failed.');
+            }
+
+            $this->accessibleBankAccounts[] = $bankAccount;
+        }
+
+        return $this->accessibleBankAccounts;
     }
 
     /** @return array<string, array<string, string>> */

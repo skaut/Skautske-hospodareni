@@ -19,4 +19,4 @@
 - Visible failure: `SkautisWsdlPageException` while waiting for `[data-test="admin-statistics-page"]` at `/admin/statistiky`
 - Artifact root cause: transient SkautIS WSDL page; the classification worked, but nothing retried the navigation
 - Repeating pattern: `SettingsCest` was routed through the shared retry helper after the 2026-07-20 incident, `AdminCest` was not, so every one of its 23 direct navigations stayed unguarded
-- Robust fix direction: `BaseAcceptanceCest::openPageAndWaitForElementWithSkautisRetry()` for direct `amOnPage` navigation, mirroring the existing link-click helper. Remaining suites with unguarded `amOnPage` + element wait: `BugReportCest`, `DashboardCest`, `HelpCest`, `InvoiceCest`, `PageViewCest`, `PaymentDashboardCest`, `PaymentDetailCest`, `UnitCest`.
+- Robust fix direction: `BaseAcceptanceCest::openPageAndWaitForElementWithSkautisRetry()` for direct `amOnPage` navigation, mirroring the existing link-click helper. Remaining suites with unguarded `amOnPage` + element wait: `BugReportCest`, `DashboardCest`, `HelpCest`, `InvoiceCest`, `PaymentDashboardCest`, `PaymentDetailCest`, `UnitCest`.

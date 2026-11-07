@@ -180,6 +180,45 @@ class PaymentRepositoryTest extends IntegrationTest
         $this->assertFalse($this->repository->existsPaymentWithVariableSymbolInGroup(1, new VariableSymbol('100'), 1));
     }
 
+    public function testFindOpenByGroupsReturnsOnlyPaymentsLeftToPair(): void
+    {
+        $this->addGroupWithId(1);
+        $this->addGroupWithId(2);
+        $this->addGroupWithId(3);
+        $this->addPayments([
+            self::PAYMENT_ROW,
+            array_merge(self::PAYMENT_ROW, ['state' => Payment\State::COMPLETED]),
+            array_merge(self::PAYMENT_ROW, ['variable_symbol' => null]),
+            array_merge(self::PAYMENT_ROW, ['group_id' => 2]),
+            array_merge(self::PAYMENT_ROW, ['group_id' => 3]),
+        ]);
+
+        $this->assertSame(
+            [1, 4],
+            array_map(static fn (Payment $payment): int => $payment->getId(), $this->repository->findOpenByGroups([1, 2])),
+        );
+        $this->assertSame([], $this->repository->findOpenByGroups([]));
+    }
+
+    public function testFindGroupIdsWithOpenPaymentsLeavesOutGroupsWithNothingToPair(): void
+    {
+        $this->addGroupWithId(1);
+        $this->addGroupWithId(2);
+        $this->addGroupWithId(3);
+        $this->addGroupWithId(4);
+        $this->addPayments([
+            self::PAYMENT_ROW,
+            self::PAYMENT_ROW,
+            array_merge(self::PAYMENT_ROW, ['group_id' => 2, 'state' => Payment\State::COMPLETED]),
+            array_merge(self::PAYMENT_ROW, ['group_id' => 2, 'variable_symbol' => null]),
+            array_merge(self::PAYMENT_ROW, ['group_id' => 3]),
+            array_merge(self::PAYMENT_ROW, ['group_id' => 4]),
+        ]);
+
+        $this->assertSame([1, 3], $this->repository->findGroupIdsWithOpenPayments([1, 2, 3]));
+        $this->assertSame([], $this->repository->findGroupIdsWithOpenPayments([]));
+    }
+
     public function testSummarizeByGroupReturnsCorrectStats(): void
     {
         $payments = [

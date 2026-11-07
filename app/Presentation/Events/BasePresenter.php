@@ -45,8 +45,7 @@ class BasePresenter extends \App\BaseSectionPresenter
                 throw new LogicException('Assertion failed.');
             }
         } catch (EventNotFound) {
-            $this->template->setParameters(['message' => 'Nemáte oprávnění načíst akci nebo akce neexsituje.']);
-            $this->forward('Default:accessDenied');
+            $this->denyAccess('Nemáte oprávnění načíst akci nebo akce neexistuje.');
         }
 
         $this->template->setParameters([

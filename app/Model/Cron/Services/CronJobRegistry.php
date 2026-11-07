@@ -19,12 +19,22 @@ use function sprintf;
 final class CronJobRegistry
 {
     public const PAYMENT_PAIRING = 'paymentPairing';
+    public const PAYMENT_REMINDERS = 'paymentReminders';
+    public const TASK_QUEUE = 'taskQueue';
 
     /** Keep in sync with the jobs in scheduler.neon. */
     private const DESCRIPTIONS = [
         self::PAYMENT_PAIRING => [
             'title' => 'Párování plateb',
-            'description' => 'Páruje bankovní transakce s platbami ve skupinách, kde je zapnuté automatické párování.',
+            'description' => 'Páruje transakce z účtů napojených na FIO s platbami ve skupinách, kde je zapnuté automatické párování.',
+        ],
+        self::PAYMENT_REMINDERS => [
+            'title' => 'Automatické upomínky plateb',
+            'description' => 'Zařadí k odeslání upomínky nezaplacených plateb ve skupinách, kde je zapnuté automatické odeslání upomínky. Každá platba ji dostane jen jednou, a to jen když jí ještě žádná upomínka neodešla.',
+        ],
+        self::TASK_QUEUE => [
+            'title' => 'Fronta úloh',
+            'description' => 'Odesílá e-maily zařazené k odeslání na pozadí, například hromadně rozeslané platební údaje, upomínky a potvrzení o úhradě.',
         ],
     ];
 

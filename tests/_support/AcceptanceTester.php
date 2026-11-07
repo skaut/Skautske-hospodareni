@@ -459,6 +459,17 @@ class AcceptanceTester extends Actor
      * Lokátory rozbalovacích tlačítek se před měřením postupně otevřou (např. menu a v něm vnořená šipka)
      * a po měření zase zavřou; velikost okna se vrátí na původní.
      */
+    /**
+     * Runs a scheduler job right away, the way www/cron.php would, e.g. the task queue. The tests run in
+     * the same container as the application, so the console reaches the same database.
+     */
+    public function runCronJob(string $name): void
+    {
+        exec(sprintf('php %s scheduler:force-run %s 2>&1', escapeshellarg(__DIR__.'/../../bin/console'), escapeshellarg($name)), $output, $exitCode);
+
+        Assert::assertSame(0, $exitCode, sprintf('Cron job "%s" failed: %s', $name, implode("\n", $output)));
+    }
+
     public function seeNoHorizontalOverflowOnPhone(string $context, string ...$dropdownToggles): void
     {
         $size = $this->executeInSelenium(static fn (RemoteWebDriver $webDriver) => $webDriver->manage()->window()->getSize());

@@ -8,9 +8,13 @@ use AcceptanceTester;
 use Cake\Chronos\ChronosDate;
 use PHPUnit\Framework\Assert;
 
+use function date;
 use function json_encode;
+use function random_int;
 use function rawurlencode;
+use function sleep;
 use function sprintf;
+use function time;
 use function uniqid;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -94,6 +98,63 @@ class PaymentDetailCest extends PaymentAcceptanceCest
         $I->waitForElementVisible('[data-test="payment-group-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
         $I->seeCurrentUrlMatches('~^/platby/skupiny/\d+/upravit(?:\?.*)?$~');
         $I->waitForText('Editace skupiny: '.$groupName, AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+    }
+
+    /** @group payment */
+    public function automaticPairingIsUnavailableForGpcAccount(): void
+    {
+        $I = $this->I;
+        $fioAccountId = $this->haveBankAccount('Účet FIO pro cron', 'fio', 'acceptance-token', '2000942147');
+        $gpcAccountId = $this->haveBankAccount('Účet GPC pro cron', 'gpc', null, '2000942148');
+        $groupId = $this->createSubtypePaymentGroup('event', $fioAccountId);
+        $checkbox = 'input[name="automaticPairingEnabled"]';
+        $label = '//label[.//input[@name="automaticPairingEnabled"]]';
+
+        $I->wantTo('see that automatic pairing can be turned on only for a FIO account');
+
+        $I->amOnPage('/platby/skupiny/'.$groupId.'/upravit');
+        $I->waitForElementVisible('[data-test="payment-group-form-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->seeElement($checkbox.':enabled');
+
+        $I->selectOption('select[name="bankAccount"]', (string) $gpcAccountId);
+        $I->seeElement($checkbox.':disabled:not(:checked)');
+        $I->moveMouseOver($label);
+        $I->waitForText('Automatické párování je dostupné pouze pro účet napojený na FIO.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, '.tooltip');
+
+        $I->selectOption('select[name="bankAccount"]', (string) $fioAccountId);
+        $I->seeElement($checkbox.':enabled');
+    }
+
+    /** @group payment */
+    public function importedGpcStatementPairsPaymentsWhenAsked(): void
+    {
+        $I = $this->I;
+        // The account number matches the header of tests/_data/bank/incoming-payment.gpc.
+        $bankAccountId = $this->haveBankAccount('Účet GPC pro import', 'gpc', null, '8310192897');
+        $groupId = $this->createSubtypePaymentGroup('event', $bankAccountId);
+        $paymentId = $I->haveInDatabase('pa_payment', [
+            'group_id' => $groupId,
+            'name' => 'Platba z importu GPC',
+            'amount' => 25000, // 250 Kč v haléřích, stejně jako v nahraném výpisu
+            'due_date' => ChronosDate::today()->addWeekdays(1)->format('Y-m-d'),
+            'variable_symbol' => '220010',
+            'constant_symbol' => null,
+            'note' => '',
+            'state' => 'preparing',
+        ]);
+
+        $I->wantTo('pair the payments of an imported GPC statement');
+
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/nastaveni/bankovni-ucty/'.$bankAccountId, '[data-test="settings-bank-account-import-gpc"]');
+        $I->clickStable('[data-test="settings-bank-account-import-gpc"]');
+        $I->waitForElementVisible('.modal input[name="file"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->attachFile('.modal input[name="file"]', 'bank/incoming-payment.gpc');
+        $I->checkOption('.modal input[name="pairPayments"]');
+        $I->clickStable('.modal input[name="send"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT, false);
+
+        $I->waitForText('GPC import dokončen: 1 transakcí, z toho 1 nových.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see('Platby na účtu "Účet GPC pro import" byly spárovány (1)');
+        $I->seeInDatabase('pa_payment', ['id' => $paymentId, 'state' => 'completed']);
     }
 
     /** @group payment */
@@ -234,6 +295,129 @@ JS);
         $I->dontSeeCheckboxIsChecked($toggle);
         $I->dontSeeElement('#unitDropdown + .dropdown-menu.show');
         $I->see('bez členů podjednotek');
+    }
+
+    /** @group payment */
+    public function refreshOfEmailPanelIsNotActivityOfUser(): void
+    {
+        $I = $this->I;
+        $groupId = $this->createSubtypePaymentGroup('event');
+        // A batch postponed until tomorrow, e.g. by a limit of Gmail.
+        $jobId = $I->haveInDatabase('task_queue_job', [
+            'type' => 'payment_email',
+            'scope_type' => 'payment_group',
+            'scope_id' => $groupId,
+            'label' => 'Upomínka',
+            'created_at' => ChronosDate::today()->format('Y-m-d H:i:s'),
+        ]);
+        $I->haveInDatabase('task_queue_item', [
+            'job_id' => $jobId,
+            'state' => 'pending',
+            'payload' => '{}',
+            'label' => 'Postponed',
+            'attempts' => 1,
+            'available_at' => ChronosDate::tomorrow()->format('Y-m-d H:i:s'),
+        ]);
+
+        $I->wantTo('refresh the panel of background e-mails without it counting as my work');
+
+        // Only the activity of this scenario is looked at, the other logins belong to other scenarios.
+        $startedAt = date('Y-m-d H:i:s', time() - 1);
+        $this->openPageAndWaitForElementWithSkautisRetry(
+            $I,
+            sprintf('/platby/skupiny/%d/platby', $groupId),
+            '[data-test="task-queue-job-postponed"]',
+        );
+        // A batch that only waits has nothing to show meanwhile, so the page does not refresh for it.
+        $I->seeElement('[data-test="task-queue-status"][data-active="0"]');
+
+        // Activity is stored at most once a minute, so the refresh comes only after a minute.
+        sleep(61);
+        $I->updateInDatabase('user_login', ['last_seen_at' => '2000-01-01 00:00:00'], ['last_seen_at >=' => $startedAt]);
+
+        $status = $I->executeAsyncJS(
+            <<<'JS'
+                const [url, done] = arguments;
+                fetch(url, {headers: {'X-Requested-With': 'XMLHttpRequest'}, credentials: 'same-origin'})
+                    .then(response => done(response.status), () => done(0));
+                JS,
+            [sprintf('/platby/skupiny/%d/odesilani', $groupId)],
+        );
+
+        Assert::assertSame(200, $status);
+        $I->seeNumRecords(0, 'user_login', ['last_seen_at >=' => $startedAt]);
+
+        // Opening a page is activity, so the scenario cannot pass just because nothing is stored at all.
+        $this->openPageAndWaitForElementWithSkautisRetry(
+            $I,
+            sprintf('/platby/skupiny/%d/platby', $groupId),
+            '[data-test="payment-group-detail-page"]',
+        );
+        Assert::assertGreaterThan(0, $I->grabNumRecords('user_login', ['last_seen_at >=' => $startedAt]));
+    }
+
+    /** @group payment */
+    public function massAddWithTakenVariableSymbolAddsNothing(): void
+    {
+        $I = $this->I;
+        $dueDate = ChronosDate::today()->addWeekdays(1)->format('Y-m-d');
+        $groupId = $I->haveInDatabase('pa_group', [
+            'groupType' => null,
+            'sisId' => null,
+            'name' => uniqid('Selenium MassAdd taken VS ', true),
+            'amount' => 10000, // 100 Kč v haléřích
+            'due_date' => $dueDate,
+            'constant_symbol' => null,
+            'next_variable_symbol' => null,
+            'state' => 'open',
+            'note' => 'acceptance',
+            'created_at' => '2026-01-01 00:00:00',
+            'last_pairing' => '2026-01-01 00:00:00',
+            'smtp_id' => null,
+            'bank_account_id' => 1,
+            'oauth_id' => null,
+            'is_reminders_enabled' => 0,
+        ]);
+        $I->haveInDatabase('pa_group_unit', ['group_id' => $groupId, 'unit_id' => AcceptanceTester::UNIT_ID]);
+        $takenVs = (string) random_int(800000000, 899999999);
+        $freeVs = (string) random_int(900000000, 999999999);
+        $I->haveInDatabase('pa_payment', [
+            'group_id' => $groupId,
+            'name' => 'Obsazený VS',
+            'amount' => 10000,
+            'due_date' => $dueDate,
+            'variable_symbol' => $takenVs,
+            'constant_symbol' => null,
+            'note' => '',
+            'state' => 'preparing',
+        ]);
+
+        $I->wantTo('add no payment when a variable symbol of one of them is taken');
+
+        $this->openPageAndWaitForElementWithSkautisRetry(
+            $I,
+            sprintf('/platby/skupiny/%d/osoby', $groupId),
+            '[data-test="payment-mass-add-page"]',
+        );
+        // Two people: the first with a free symbol, the second with the taken one.
+        $I->executeJS(
+            <<<'JS'
+                const [free, taken] = arguments;
+                Array.from(document.querySelectorAll('[data-mass-add-person-selection]')).slice(0, 2).forEach((checkbox, index) => {
+                    checkbox.checked = true;
+                    checkbox.dispatchEvent(new Event('change', {bubbles: true}));
+                    checkbox.closest('tr').querySelector('input[name$="[variableSymbol]"]').value = index === 0 ? free : taken;
+                });
+                JS,
+            [$freeVs, $takenVs],
+        );
+        $I->clickStable('[data-test="mass-add-form-submit"]');
+
+        $I->waitForElementVisible('[data-test="mass-add-form-errors"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->see('Variabilní symbol '.$takenVs.' je už použitý', '[data-test="mass-add-form-errors"]');
+        $I->see('Žádná platba nebyla přidána.', '[data-test="mass-add-form-errors"]');
+        $I->seeNumRecords(1, 'pa_payment', ['group_id' => $groupId]);
+        $I->dontSeeInDatabase('pa_payment', ['variable_symbol' => $freeVs]);
     }
 
     /** @group payment */
@@ -518,7 +702,10 @@ JS);
         $I->seeElement($selector.'.ui--sendEmail');
         $I->dontSeeElement('[data-test="payment-bank-transaction-action-'.$paymentId.'"]');
         $I->clickStable($selector);
-        $I->waitForText('1 informační e-mail odeslán', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        // Even one e-mail waits in the queue, the cron sends it.
+        $I->waitForText('1 e-mail byl zařazen k odeslání.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->runCronJob('taskQueue');
+        $I->seeInDatabase('pa_payment_sent_emails', ['payment_id' => $paymentId, 'type' => 'payment_info']);
     }
 
     /** @group payment */
@@ -1114,5 +1301,20 @@ JS);
         }
 
         $I->seeNumberOfElements('//*[contains(text(), "Rozděleno z platby #'.$sourcePaymentId.'")]', 2);
+    }
+
+    private function haveBankAccount(string $name, string $source, ?string $token, string $number): int
+    {
+        return $this->I->haveInDatabase('pa_bank_account', [
+            'unit_id' => AcceptanceTester::UNIT_ID,
+            'name' => $name,
+            'token' => $token,
+            'transaction_source' => $source,
+            'created_at' => '2026-06-18 12:00:00',
+            'allowed_for_subunits' => 1,
+            'number_prefix' => null,
+            'number_number' => $number,
+            'number_bank_code' => '2010',
+        ]);
     }
 }

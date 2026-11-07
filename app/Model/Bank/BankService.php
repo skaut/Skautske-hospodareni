@@ -14,6 +14,7 @@ use App\Model\Bank\Services\BankPairingCandidateProvider;
 use App\Model\Bank\Services\BankTransactionService;
 use App\Model\DTO\Payment\PairingResult;
 use App\Model\Google\InvalidOAuth;
+use App\Model\Payment\BankAccountNotFound;
 use App\Model\Payment\Group;
 use App\Model\Payment\Repositories\IBankAccountRepository;
 use App\Model\Payment\Repositories\IGroupRepository;
@@ -23,12 +24,18 @@ use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 
+use function array_filter;
+use function array_flip;
+use function array_keys;
 use function array_map;
 use function array_sum;
 use function array_values;
 use function count;
+use function max;
 use function min;
 use function sprintf;
+
+use const ARRAY_FILTER_USE_KEY;
 
 class BankService
 {
@@ -77,10 +84,12 @@ class BankService
                 ? $this->resolvePairingIntervalStart($groups)
                 : ChronosDate::today()->subDays($daysBack),
             fn (BankAccount $bankAccount, ChronosDate $pairSince, ChronosDate $now): array => $this->transactions->getPersistentTransactionsForPeriod($bankAccount, $pairSince, $now),
-            fn (BankAccount $bankAccount, array $groups): bool => ! (
+            static fn (BankAccount $bankAccount): bool => ! (
                 $bankAccount->getTransactionSource() === BankTransactionSource::FIO
                 && $bankAccount->getToken() === null
-            ) && $this->payments->findByMultipleGroups(array_values(array_map(static fn (Group $group): int => (int) $group->getId(), $groups))) !== [],
+            ),
+            // Without an unpaid payment there is nothing to pair, so the bank is not even asked.
+            skipWhenNoScopeCandidates: true,
         ) as $result) {
             $this->payments->saveMany($result->payments);
             $pairingResults[] = new PairingResult(
@@ -101,22 +110,35 @@ class BankService
     /**
      * Pair groups that have automatic pairing enabled (cron).
      *
+     * Only FIO accounts take part: a GPC statement does not change after its import, so pairing it again
+     * finds nothing new. Groups without an unpaid payment are left out, so old fully paid groups cost nothing.
      * Each bank account is paired on its own, so one unreachable bank or invalid token does not stop the others.
      *
      * @return PairingResult[]
      */
     public function pairAutomaticGroups(): array
     {
+        $groups = $this->groups->findAutomaticPairingEnabled();
+        // Only the ids are needed here, the pairing itself loads the payments of the groups it pairs.
+        $groupsWithOpenPayments = array_flip($this->payments->findGroupIdsWithOpenPayments(
+            array_values(array_map(static fn (Group $group): int => (int) $group->getId(), $groups)),
+        ));
         $groupIdsByBankAccount = [];
 
-        foreach ($this->groups->findAutomaticPairingEnabled() as $group) {
+        foreach ($groups as $group) {
             $bankAccountId = $group->getBankAccountId();
 
-            if ($bankAccountId !== null) {
+            if ($bankAccountId !== null && isset($groupsWithOpenPayments[(int) $group->getId()])) {
                 $groupIdsByBankAccount[$bankAccountId][] = (int) $group->getId();
             }
         }
 
+        $fioAccounts = array_flip($this->findFioAccountIds(array_keys($groupIdsByBankAccount)));
+        $groupIdsByBankAccount = array_filter(
+            $groupIdsByBankAccount,
+            static fn (int $bankAccountId): bool => isset($fioAccounts[$bankAccountId]),
+            ARRAY_FILTER_USE_KEY,
+        );
         $pairingResults = [];
 
         foreach ($groupIdsByBankAccount as $bankAccountId => $groupIds) {
@@ -137,6 +159,66 @@ class BankService
         ));
 
         return $pairingResults;
+    }
+
+    /**
+     * Pairs the open groups of a GPC account after a statement import. The window starts at the first day
+     * of the statement instead of the last pairing, because a statement may bring older days. Pairing
+     * completes payments, so only groups the importing user may edit take part, as in manual pairing.
+     *
+     * @param  int[]           $editableGroupIds groups the user may edit
+     * @return PairingResult[]
+     */
+    public function pairImportedStatement(int $bankAccountId, ChronosDate $statementStart, array $editableGroupIds): array
+    {
+        $editable = array_flip($editableGroupIds);
+        $groupIds = array_values(array_map(
+            static fn (Group $group): int => (int) $group->getId(),
+            array_filter(
+                $this->groups->findByBankAccount($bankAccountId),
+                static fn (Group $group): bool => $group->getState() === Group::STATE_OPEN && isset($editable[(int) $group->getId()]),
+            ),
+        ));
+
+        if ($groupIds === []) {
+            return [];
+        }
+
+        return $this->pairAllGroups($groupIds, max(1, $statementStart->diffInDays(ChronosDate::today(), false)));
+    }
+
+    /**
+     * FIO accounts among the given ones, in one query. An account removed meanwhile is left out; the rest is then
+     * checked one by one, so it does not stop the others.
+     *
+     * @param  int[]     $bankAccountIds
+     * @return list<int>
+     */
+    private function findFioAccountIds(array $bankAccountIds): array
+    {
+        if ($bankAccountIds === []) {
+            return [];
+        }
+
+        try {
+            $accounts = $this->bankAccounts->findByIds($bankAccountIds);
+        } catch (BankAccountNotFound) {
+            return array_values(array_filter($bankAccountIds, fn (int $bankAccountId): bool => $this->isFioAccount($bankAccountId)));
+        }
+
+        return array_values(array_map(
+            static fn (BankAccount $account): int => $account->getId(),
+            array_filter($accounts, static fn (BankAccount $account): bool => $account->getTransactionSource() === BankTransactionSource::FIO),
+        ));
+    }
+
+    private function isFioAccount(int $bankAccountId): bool
+    {
+        try {
+            return $this->bankAccounts->find($bankAccountId)->getTransactionSource() === BankTransactionSource::FIO;
+        } catch (BankAccountNotFound) {
+            return false;
+        }
     }
 
     /** @param Group[] $groups */

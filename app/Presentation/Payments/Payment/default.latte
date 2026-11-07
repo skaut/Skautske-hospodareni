@@ -13,7 +13,7 @@
                 {elseif $group->type === "camp"}Tábor
                 {elseif $group->type === "event"}Akce
                 {elseif $group->type === "registration"}Registrace{/if}
-                {if $paymentPairingJob !== null && $group->state === 'open' && $hasBankAccount}
+                {if $paymentPairingJob !== null}
                     <span>·</span>
                     <span data-test="payment-group-automatic-pairing">
                         <i class="fi fi-rr-time-check" aria-hidden="true"></i>
@@ -21,6 +21,20 @@
                             Automatické párování je pozastavené
                         {else}
                             Automatické párování {$paymentPairingJob->getIntervalLabel()}
+                        {/if}
+                    </span>
+                {/if}
+                {if $automaticRemindersJob !== null}
+                    <span>·</span>
+                    <span data-test="payment-group-automatic-reminders">
+                        <i class="fi fi-rr-bell" aria-hidden="true"></i>
+                        {if $automaticRemindersJob->paused}
+                            Automatické upomínky jsou pozastavené
+                        {elseif $group->getOAuthId() === null}
+                            Automatické upomínky nemohou odejít, skupina nemá e-mail odesílatele
+                        {else}
+                            {var $reminderDays = (int) $group->getReminderDaysAfterDue()}
+                            Automatické upomínky {$reminderDays} {if $reminderDays === 1}den{elseif $reminderDays < 5}dny{else}dní{/if} po splatnosti
                         {/if}
                     </span>
                 {/if}
@@ -103,6 +117,8 @@
         </section>
     </div>
 
+    {control taskQueueStatus}
+
     <section class="card mb-4" data-test="payment-group-progress" n:snippet="groupProgress">
         <div class="card-body">
             {control progress}
@@ -148,7 +164,7 @@
                     </span>
                     {include '../../../Components/templates/FileActionButton.latte',
                         label => 'Stáhnout Excel',
-                        downloadUrl => $presenter->link('export!', [$group->id]),
+                        downloadUrl => $presenter->link('export!'),
                         variant => 'light',
                         dataTest => 'payment-group-export',
                     }

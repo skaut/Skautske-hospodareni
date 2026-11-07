@@ -70,10 +70,7 @@ class ContractPresenter extends \App\Presentation\Travel\TravelBasePresenter
         $contract = $this->travelService->getContract($id) ?? throw new RuntimeException('Smlouva nebyla nalezena.');
 
         if (! $this->isContractAccessible($contract)) {
-            $this->setView('accessDenied');
-            $this->template->setParameters(['message' => 'Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.']);
-
-            return;
+            $this->denyAccess('Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.');
         }
 
         $commands = $this->travelService->getAllCommandsByContract($contract->getId());
@@ -90,10 +87,7 @@ class ContractPresenter extends \App\Presentation\Travel\TravelBasePresenter
     {
         $contract = $this->travelService->getContract($id) ?? throw new RuntimeException('Smlouva nebyla nalezena.');
         if (! $this->isContractAccessible($contract)) {
-            $this->setView('accessDenied');
-            $this->template->setParameters(['message' => 'Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.']);
-
-            return;
+            $this->denyAccess('Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.');
         }
 
         switch ($contract->getTemplateVersion()) {
@@ -128,10 +122,7 @@ class ContractPresenter extends \App\Presentation\Travel\TravelBasePresenter
 
         $contract = $this->travelService->getContract($contractId) ?? throw new RuntimeException('Smlouva nebyla nalezena.');
         if (! $this->isContractEditable($contract)) {
-            $this->setView('accessDenied');
-            $this->template->setParameters(['message' => 'Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.']);
-
-            return;
+            $this->denyAccess('Nemáte oprávnění ke smlouvě o proplácení cestovních náhrad.');
         }
 
         $this->travelService->deleteContract($contractId);
@@ -141,6 +132,8 @@ class ContractPresenter extends \App\Presentation\Travel\TravelBasePresenter
 
     protected function createComponentFormCreateContract(): Form
     {
+        $this->assertCanEditOfficialUnit();
+
         $form = new BaseForm();
 
         $form->addText('passengerName', 'Jméno a příjmení řidiče')
