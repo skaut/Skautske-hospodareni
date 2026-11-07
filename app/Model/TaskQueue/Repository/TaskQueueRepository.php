@@ -244,30 +244,17 @@ final class TaskQueueRepository
      */
     public function failPendingItemsOfJob(int $jobId, string $message, DateTimeImmutable $now): array
     {
-        $rows = $this->connection()->fetchAllAssociative(
-            'SELECT id, payload FROM task_queue_item WHERE job_id = ? AND state = ? FOR UPDATE',
-            [$jobId, TaskItemState::PENDING->value],
+        $failed = $this->finishLocked(
+            TaskItemState::PENDING,
+            TaskItemState::FAILED,
+            'i.job_id = ?',
+            [$jobId],
+            [Types::INTEGER],
+            $message,
+            $now,
         );
 
-        if ($rows === []) {
-            return [];
-        }
-
-        $this->connection()->executeStatement(
-            'UPDATE task_queue_item SET state = ?, finished_at = ?, dedup_key = NULL, message = ?
-                WHERE id IN (?) AND state = ?',
-            [TaskItemState::FAILED->value, $now, $message, array_map('intval', array_column($rows, 'id')), TaskItemState::PENDING->value],
-            [Types::STRING, Types::DATETIME_IMMUTABLE, Types::TEXT, ArrayParameterType::INTEGER, Types::STRING],
-        );
-
-        $payloads = [];
-
-        foreach ($rows as $row) {
-            $payload = Json::decode((string) $row['payload'], forceArrays: true);
-            $payloads[] = is_array($payload) ? $payload : [];
-        }
-
-        return $payloads;
+        return array_column($failed, 'payload');
     }
 
     /**
@@ -280,12 +267,41 @@ final class TaskQueueRepository
      */
     public function failRepeatedlyAbandoned(DateTimeImmutable $claimedBefore, int $maxAbandoned, DateTimeImmutable $now, string $message): array
     {
+        return $this->finishLocked(
+            TaskItemState::CLAIMED,
+            TaskItemState::FAILED,
+            'i.claimed_at < ? AND i.abandoned + 1 >= ?',
+            [$claimedBefore, $maxAbandoned],
+            [Types::DATETIME_IMMUTABLE, Types::INTEGER],
+            $message,
+            $now,
+        );
+    }
+
+    /**
+     * Ends the tasks in the state $from that match the condition: locks them, moves them to the final state $to
+     * and frees their duplicate key, so the same task may be queued again. Call it inside a transaction.
+     *
+     * @param  string                                                   $condition SQL over task_queue_item i, with ? for $params
+     * @param  list<mixed>                                              $params
+     * @param  list<string>                                             $types     DBAL types of $params
+     * @return list<array{type: string, payload: array<string, mixed>}> the ended tasks
+     */
+    private function finishLocked(
+        TaskItemState $from,
+        TaskItemState $to,
+        string $condition,
+        array $params,
+        array $types,
+        string $message,
+        DateTimeImmutable $now,
+    ): array {
         $rows = $this->connection()->fetchAllAssociative(
             'SELECT i.id, i.payload, j.type FROM task_queue_item i JOIN task_queue_job j ON j.id = i.job_id
-                WHERE i.state = ? AND i.claimed_at < ? AND i.abandoned + 1 >= ?
+                WHERE i.state = ? AND '.$condition.'
                 FOR UPDATE',
-            [TaskItemState::CLAIMED->value, $claimedBefore, $maxAbandoned],
-            [Types::STRING, Types::DATETIME_IMMUTABLE, Types::INTEGER],
+            [$from->value, ...$params],
+            [Types::STRING, ...$types],
         );
 
         if ($rows === []) {
@@ -295,18 +311,18 @@ final class TaskQueueRepository
         $this->connection()->executeStatement(
             'UPDATE task_queue_item SET state = ?, finished_at = ?, dedup_key = NULL, claim_token = NULL, message = ?
                 WHERE id IN (?) AND state = ?',
-            [TaskItemState::FAILED->value, $now, $message, array_map('intval', array_column($rows, 'id')), TaskItemState::CLAIMED->value],
+            [$to->value, $now, $message, array_map('intval', array_column($rows, 'id')), $from->value],
             [Types::STRING, Types::DATETIME_IMMUTABLE, Types::TEXT, ArrayParameterType::INTEGER, Types::STRING],
         );
 
-        $failed = [];
+        $ended = [];
 
         foreach ($rows as $row) {
             $payload = Json::decode((string) $row['payload'], forceArrays: true);
-            $failed[] = ['type' => (string) $row['type'], 'payload' => is_array($payload) ? $payload : []];
+            $ended[] = ['type' => (string) $row['type'], 'payload' => is_array($payload) ? $payload : []];
         }
 
-        return $failed;
+        return $ended;
     }
 
     /**
