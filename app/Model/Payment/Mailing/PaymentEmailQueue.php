@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Payment\Mailing;
 
 use App\Model\Common\Repositories\IUserRepository;
+use App\Model\Common\UserNotFound;
 use App\Model\Payment\EmailType;
 use App\Model\Payment\Group;
 use App\Model\Payment\GroupNotFound;
@@ -18,6 +19,7 @@ use App\Model\TaskQueue\TaskQueue;
 use App\Model\TaskQueue\TaskScope;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Skautis\Exception as SkautisException;
 
 use function array_filter;
 use function array_map;
@@ -124,7 +126,7 @@ final class PaymentEmailQueue
             PaymentEmailTaskHandler::TYPE,
             TaskScope::paymentGroup($payment->getGroupId()),
             self::label($type),
-            $this->users->findCurrentUser()?->getName(),
+            $this->findCompletingUserName(),
             [$task],
         );
 
@@ -180,6 +182,19 @@ final class PaymentEmailQueue
             EmailType::PAYMENT_COMPLETED => 'Potvrzení o úhradě',
             default => 'E-maily',
         };
+    }
+
+    /**
+     * Who completed the payment, only for the record of the e-mail. The confirmation is queued in the transaction
+     * that completes the payment, so skautIS failing to tell must not roll it back; the record then says AUTOMAT.
+     */
+    private function findCompletingUserName(): ?string
+    {
+        try {
+            return $this->users->findCurrentUser()?->getName();
+        } catch (UserNotFound|SkautisException) {
+            return null;
+        }
     }
 
     /** Why no e-mail of this type of the group can go out at all, or null when it can. */

@@ -30,6 +30,7 @@ use DateTimeImmutable;
 use Helpers;
 use IntegrationTest;
 use RuntimeException;
+use Skautis\Wsdl\WsdlException;
 
 use function microtime;
 
@@ -175,6 +176,36 @@ class PaymentCompletedEmailTest extends IntegrationTest
         $this->processQueue();
 
         $this->assertPaymentWasCompleted();
+        $this->tester->seeInDatabase('pa_payment_sent_emails', [
+            'payment_id' => 1,
+            'type' => EmailType::PAYMENT_COMPLETED,
+            'sender_name' => 'AUTOMAT',
+        ]);
+    }
+
+    /** Who completed the payment is only for the record; skautIS failing to tell must not roll back the payment. */
+    public function testPaymentIsCompletedWhenSkautisCannotTellWhoCompletedIt(): void
+    {
+        $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
+        $this->initEntities(
+            [
+                EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
+                EmailType::PAYMENT_COMPLETED => new EmailTemplate('subject', 'body'),
+            ],
+            self::EMAIL,
+            $this->createOAuth(),
+        );
+        $this->users->failWith(new WsdlException('Service Unavailable'));
+        $mailer = $this->useRecordingMailer();
+
+        $this->paymentService->completePayment(1);
+
+        $this->users->failWith(null);
+        $this->users->setUser(null);
+        $this->processQueue();
+
+        $this->assertPaymentWasCompleted();
+        self::assertCount(1, $mailer->messages);
         $this->tester->seeInDatabase('pa_payment_sent_emails', [
             'payment_id' => 1,
             'type' => EmailType::PAYMENT_COMPLETED,
