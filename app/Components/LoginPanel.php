@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Components;
 
+use App\Model\Skautis\SkautisErrors;
 use App\Model\Unit\UnitService;
 use App\Model\User\UserPreferencesService;
 use App\Model\User\UserService;
@@ -29,8 +30,12 @@ final class LoginPanel extends BaseControl
             $this->userService->updateSkautISRole($roleId);
         } catch (AuthenticationException $exception) {
             throw $exception; // an expired login goes to the sign-in page
-        } catch (WsdlException) {
-            // skautIS refuses a role the user no longer has, e.g. one that expired, or a link from an older page.
+        } catch (WsdlException $exception) {
+            if (SkautisErrors::isNoAnswer($exception)) {
+                throw $exception; // the error page tells that skautIS is unavailable
+            }
+
+            // skautIS answered and refused, e.g. a role the user no longer has (one that expired, a link from an older page).
             $this->flashMessage('Na vybranou roli se nepodařilo přepnout, skautIS ji odmítl. Možná už neplatí, vyberte prosím jinou.', 'warning');
             $this->redirect('this');
         }
