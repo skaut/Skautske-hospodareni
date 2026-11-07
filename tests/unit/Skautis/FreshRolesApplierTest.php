@@ -6,7 +6,6 @@ namespace App\Model\Skautis;
 
 use App\Model\Cashbook\Commands\Cashbook\SelectFirstActiveRole;
 use App\Model\Common\Services\CommandBus;
-use App\Model\Skautis\Exception\MissingCurrentRole;
 use App\Model\User\Exception\UserHasNoRole;
 use App\Model\User\SkautisRole;
 use App\Model\User\UserService;
@@ -92,8 +91,8 @@ final class FreshRolesApplierTest extends Unit
 
         try {
             $this->applier->apply($this->identity);
-            self::fail('MissingCurrentRole expected.');
-        } catch (MissingCurrentRole) {
+            self::fail('UserHasNoRole expected.');
+        } catch (UserHasNoRole) {
         }
 
         self::assertEquals($roles, $this->refresher->freshRoles());

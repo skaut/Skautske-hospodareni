@@ -6,7 +6,6 @@ namespace App\Model\Skautis;
 
 use App\Model\Cashbook\Commands\Cashbook\SelectFirstActiveRole;
 use App\Model\Common\Services\CommandBus;
-use App\Model\Skautis\Exception\MissingCurrentRole;
 use App\Model\User\Exception\UserHasNoRole;
 use App\Model\User\UserService;
 use Nette\Security\SimpleIdentity;
@@ -24,7 +23,7 @@ final class FreshRolesApplier
     /**
      * @return bool true when the active role ended in SkautIS and the user was switched to another role
      *
-     * @throws MissingCurrentRole when the user has no active role left
+     * @throws UserHasNoRole when the user has no active role left; the fresh roles stay unapplied, so the next request tries again
      */
     public function apply(SimpleIdentity $identity): bool
     {
@@ -35,7 +34,7 @@ final class FreshRolesApplier
 
         $currentRole = $this->userService->getActualRole($roles);
         if ($currentRole === null) {
-            $this->switchFromEndedRole();
+            $this->commandBus->handle(new SelectFirstActiveRole()); // the active role ended in SkautIS
         } else {
             $identity->skautisRoles = $roles;
             $identity->currentRole = $currentRole;
@@ -44,18 +43,5 @@ final class FreshRolesApplier
         $this->skautisLoginRefresher->forgetFreshRoles();
 
         return $currentRole === null;
-    }
-
-    /**
-     * The active role is no longer active in SkautIS. If switching fails, the exception leaves the fresh roles
-     * unapplied, so the next request tries again.
-     */
-    private function switchFromEndedRole(): void
-    {
-        try {
-            $this->commandBus->handle(new SelectFirstActiveRole());
-        } catch (UserHasNoRole) {
-            throw new MissingCurrentRole(); // ErrorPresenter shows the "no role" page
-        }
     }
 }

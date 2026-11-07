@@ -62,7 +62,9 @@ class ErrorPresenter extends Presenter
             }
         }
 
-        if ($exception instanceof UserHasNoUnit) {
+        if ($exception instanceof UserHasNoRole) { // from FreshRolesApplier, which already tried another role
+            $this->setView('noRole');
+        } elseif ($exception instanceof UserHasNoUnit) {
             $this->setView('noUnit');
         } elseif ($exception instanceof Nette\Application\BadRequestException) {
             $code = $exception->getCode();
