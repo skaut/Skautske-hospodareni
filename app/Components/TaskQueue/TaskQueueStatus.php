@@ -108,9 +108,11 @@ final class TaskQueueStatus extends BaseControl
     public function render(): void
     {
         $jobs = $this->queryBus->handle(new TaskQueueStatusQuery($this->scope, new DateTimeImmutable(), $this->followedJobIds));
+        // A batch that only waits until it is postponed to (e.g. a limit of Gmail for up to a day) has nothing
+        // to show meanwhile, so the page does not refresh for it.
         $activeJobIds = array_map(
             static fn (TaskJobStatus $job): int => $job->id,
-            array_filter($jobs, static fn (TaskJobStatus $job): bool => ! $job->isFinished()),
+            array_filter($jobs, static fn (TaskJobStatus $job): bool => ! $job->isFinished() && $job->postponedUntil === null),
         );
 
         $this->template->setFile(__DIR__.'/templates/TaskQueueStatus.latte');

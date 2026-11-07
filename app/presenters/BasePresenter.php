@@ -53,6 +53,9 @@ abstract class BasePresenter extends Presenter
 {
     private const SESSION_KEEP_ALIVE_INTERVAL_MS = 1_200_000;
 
+    /** Presenters a page calls on a timer, see isBackgroundRequest(). */
+    private const BACKGROUND_PRESENTERS = ['SessionKeepAlive', 'Payments:TaskQueueStatus'];
+
     private const PUBLIC_ACTIONS = [
         'Default' => ['default', 'about', 'supporters', 'reinforcement', 'privacy'],
     ];
@@ -163,7 +166,7 @@ abstract class BasePresenter extends Presenter
             $this->redirect(':Default:', ['backlink' => $backlink]);
         }
 
-        if ($this->getUser()->isLoggedIn() && ! $this->isSessionKeepAliveRequest()) {
+        if ($this->getUser()->isLoggedIn() && ! $this->isBackgroundRequest()) {
             $this->loginTracker->touch();
         }
 
@@ -186,13 +189,13 @@ abstract class BasePresenter extends Presenter
     }
 
     /**
-     * The keep-alive ping fires on a timer whether or not anyone is at the
-     * keyboard, so it must not count as activity — otherwise every user who
-     * opted into it would appear to work for as long as the tab stays open.
+     * A request a page sends on a timer (the keep-alive ping, the refresh of the panel of background e-mails)
+     * fires whether or not anyone is at the keyboard, so it must not count as activity — otherwise every user
+     * would appear to work for as long as the tab stays open.
      */
-    private function isSessionKeepAliveRequest(): bool
+    protected function isBackgroundRequest(): bool
     {
-        return $this->getName() === 'SessionKeepAlive';
+        return in_array($this->getName(), self::BACKGROUND_PRESENTERS, true);
     }
 
     protected function beforeRender(): void

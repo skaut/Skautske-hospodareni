@@ -65,7 +65,10 @@ abstract class BaseSectionPresenter extends BasePresenter
         $unitId = $this->getParameter('unitId');
         $this->unitId = new UnitId($unitId !== null ? (int) $unitId : $this->unitService->getUnitId());
 
-        $this->userService->updateLogoutTime();
+        // A request on a timer must not keep the login alive; only the keep-alive the user chose does that.
+        if (! $this->isBackgroundRequest()) {
+            $this->userService->updateLogoutTime();
+        }
     }
 
     /** @param string $message */

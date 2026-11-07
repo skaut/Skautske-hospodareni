@@ -8,10 +8,13 @@ use AcceptanceTester;
 use Cake\Chronos\ChronosDate;
 use PHPUnit\Framework\Assert;
 
+use function date;
 use function json_encode;
 use function random_int;
 use function rawurlencode;
+use function sleep;
 use function sprintf;
+use function time;
 use function uniqid;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -292,6 +295,65 @@ JS);
         $I->dontSeeCheckboxIsChecked($toggle);
         $I->dontSeeElement('#unitDropdown + .dropdown-menu.show');
         $I->see('bez členů podjednotek');
+    }
+
+    /** @group payment */
+    public function refreshOfEmailPanelIsNotActivityOfUser(): void
+    {
+        $I = $this->I;
+        $groupId = $this->createSubtypePaymentGroup('event');
+        // A batch postponed until tomorrow, e.g. by a limit of Gmail.
+        $jobId = $I->haveInDatabase('task_queue_job', [
+            'type' => 'payment_email',
+            'scope_type' => 'payment_group',
+            'scope_id' => $groupId,
+            'label' => 'Upomínka',
+            'created_at' => ChronosDate::today()->format('Y-m-d H:i:s'),
+        ]);
+        $I->haveInDatabase('task_queue_item', [
+            'job_id' => $jobId,
+            'state' => 'pending',
+            'payload' => '{}',
+            'label' => 'Postponed',
+            'attempts' => 1,
+            'available_at' => ChronosDate::tomorrow()->format('Y-m-d H:i:s'),
+        ]);
+
+        $I->wantTo('refresh the panel of background e-mails without it counting as my work');
+
+        // Only the activity of this scenario is looked at, the other logins belong to other scenarios.
+        $startedAt = date('Y-m-d H:i:s', time() - 1);
+        $this->openPageAndWaitForElementWithSkautisRetry(
+            $I,
+            sprintf('/platby/skupiny/%d/platby', $groupId),
+            '[data-test="task-queue-job-postponed"]',
+        );
+        // A batch that only waits has nothing to show meanwhile, so the page does not refresh for it.
+        $I->seeElement('[data-test="task-queue-status"][data-active="0"]');
+
+        // Activity is stored at most once a minute, so the refresh comes only after a minute.
+        sleep(61);
+        $I->updateInDatabase('user_login', ['last_seen_at' => '2000-01-01 00:00:00'], ['last_seen_at >=' => $startedAt]);
+
+        $status = $I->executeAsyncJS(
+            <<<'JS'
+                const [url, done] = arguments;
+                fetch(url, {headers: {'X-Requested-With': 'XMLHttpRequest'}, credentials: 'same-origin'})
+                    .then(response => done(response.status), () => done(0));
+                JS,
+            [sprintf('/platby/skupiny/%d/odesilani', $groupId)],
+        );
+
+        Assert::assertSame(200, $status);
+        $I->seeNumRecords(0, 'user_login', ['last_seen_at >=' => $startedAt]);
+
+        // Opening a page is activity, so the scenario cannot pass just because nothing is stored at all.
+        $this->openPageAndWaitForElementWithSkautisRetry(
+            $I,
+            sprintf('/platby/skupiny/%d/platby', $groupId),
+            '[data-test="payment-group-detail-page"]',
+        );
+        Assert::assertGreaterThan(0, $I->grabNumRecords('user_login', ['last_seen_at >=' => $startedAt]));
     }
 
     /** @group payment */
