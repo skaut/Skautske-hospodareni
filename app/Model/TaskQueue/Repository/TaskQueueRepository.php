@@ -272,17 +272,19 @@ final class TaskQueueRepository
 
     /**
      * Fails claimed tasks whose run died again and again before their irreversible part, e.g. on running out
-     * of memory. Returning them once more would only kill the next run. Call it inside a transaction.
+     * of memory. Returning them once more would only kill the next run. Only dead runs count, the run that left
+     * the task now included; a task postponed before (e.g. over a limit of Gmail) is not closer to failing.
+     * Call it inside a transaction.
      *
      * @return list<array{type: string, payload: array<string, mixed>}> the failed tasks
      */
-    public function failRepeatedlyAbandoned(DateTimeImmutable $claimedBefore, int $maxAttempts, DateTimeImmutable $now, string $message): array
+    public function failRepeatedlyAbandoned(DateTimeImmutable $claimedBefore, int $maxAbandoned, DateTimeImmutable $now, string $message): array
     {
         $rows = $this->connection()->fetchAllAssociative(
             'SELECT i.id, i.payload, j.type FROM task_queue_item i JOIN task_queue_job j ON j.id = i.job_id
-                WHERE i.state = ? AND i.claimed_at < ? AND i.attempts >= ?
+                WHERE i.state = ? AND i.claimed_at < ? AND i.abandoned + 1 >= ?
                 FOR UPDATE',
-            [TaskItemState::CLAIMED->value, $claimedBefore, $maxAttempts],
+            [TaskItemState::CLAIMED->value, $claimedBefore, $maxAbandoned],
             [Types::STRING, Types::DATETIME_IMMUTABLE, Types::INTEGER],
         );
 
@@ -316,7 +318,8 @@ final class TaskQueueRepository
     public function recoverStale(DateTimeImmutable $claimedBefore, DateTimeImmutable $now, string $uncertainMessage): int
     {
         $returned = (int) $this->connection()->executeStatement(
-            'UPDATE task_queue_item SET state = ?, claim_token = NULL, claimed_at = NULL WHERE state = ? AND claimed_at < ?',
+            'UPDATE task_queue_item SET state = ?, claim_token = NULL, claimed_at = NULL, abandoned = abandoned + 1
+                WHERE state = ? AND claimed_at < ?',
             [TaskItemState::PENDING->value, TaskItemState::CLAIMED->value, $claimedBefore],
             [Types::STRING, Types::STRING, Types::DATETIME_IMMUTABLE],
         );

@@ -35,7 +35,7 @@ Každá úloha (např. jeden e-mail) prochází stavy:
 | nejisté (`uncertain`) | Běh skončil uprostřed nevratné části. Nevíme, jestli e-mail odešel. |
 
 - Úlohu převezme jen ten běh, kterému se podaří podmíněně přepsat její stav. Souběžné běhy (překryv cronu, víc serverů) si ji nemohou vzít oba.
-- Úloha, kterou převzal běh, jenž zemřel (timeout PHP, limit 30 s), se po 10 minutách vrátí do fronty. Nevratná část ještě nezačala, takže se nic neopakuje. Když běh zemře na stejné úloze potřetí, úloha se označí jako neproběhlá, aby nezabíjela další běhy.
+- Úloha, kterou převzal běh, jenž zemřel (timeout PHP, limit 30 s), se po 10 minutách vrátí do fronty. Nevratná část ještě nezačala, takže se nic neopakuje. Když běh zemře na stejné úloze potřetí, úloha se označí jako neproběhlá, aby nezabíjela další běhy. Počítají se jen běhy, které zemřely. Odložení úlohy (např. kvůli limitu Gmailu) se do toho nepočítá.
 - Úloha ve stavu „běží“ se po 10 minutách označí jako nejistá a **automaticky se už nikdy nespustí**. Gmail máme jen s oprávněním odesílat, odeslanou poštu ověřit nejde. Uživatel to uvidí v přehledu a rozhodne sám.
 - Když Gmail odmítne e-mail kvůli limitu odesílání, odloží se o hodinu celá dávka, protože by Gmail odmítl i další e-maily téhož odesílatele. Pokus se počítá jen odmítnutému e-mailu. Denní limit Gmailu trvá až den, proto se e-mail zkouší až 26krát (déle než den). Panel mezitím ukazuje, do kdy je odesílání odložené, a dávku nehlásí jako zastavenou.
 - Když Google před odesláním neodpoví (výpadek spojení, timeout, chyba na jeho straně), nic neodešlo, a tak se celá dávka odloží o 10 minut, nejvýš 6krát.

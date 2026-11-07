@@ -122,7 +122,7 @@ final class TaskQueueTest extends IntegrationTest
     {
         $jobId = (int) $this->enqueue(TaskScope::paymentGroup(1), ['deadly', 'fine'])->jobId;
         $deadly = $this->firstPendingItem($jobId);
-        $this->entityManager->getConnection()->executeStatement('UPDATE task_queue_item SET attempts = 2 WHERE id = ?', [$deadly]);
+        $this->entityManager->getConnection()->executeStatement('UPDATE task_queue_item SET attempts = 2, abandoned = 2 WHERE id = ?', [$deadly]);
         // The third run that took it died as well.
         self::assertNotNull($this->repository->claim($deadly, 'deadrun3deadrun3deadrun3deadrun3', new DateTimeImmutable('-1 hour')));
 
@@ -131,6 +131,21 @@ final class TaskQueueTest extends IntegrationTest
         self::assertSame(['fine'], $this->handler->handled);
         $this->tester->seeInDatabase('task_queue_item', ['id' => $deadly, 'state' => TaskItemState::FAILED->value]);
         self::assertSame(['deadly'], $this->handler->released);
+    }
+
+    /** Postponing is no dead run: a task postponed twice whose run then dies once waits again. */
+    public function testPostponedTaskWhoseRunDiedOnceWaitsAgain(): void
+    {
+        $jobId = (int) $this->enqueue(TaskScope::paymentGroup(1), ['postponed'])->jobId;
+        $itemId = $this->firstPendingItem($jobId);
+        $this->entityManager->getConnection()->executeStatement('UPDATE task_queue_item SET attempts = 2 WHERE id = ?', [$itemId]);
+        // The run that took it for the third time died.
+        self::assertNotNull($this->repository->claim($itemId, 'deadrun1deadrun1deadrun1deadrun1', new DateTimeImmutable('-1 hour')));
+
+        $this->processAll();
+
+        self::assertSame(['postponed'], $this->handler->handled);
+        $this->tester->seeInDatabase('task_queue_item', ['id' => $itemId, 'state' => TaskItemState::DONE->value, 'abandoned' => 1]);
     }
 
     public function testNoTaskStartsAfterTheDeadline(): void

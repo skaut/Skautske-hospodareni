@@ -52,6 +52,10 @@ class TaskItem extends AbstractIdEntity
     #[Column(name: 'attempts', type: Types::SMALLINT, options: ['unsigned' => true, 'default' => 0])]
     private int $attempts = 0;
 
+    /** Runs that died holding the task before its irreversible part; unlike attempts, postponing does not count. */
+    #[Column(name: 'abandoned', type: Types::SMALLINT, options: ['unsigned' => true, 'default' => 0])]
+    private int $abandoned = 0;
+
     #[Column(name: 'available_at', type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $availableAt;
 
