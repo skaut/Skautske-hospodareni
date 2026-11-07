@@ -26,6 +26,8 @@ final class SelectFirstActiveRoleHandler
             throw new UserHasNoRole();
         }
 
+        // Read before the switch: if SkautIS fails here, the role and the access stay unchanged both here and in SkautIS.
+        $access = $this->userService->getAccessArrays($this->unitService, $roles, $roles[0]->ID);
         $this->userService->updateSkautISRole($roles[0]->ID);
 
         // The active role query reads the identity, so it must see the new role or the forwarded request fails again.
@@ -37,6 +39,6 @@ final class SelectFirstActiveRoleHandler
         $identity->currentRole = $this->userService->getActualRole($roles);
         $identity->skautisRoles = $roles;
         // The ended role's units must not stay editable.
-        $identity->access = $this->userService->getAccessArrays($this->unitService, $roles);
+        $identity->access = $access;
     }
 }

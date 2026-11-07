@@ -94,13 +94,15 @@ class UserService
      *
      * @see ActiveSkautisRoleQuery
      *
-     * @param stdClass[]|null $roles roles already loaded by getAllSkautisRoles(), saves a SkautIS call
+     * @param stdClass[]|null $roles  roles already loaded by getAllSkautisRoles(), saves a SkautIS call
+     * @param int|null        $roleId another role than the active one, e.g. the one a switch goes to
      */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    public function getActualRole(?array $roles = null): ?SkautisRole
+    public function getActualRole(?array $roles = null, ?int $roleId = null): ?SkautisRole
     {
+        $roleId ??= $this->getRoleId();
         foreach ($roles ?? $this->getAllSkautisRoles() as $r) {
-            if ($r->ID === $this->getRoleId()) {
+            if ($r->ID === $roleId) {
                 return new SkautisRole($r->Key ?? '', $r->DisplayName, $r->ID_Unit, $r->Unit);
             }
         }
@@ -132,15 +134,16 @@ class UserService
     }
 
     /**
-     * @param stdClass[]|null $roles roles already loaded by getAllSkautisRoles(), saves a SkautIS call
+     * @param stdClass[]|null $roles  roles already loaded by getAllSkautisRoles(), saves a SkautIS call
+     * @param int|null        $roleId the role to compute access for, the active one by default
      *
      * @return mixed[]
      *
      * @throws BadRequestException
      */
-    public function getAccessArrays(UnitService $us, ?array $roles = null): array
+    public function getAccessArrays(UnitService $us, ?array $roles = null, ?int $roleId = null): array
     {
-        $role = $this->getActualRole($roles);
+        $role = $this->getActualRole($roles, $roleId);
 
         if ($role !== null) {
             $unitIds = $role->isBasicUnit() || $role->isTroop()
