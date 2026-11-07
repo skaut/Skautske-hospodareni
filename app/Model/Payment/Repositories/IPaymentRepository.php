@@ -79,5 +79,13 @@ interface IPaymentRepository
      */
     public function findOpenByGroups(array $groupIds): array;
 
+    /**
+     * Groups among the given ones with a payment left to pair, as in findOpenByGroups(), without loading the payments.
+     *
+     * @param  int[]     $groupIds
+     * @return list<int>
+     */
+    public function findGroupIdsWithOpenPayments(array $groupIds): array;
+
     public function existsPairedPaymentForBankAccount(int $bankAccountId): bool;
 }

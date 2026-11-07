@@ -19,6 +19,7 @@ use Money\Money;
 
 use function array_fill_keys;
 use function array_filter;
+use function array_map;
 use function array_values;
 
 final class PaymentRepository extends AggregateRepository implements IPaymentRepository
@@ -264,6 +265,29 @@ final class PaymentRepository extends AggregateRepository implements IPaymentRep
             ->setParameter('state', State::PREPARING)
             ->getQuery()
             ->getResult();
+    }
+
+    public function findGroupIdsWithOpenPayments(array $groupIds): array
+    {
+        Assert::thatAll($groupIds)->integer();
+
+        if ($groupIds === []) {
+            return [];
+        }
+
+        $ids = $this->getEntityManager()->createQueryBuilder()
+            ->select('DISTINCT p.groupId')
+            ->from(Payment::class, 'p')
+            ->where('p.groupId IN (:groupIds)')
+            ->andWhere('p.state = :state')
+            ->andWhere('p.variableSymbol IS NOT NULL')
+            ->orderBy('p.groupId')
+            ->setParameter('groupIds', $groupIds)
+            ->setParameter('state', State::PREPARING)
+            ->getQuery()
+            ->getSingleColumnResult();
+
+        return array_values(array_map('intval', $ids));
     }
 
     public function existsPairedPaymentForBankAccount(int $bankAccountId): bool

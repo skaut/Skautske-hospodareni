@@ -16,7 +16,6 @@ use App\Model\DTO\Payment\PairingResult;
 use App\Model\Google\InvalidOAuth;
 use App\Model\Payment\BankAccountNotFound;
 use App\Model\Payment\Group;
-use App\Model\Payment\Payment;
 use App\Model\Payment\Repositories\IBankAccountRepository;
 use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Repositories\IPaymentRepository;
@@ -27,6 +26,7 @@ use Psr\Log\LoggerInterface;
 
 use function array_filter;
 use function array_flip;
+use function array_keys;
 use function array_map;
 use function array_sum;
 use function array_values;
@@ -119,9 +119,9 @@ class BankService
     public function pairAutomaticGroups(): array
     {
         $groups = $this->groups->findAutomaticPairingEnabled();
-        $groupsWithOpenPayments = array_flip(array_map(
-            static fn (Payment $payment): int => $payment->getGroupId(),
-            $this->payments->findOpenByGroups(array_values(array_map(static fn (Group $group): int => (int) $group->getId(), $groups))),
+        // Only the ids are needed here, the pairing itself loads the payments of the groups it pairs.
+        $groupsWithOpenPayments = array_flip($this->payments->findGroupIdsWithOpenPayments(
+            array_values(array_map(static fn (Group $group): int => (int) $group->getId(), $groups)),
         ));
         $groupIdsByBankAccount = [];
 
@@ -133,9 +133,10 @@ class BankService
             }
         }
 
+        $fioAccounts = array_flip($this->findFioAccountIds(array_keys($groupIdsByBankAccount)));
         $groupIdsByBankAccount = array_filter(
             $groupIdsByBankAccount,
-            fn (int $bankAccountId): bool => $this->isFioAccount($bankAccountId),
+            static fn (int $bankAccountId): bool => isset($fioAccounts[$bankAccountId]),
             ARRAY_FILTER_USE_KEY,
         );
         $pairingResults = [];
@@ -184,6 +185,31 @@ class BankService
         }
 
         return $this->pairAllGroups($groupIds, max(1, $statementStart->diffInDays(ChronosDate::today(), false)));
+    }
+
+    /**
+     * FIO accounts among the given ones, in one query. An account removed meanwhile is left out; the rest is then
+     * checked one by one, so it does not stop the others.
+     *
+     * @param  int[]     $bankAccountIds
+     * @return list<int>
+     */
+    private function findFioAccountIds(array $bankAccountIds): array
+    {
+        if ($bankAccountIds === []) {
+            return [];
+        }
+
+        try {
+            $accounts = $this->bankAccounts->findByIds($bankAccountIds);
+        } catch (BankAccountNotFound) {
+            return array_values(array_filter($bankAccountIds, fn (int $bankAccountId): bool => $this->isFioAccount($bankAccountId)));
+        }
+
+        return array_values(array_map(
+            static fn (BankAccount $account): int => $account->getId(),
+            array_filter($accounts, static fn (BankAccount $account): bool => $account->getTransactionSource() === BankTransactionSource::FIO),
+        ));
     }
 
     private function isFioAccount(int $bankAccountId): bool
