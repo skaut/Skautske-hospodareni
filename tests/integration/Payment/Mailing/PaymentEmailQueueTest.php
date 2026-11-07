@@ -27,10 +27,13 @@ use App\Model\Payment\UserRepositoryStub;
 use App\Model\TaskQueue\Entity\TaskItem;
 use App\Model\TaskQueue\Entity\TaskQueueRun;
 use App\Model\TaskQueue\TaskItemState;
+use App\Model\TaskQueue\TaskQueue;
 use App\Model\TaskQueue\TaskQueueProcessor;
+use App\Model\TaskQueue\TaskScope;
 use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use DateTimeImmutable;
+use Google\Service\Exception as GoogleServiceException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
 use Helpers;
@@ -261,6 +264,38 @@ final class PaymentEmailQueueTest extends IntegrationTest
         $this->processQueue();
 
         self::assertCount(1, $this->mailer->messages);
+    }
+
+    /** The user cancelled the automatic reminder, so it is not queued again on another day. */
+    public function testCancelledAutomaticReminderIsNotQueuedAgain(): void
+    {
+        $this->createGroup(reminderDaysAfterDue: 3);
+        $paymentId = $this->createPayment(ChronosDate::today()->subDays(5));
+        $this->queueAutomaticReminders();
+        $jobId = (int) $this->tester->grabFromDatabase('task_queue_item', 'job_id', ['state' => TaskItemState::PENDING->value]);
+
+        $cancelled = $this->tester->grabService(TaskQueue::class)->cancelWaiting($jobId, TaskScope::paymentGroup($this->groupId), self::USER_NAME);
+        $this->queueAutomaticReminders();
+        $this->processQueue();
+
+        self::assertSame(1, $cancelled);
+        self::assertSame([], $this->mailer->messages);
+        $this->tester->dontSeeInDatabase('task_queue_item', ['state' => TaskItemState::PENDING->value]);
+        $this->tester->dontSeeInDatabase('pa_payment', ['id' => $paymentId, 'automatic_reminder_at' => null]);
+    }
+
+    /** A postponed automatic reminder still waits in the queue, so its payment stays marked. */
+    public function testPostponedAutomaticReminderKeepsItsPaymentMarked(): void
+    {
+        $this->createGroup(reminderDaysAfterDue: 3);
+        $paymentId = $this->createPayment(ChronosDate::today()->subDays(5));
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(new GoogleServiceException('Rate limit exceeded', 429));
+
+        $this->queueAutomaticReminders();
+        $this->processQueue();
+
+        $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::PENDING->value]);
+        $this->tester->dontSeeInDatabase('pa_payment', ['id' => $paymentId, 'automatic_reminder_at' => null]);
     }
 
     /** Google not answering before anything was sent postpones the batch instead of failing it. */

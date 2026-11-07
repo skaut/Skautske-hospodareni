@@ -26,8 +26,9 @@ interface TaskHandler
     public function handle(TaskContext $context): void;
 
     /**
-     * Called when a task ends without its effect (skipped, failed or postponed), in the same
-     * transaction as the state change, so the handler can undo what it reserved for the task.
+     * Called when a task ends without its effect (skipped or failed), in the same transaction as
+     * the state change, so the handler can undo what it reserved for the task. Not called for a task
+     * that is postponed (it still waits) or cancelled by the user (they decided it should not run).
      * It must use plain SQL, the entity manager may be closed after a failure.
      *
      * @param array<string, mixed> $payload

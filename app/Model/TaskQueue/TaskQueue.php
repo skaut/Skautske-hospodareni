@@ -19,18 +19,10 @@ use function count;
  */
 final class TaskQueue
 {
-    /** @var array<string, TaskHandler> */
-    private array $handlers = [];
-
-    /** @param TaskHandler[] $handlers */
     public function __construct(
         private TaskQueueRepository $repository,
         private EntityManagerInterface $entityManager,
-        array $handlers = [],
     ) {
-        foreach ($handlers as $handler) {
-            $this->handlers[$handler->getType()] = $handler;
-        }
     }
 
     /**
@@ -82,22 +74,16 @@ final class TaskQueue
 
     /**
      * Cancels what still waits in a batch of the scope, e.g. reminders the user no longer wants to send.
-     * What went out or is being sent right now stays.
+     * What went out or is being sent right now stays. The tasks are not released: the user decided, so e.g.
+     * a cancelled automatic reminder is not queued again on another day.
      *
      * @return int the cancelled tasks
      */
     public function cancelWaiting(int $jobId, TaskScope $scope, ?string $userName): int
     {
-        return $this->entityManager->wrapInTransaction(function () use ($jobId, $scope, $userName): int {
-            $message = $userName === null ? 'Zrušeno.' : 'Zrušil(a) '.$userName.'.';
-            $cancelled = $this->repository->cancelWaitingOfJob($jobId, $scope, $message, new DateTimeImmutable());
+        $message = $userName === null ? 'Zrušeno.' : 'Zrušil(a) '.$userName.'.';
 
-            foreach ($cancelled as $task) {
-                ($this->handlers[$task['type']] ?? null)?->release($task['payload']);
-            }
-
-            return count($cancelled);
-        });
+        return $this->repository->cancelWaitingOfJob($jobId, $scope, $message, new DateTimeImmutable());
     }
 
     /** Hides a finished batch of the scope from the overview. */

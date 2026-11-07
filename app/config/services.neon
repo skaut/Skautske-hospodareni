@@ -124,7 +124,7 @@ services:
     - App\Components\Grids\GridFactory
 
     # Task queue processed by the cron (.docs/fronta-uloh.md)
-    - App\Model\TaskQueue\TaskQueue(handlers: typed(App\Model\TaskQueue\TaskHandler))
+    - App\Model\TaskQueue\TaskQueue
     - App\Model\TaskQueue\ReadModel\TaskJobStatusReader
     - App\Model\TaskQueue\TaskQueueProcessor(
           handlers: typed(App\Model\TaskQueue\TaskHandler)

@@ -48,7 +48,7 @@ final class TaskQueueTest extends IntegrationTest
         $this->handler = new RecordingTaskHandler();
         $this->repository = new TaskQueueRepository($this->entityManager);
         $this->processor = new TaskQueueProcessor($this->repository, $this->entityManager, new NullLogger(), [$this->handler], 20, 600);
-        $this->queue = new TaskQueue($this->repository, $this->entityManager, [$this->handler]);
+        $this->queue = new TaskQueue($this->repository, $this->entityManager);
         $this->statusQuery = new TaskQueueStatusQueryHandler(new TaskJobStatusReader($this->entityManager));
     }
 
@@ -202,6 +202,7 @@ final class TaskQueueTest extends IntegrationTest
 
         self::assertSame(['limited'], $this->handler->handled);
         $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::PENDING->value]);
+        self::assertSame([], $this->handler->released, 'A postponed task still waits, so it keeps what was reserved for it');
 
         for ($attempt = 2; $attempt <= 3; ++$attempt) {
             $this->entityManager->getConnection()->executeStatement('UPDATE task_queue_item SET available_at = NOW() - INTERVAL 1 MINUTE');
@@ -210,6 +211,7 @@ final class TaskQueueTest extends IntegrationTest
 
         self::assertCount(3, $this->handler->handled);
         $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::FAILED->value, 'attempts' => 3]);
+        self::assertSame(['limited'], $this->handler->released);
     }
 
     /** A limit of the sender postpones the whole batch at once, and only the refused task uses up an attempt. */
@@ -286,7 +288,7 @@ final class TaskQueueTest extends IntegrationTest
 
         self::assertSame(0, $this->repository->countWaiting($scope));
         $this->tester->seeInDatabase('task_queue_item', ['label' => 'first', 'state' => TaskItemState::SKIPPED->value, 'message' => 'Zrušil(a) František Maša.']);
-        self::assertSame(['first', 'second'], $this->handler->released);
+        self::assertSame([], $this->handler->released, 'The user decided, so cancelled tasks are not released');
 
         $this->processAll();
         self::assertSame([], $this->handler->handled);

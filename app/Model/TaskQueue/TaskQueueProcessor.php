@@ -175,12 +175,11 @@ final class TaskQueueProcessor
                 return $this->endWithoutEffect($handler, $task, TaskItemState::FAILED, $exception->getMessage());
             }
 
-            $this->repository->connection()->transactional(function () use ($handler, $task, $exception): void {
+            // The task still waits, so what the handler reserved for it stays.
+            $this->repository->connection()->transactional(function () use ($task, $exception): void {
                 $availableAt = (new DateTimeImmutable())->modify(sprintf('+%d seconds', $exception->delaySeconds));
 
-                if ($this->repository->postpone($task, $availableAt, $exception->getMessage())) {
-                    $handler->release($task->payload);
-                }
+                $this->repository->postpone($task, $availableAt, $exception->getMessage());
 
                 if ($exception->wholeBatch) {
                     $this->repository->postponeWaitingOfJob($task->jobId, $availableAt, $exception->getMessage());
