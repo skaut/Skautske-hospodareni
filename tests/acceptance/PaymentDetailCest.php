@@ -870,7 +870,8 @@ JS);
             $context = sprintf('Akce v gridu na %d px: %s', $width, (string) json_encode($mobileLayout));
 
             Assert::assertSame('table-row', $mobileLayout['actionRowDisplay'], $context);
-            Assert::assertSame(0, $mobileLayout['horizontalOverflow'], $context);
+            // Negative is fine: the reserved scrollbar gutter makes the page narrower than the window, not wider.
+            Assert::assertLessThanOrEqual(0, $mobileLayout['horizontalOverflow'], $context);
             Assert::assertSame(0, $mobileLayout['scrollerScrollLeft'], $context);
             Assert::assertSame(0, $mobileLayout['inaccessibleButtons'], $context);
             Assert::assertGreaterThanOrEqual(6, $mobileLayout['rightInset'], $context);
@@ -1038,7 +1039,8 @@ return {
 };
 JS);
 
-        Assert::assertSame(0, $mobileLayout['horizontalOverflow'], (string) json_encode($mobileLayout));
+        // Negative is fine: the reserved scrollbar gutter makes the page narrower than the window, not wider.
+        Assert::assertLessThanOrEqual(0, $mobileLayout['horizontalOverflow'], (string) json_encode($mobileLayout));
         Assert::assertTrue($mobileLayout['scrollableDialog']);
         Assert::assertGreaterThanOrEqual(44, $mobileLayout['inputHeight']);
         Assert::assertGreaterThanOrEqual(44, $mobileLayout['addHeight']);
