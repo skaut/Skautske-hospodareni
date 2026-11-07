@@ -162,17 +162,20 @@ class BankService
 
     /**
      * Pairs the open groups of a GPC account after a statement import. The window starts at the first day
-     * of the statement instead of the last pairing, because a statement may bring older days.
+     * of the statement instead of the last pairing, because a statement may bring older days. Pairing
+     * completes payments, so only groups the importing user may edit take part, as in manual pairing.
      *
+     * @param  int[]           $editableGroupIds groups the user may edit
      * @return PairingResult[]
      */
-    public function pairImportedStatement(int $bankAccountId, ChronosDate $statementStart): array
+    public function pairImportedStatement(int $bankAccountId, ChronosDate $statementStart, array $editableGroupIds): array
     {
+        $editable = array_flip($editableGroupIds);
         $groupIds = array_values(array_map(
             static fn (Group $group): int => (int) $group->getId(),
             array_filter(
                 $this->groups->findByBankAccount($bankAccountId),
-                static fn (Group $group): bool => $group->getState() === Group::STATE_OPEN,
+                static fn (Group $group): bool => $group->getState() === Group::STATE_OPEN && isset($editable[(int) $group->getId()]),
             ),
         ));
 

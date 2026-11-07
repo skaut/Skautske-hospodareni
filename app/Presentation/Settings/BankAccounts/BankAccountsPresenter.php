@@ -381,6 +381,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             $this->bankService,
             $this->userService,
             fn (int $bankAccountId): bool => $this->canImportGpcForAccountId($bankAccountId),
+            fn (): array => $this->getEditableGroupIds(),
         );
 
         $dialog->onSuccess[] = function (int $bankAccountId): void {
