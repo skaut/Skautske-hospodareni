@@ -16,6 +16,7 @@ use App\Model\Common\Services\QueryBus;
 use App\Model\Common\UnitId;
 use App\Model\DTO\Participant\Participant;
 use App\Model\DTO\Payment\Group;
+use App\Model\Invoice\Repository\InvoiceRepository;
 use App\Model\Participant\Payment;
 use App\Model\Participant\Payment\Event as PaymentEvent;
 use App\Model\Participant\Payment\EventType;
@@ -26,6 +27,9 @@ use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\EventParticipantsWithoutPaymentQuery;
 use App\Model\Payment\ReadModel\Queries\NextVariableSymbolSequenceQuery;
 use App\Model\Payment\ReadModel\Queries\RegistrationWithoutGroupQuery;
+use App\Model\Payment\Repositories\IGroupRepository;
+use App\Model\Payment\Repositories\IPaymentRepository;
+use App\Model\Payment\Services\VariableSymbolCollisionChecker;
 use App\Model\Unit\UnitService;
 use App\Model\Utils\MoneyFactory;
 use App\Presentation\Payments\EventAddParticipants\EventAddParticipantsPresenter;
@@ -76,7 +80,13 @@ final class AttachedFormComponentsTest extends Unit
         $formFactory = Mockery::mock(IMassAddFormFactory::class);
         $formFactory->shouldReceive('create')
             ->with(self::GROUP_ID)
-            ->andReturn(new MassAddForm(self::GROUP_ID, $payments, Mockery::mock(CommandBus::class)));
+            ->andReturn(new MassAddForm(
+                self::GROUP_ID,
+                $payments,
+                Mockery::mock(CommandBus::class),
+                Mockery::mock(IGroupRepository::class),
+                new VariableSymbolCollisionChecker(Mockery::mock(IPaymentRepository::class), Mockery::mock(InvoiceRepository::class)),
+            ));
 
         $presenter = new EventAddParticipantsPresenter($payments, $formFactory);
         $this->preparePresenter($presenter, $queryBus);
@@ -111,7 +121,13 @@ final class AttachedFormComponentsTest extends Unit
         $formFactory = Mockery::mock(IMassAddFormFactory::class);
         $formFactory->shouldReceive('create')
             ->with(self::GROUP_ID)
-            ->andReturn(new MassAddForm(self::GROUP_ID, $payments, Mockery::mock(CommandBus::class)));
+            ->andReturn(new MassAddForm(
+                self::GROUP_ID,
+                $payments,
+                Mockery::mock(CommandBus::class),
+                Mockery::mock(IGroupRepository::class),
+                new VariableSymbolCollisionChecker(Mockery::mock(IPaymentRepository::class), Mockery::mock(InvoiceRepository::class)),
+            ));
 
         $presenter = new RegistrationAddMembersPresenter($formFactory, $payments);
         $this->preparePresenter($presenter, Mockery::mock(QueryBus::class));
@@ -199,6 +215,7 @@ final class AttachedFormComponentsTest extends Unit
         (new ReflectionProperty(BasePresenter::class, 'queryBus'))->setValue($presenter, $queryBus);
         (new ReflectionProperty(BaseSectionPresenter::class, 'unitId'))->setValue($presenter, new UnitId(self::UNIT_ID));
         (new ReflectionProperty(BaseSectionPresenter::class, 'isEditable'))->setValue($presenter, true);
+        (new ReflectionProperty(PaymentsBasePresenter::class, 'editableUnits'))->setValue($presenter, [self::UNIT_ID]);
         (new ReflectionProperty(Control::class, 'template'))->setValue($presenter, new DefaultTemplate(new Engine()));
     }
 

@@ -53,6 +53,41 @@ final class VariableSymbolCollisionChecker
         }
     }
 
+    /**
+     * Checks the variable symbols of payments about to be added to the group, all before any of them is added:
+     * the same as one new payment, and none may repeat among them, as the later one would collide with the first.
+     *
+     * @param  array<array-key, VariableSymbol>          $variableSymbols
+     * @return array<array-key, VariableSymbolCollision> by the key of the colliding symbol
+     */
+    public function findCollisionsOfNewPayments(Group $group, array $variableSymbols): array
+    {
+        if ($group->getBankAccountId() === null) {
+            return [];
+        }
+
+        $collisions = [];
+        $seen = [];
+
+        foreach ($variableSymbols as $key => $variableSymbol) {
+            if (isset($seen[(string) $variableSymbol])) {
+                $collisions[$key] = VariableSymbolCollision::repeatedAmongNewPayments($variableSymbol);
+
+                continue;
+            }
+
+            $seen[(string) $variableSymbol] = true;
+
+            try {
+                $this->assertUniqueForPayment($group, null, $variableSymbol);
+            } catch (VariableSymbolCollision $collision) {
+                $collisions[$key] = $collision;
+            }
+        }
+
+        return $collisions;
+    }
+
     public function assertGroupCanUseBankAccount(Group $group, ?BankAccount $bankAccount): void
     {
         if ($bankAccount === null) {

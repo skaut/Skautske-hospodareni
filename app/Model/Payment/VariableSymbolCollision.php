@@ -17,4 +17,9 @@ final class VariableSymbolCollision extends RuntimeException
             (string) $variableSymbol,
         ));
     }
+
+    public static function repeatedAmongNewPayments(VariableSymbol $variableSymbol): self
+    {
+        return new self(sprintf('Variabilní symbol %s je zadaný u více přidávaných plateb.', (string) $variableSymbol));
+    }
 }

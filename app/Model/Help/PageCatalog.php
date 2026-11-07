@@ -36,12 +36,8 @@ class PageCatalog
 {
     private const PRESENTER_DIRECTORIES = ['/Presentation', '/presenters'];
 
-    /**
-     * Presenters that exist only as plumbing and never show contextual help.
-     * Shared with page view counting, so a page missing from this list cannot
-     * turn up in the usage figures either.
-     */
-    public const EXCLUDED_PRESENTERS = ['Error', 'Error4xx', 'Auth', 'SessionKeepAlive'];
+    /** Presenters that exist only as plumbing and never show contextual help. */
+    public const EXCLUDED_PRESENTERS = ['Error', 'Error4xx', 'Auth', 'SessionKeepAlive', 'Payments:TaskQueueStatus'];
 
     /** @var array<string, string>|null */
     private ?array $pages = null;

@@ -10,7 +10,7 @@ Skautske hospodareni is a web application for accounting and financial administr
 
 - The project targets PHP 8.3 exclusively. Do not maintain PHP 8.2 compatibility and do not use features that require PHP 8.4 or newer.
 - The PHP image is based on `thecodingmachine/php:8.3-v4-fpm-node22`.
-- The database is MySQL 8.0 with `utf8mb4` and `utf8mb4_czech_ci` collation.
+- The database is MySQL 8.4 (production server lebeda) with `utf8mb4` and `utf8mb4_czech_ci` collation.
 - The web stack consists of Nginx and Traefik.
 - The application time zone is `Europe/Prague`.
 
@@ -61,6 +61,17 @@ CI commands always use the base and CI Compose files, without the rootless overr
 - SkautIS is an external integration system; isolate communication in infrastructure services and map it to DTOs.
 - For dates without time, use the established `Cake\Chronos\ChronosDate`; for points in time, use `DateTimeImmutable`.
 - Use existing domain value objects and custom Doctrine types instead of bypassing the domain model with primitive values.
+
+### Access Control
+
+- An access denial must end the request: call `denyAccess()` (403) in presenters or throw `BadRequestException` with 403 in components. Never only switch the view; Nette still runs signals and form submissions after the action.
+- Check rights to the entity the request works with (group, payment, bank account, cashbook), not to the unit from the URL. Filter IDs coming from the request, including datagrid group actions, to that entity.
+
+### Background Work And Bulk Emails
+
+- A web request on production may run at most 30 s and there is no CLI or worker. Work that may take longer goes to the task queue in `app/Model/TaskQueue`, processed by the `taskQueue` cron job (see `.docs/fronta-uloh.md`).
+- Sending more than one email at once always goes through the queue; payment emails use `PaymentEmailQueue`. A single email sent by a button may run right away through the same queue record.
+- A task handler calls `TaskContext::beginIrreversible()` right before the irreversible effect and records the result with `complete()`. Never retry a task that may have had its effect.
 
 ### Service Emails
 

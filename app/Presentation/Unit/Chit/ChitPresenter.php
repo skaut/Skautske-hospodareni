@@ -65,7 +65,14 @@ class ChitPresenter extends UnitBasePresenter
 
     public function handleLockCashbook(string $cashbookId): void
     {
-        $this->commandBus->handle(new LockCashbook(CashbookId::fromString($cashbookId), (int) $this->getUser()->getId()));
+        $cashbookIdVo = CashbookId::fromString($cashbookId);
+
+        // Only cashbooks listed on this page may be locked, the same as their chits in createComponentChitList().
+        if (! $this->canEditCashbook($cashbookIdVo)) {
+            throw new BadRequestException(sprintf('Cashbook #%s not found', $cashbookIdVo->toString()), IResponse::S404_NotFound);
+        }
+
+        $this->commandBus->handle(new LockCashbook($cashbookIdVo, (int) $this->getUser()->getId()));
 
         $this->flashMessage('Evidence plateb byla uzamčena', 'success');
         $this->redrawControl();

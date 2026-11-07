@@ -24,6 +24,20 @@
                         {/if}
                     </span>
                 {/if}
+                {if $automaticRemindersJob !== null}
+                    <span>·</span>
+                    <span data-test="payment-group-automatic-reminders">
+                        <i class="fi fi-rr-bell" aria-hidden="true"></i>
+                        {if $automaticRemindersJob->paused}
+                            Automatické upomínky jsou pozastavené
+                        {elseif $group->getOAuthId() === null}
+                            Automatické upomínky nemohou odejít, skupina nemá e-mail odesílatele
+                        {else}
+                            {var $reminderDays = (int) $group->getReminderDaysAfterDue()}
+                            Automatické upomínky {$reminderDays} {if $reminderDays === 1}den{elseif $reminderDays < 5}dny{else}dní{/if} po splatnosti
+                        {/if}
+                    </span>
+                {/if}
             </div>
             <div class="page-heading-actions d-flex flex-wrap gap-2 align-items-center" n:if="$isEditable">
                 {if $group->state === 'open'}
@@ -103,6 +117,8 @@
         </section>
     </div>
 
+    {control taskQueueStatus}
+
     <section class="card mb-4" data-test="payment-group-progress" n:snippet="groupProgress">
         <div class="card-body">
             {control progress}
@@ -148,7 +164,7 @@
                     </span>
                     {include '../../../Components/templates/FileActionButton.latte',
                         label => 'Stáhnout Excel',
-                        downloadUrl => $presenter->link('export!', [$group->id]),
+                        downloadUrl => $presenter->link('export!'),
                         variant => 'light',
                         dataTest => 'payment-group-export',
                     }
