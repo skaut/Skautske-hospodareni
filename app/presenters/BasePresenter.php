@@ -145,7 +145,7 @@ abstract class BasePresenter extends Presenter
         $this->pageViewTracker = $pageViewTracker;
     }
 
-    public function injectSkautisLoginRefresher(SkautisLoginRefresher $refresher, FreshRolesApplier $freshRolesApplier): void
+    public function injectSkautisLogin(SkautisLoginRefresher $refresher, FreshRolesApplier $freshRolesApplier): void
     {
         $this->skautisLoginRefresher = $refresher;
         $this->freshRolesApplier = $freshRolesApplier;
