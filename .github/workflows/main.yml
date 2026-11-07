@@ -304,6 +304,7 @@ jobs:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
       CRON_TOKEN_SHA256: ${{ secrets.CRON_TOKEN_SHA256 }}
+      APP_KEY: ${{ secrets.APP_KEY }}
       SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
       SEND_EMAIL: ${{ vars.SEND_EMAIL }}
       ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
@@ -376,6 +377,7 @@ jobs:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
       CRON_TOKEN_SHA256: ${{ secrets.CRON_TOKEN_SHA256 }}
+      APP_KEY: ${{ secrets.APP_KEY }}
       SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
       SEND_EMAIL: ${{ vars.SEND_EMAIL }}
       ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
@@ -420,6 +422,7 @@ jobs:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
       CRON_TOKEN_SHA256: ${{ secrets.CRON_TOKEN_SHA256 }}
+      APP_KEY: ${{ secrets.APP_KEY }}
       SKAUTIS_TEST_MODE: "false"
       SEND_EMAIL: "true"
       ERROR_EMAILS: alex@skaut.cz

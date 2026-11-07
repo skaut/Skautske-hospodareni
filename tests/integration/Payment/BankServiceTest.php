@@ -179,11 +179,35 @@ class BankServiceTest extends IntegrationTest
         $this->storeTransaction($bankAccount, 300, '456', new DateTimeImmutable('- 40 days'));
         $this->storeTransaction($bankAccount, 400, '789', new DateTimeImmutable('- 20 days'));
 
-        $pairingResults = $this->bankService->pairImportedStatement($bankAccount->getId(), ChronosDate::today()->subDays(20));
+        $pairingResults = $this->bankService->pairImportedStatement(
+            $bankAccount->getId(),
+            ChronosDate::today()->subDays(20),
+            [(int) $openGroup->getId(), (int) $closedGroup->getId()],
+        );
 
         self::assertCount(1, $pairingResults);
         self::assertSame(1, $pairingResults[0]->getCount());
         // The payment of the closed group and the transaction older than the statement stay unpaired.
+        self::assertSame([1], $this->activePairedPaymentIds());
+    }
+
+    /** Pairing completes payments, so a statement imported on a shared account leaves groups the user may not edit. */
+    public function testImportedStatementPairsOnlyGroupsTheUserMayEdit(): void
+    {
+        $bankAccount = $this->createBankAccountFixture('GPC', null, BankTransactionSource::GPC);
+        $this->bankAccounts->save($bankAccount);
+
+        $editableGroup = $this->addGroup($bankAccount);
+        $otherGroup = $this->addGroup($bankAccount);
+
+        $this->addPayment($editableGroup, 200, '123'); // ID: 1
+        $this->addPayment($otherGroup, 300, '456'); // ID: 2
+
+        $this->storeTransaction($bankAccount, 200, '123', new DateTimeImmutable('- 5 days'));
+        $this->storeTransaction($bankAccount, 300, '456', new DateTimeImmutable('- 5 days'));
+
+        $this->bankService->pairImportedStatement($bankAccount->getId(), ChronosDate::today()->subDays(10), [(int) $editableGroup->getId()]);
+
         self::assertSame([1], $this->activePairedPaymentIds());
     }
 

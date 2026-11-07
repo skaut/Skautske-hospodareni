@@ -139,6 +139,21 @@ class DashboardCest extends BaseAcceptanceCest
     }
 
     /** @group dashboard */
+    public function roleRefusedBySkautisIsNotSwitched(): void
+    {
+        $I = $this->I;
+
+        $I->wantTo('stay in my role when skautIS refuses the chosen one');
+
+        $this->openPageAndWaitForElementWithSkautisRetry(
+            $I,
+            '/nastenka?do=loginPanel-changeRole&loginPanel-roleId=1',
+            '[data-test="dashboard"]',
+        );
+        $I->see('Na vybranou roli se nepodařilo přepnout');
+    }
+
+    /** @group dashboard */
     public function dashboardUsesReadableAnnouncementHierarchy(): void
     {
         $I = $this->I;

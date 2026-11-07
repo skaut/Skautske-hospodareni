@@ -43,7 +43,7 @@ final class StatisticsPresenter extends \App\Presentation\Admin\AdminBasePresent
     public function createComponentSelectYearForm(): Form
     {
         $form = new BaseForm();
-        $form->addSelect('unitId', 'Jednotka', $this->unitTreeSelectOptions->getOptions())
+        $form->addSelect('unitId', 'Jednotka', $this->unitTreeSelectOptions->getOptions(selectedUnitId: $this->unitId->toInt()))
             ->setDefaultValue($this->unitId->toInt());
         $form->addSelect('year', 'Rok', $this->getYearRange())
             ->setDefaultValue($this->year);

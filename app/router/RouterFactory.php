@@ -39,6 +39,7 @@ class RouterFactory
         // Utility & auth
         $router->addRoute('debugging', 'Admin:Debugging:default');
         $router->addRoute('prodlouzit-prihlaseni', 'SessionKeepAlive:default');
+        $router->addRoute('vzhled', 'ThemeReport:default');
         $router->addRoute('google/<action>', 'Settings:Google:default');
         $router->addRoute(
             'sign/<action>[/back-<backlink>]',
@@ -211,6 +212,7 @@ class RouterFactory
             ->addRoute('platby/skupiny/<id [0-9]+>/upravit', 'Group:edit')
             ->addRoute('platby/skupiny/<id [0-9]+>/platby/parovat', 'Payment:pairTransactionToPayment')
             ->addRoute('platby/skupiny/<id [0-9]+>/platby', 'Payment:default')
+            ->addRoute('platby/skupiny/<id [0-9]+>/odesilani', 'TaskQueueStatus:default')
             ->addRoute('platby/skupiny/<id [0-9]+>/ucastnici', 'Participants:default')
             ->addRoute('platby/skupiny/<id [0-9]+>/osoby', 'People:default')
             ->addRoute('platby/skupiny/<groupId [0-9]+>/casopisy', 'Journal:default')
@@ -251,6 +253,7 @@ class RouterFactory
             ->addRoute('oznameni/nove', 'Announcements:create')
             ->addRoute('oznameni/<id [0-9]+>/upravit', 'Announcements:edit')
             ->addRoute('statistiky ? jednotka=<unitId>', 'Statistics:default')
+            ->addRoute('fronta', 'TaskQueue:default')
             ->addRoute('<presenter>[/<action>]', ['action' => 'default']);
     }
 

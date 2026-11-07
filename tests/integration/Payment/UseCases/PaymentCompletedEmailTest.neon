@@ -25,6 +25,17 @@ services:
     - Psr\Log\NullLogger
     - App\Model\Services\TemplateFactory
     - App\Model\Payment\MailingService
+    - App\Model\TaskQueue\Repository\TaskQueueRepository
+    - App\Model\TaskQueue\TaskQueue
+    - App\Model\TaskQueue\TaskQueueProcessor(handlers: typed(App\Model\TaskQueue\TaskHandler), budgetSeconds: 20, leaseSeconds: 600)
+    - App\Model\Payment\Mailing\PaymentEmailQueue
+    - App\Model\Payment\Mailing\PaymentEmailTaskHandler
+    - App\Model\Payment\Mailing\AutomaticPaymentReminders
+    - App\Model\TaskQueue\ReadModel\TaskJobStatusReader
+    - class: App\Model\Payment\ReadModel\QueryHandlers\CountAutomaticReminderGroupsQueryHandler
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
 
     - class: App\Model\Payment\Handlers\Payment\CreatePaymentHandler
       tags:

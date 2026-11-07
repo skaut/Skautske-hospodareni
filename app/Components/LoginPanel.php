@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Components;
 
+use App\Model\Skautis\SkautisErrors;
 use App\Model\Unit\UnitService;
 use App\Model\User\UserPreferencesService;
 use App\Model\User\UserService;
 use LogicException;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
+use Skautis\Wsdl\AuthenticationException;
+use Skautis\Wsdl\WsdlException;
 
 final class LoginPanel extends BaseControl
 {
@@ -26,7 +29,21 @@ final class LoginPanel extends BaseControl
         // Read before the switch: if SkautIS fails here, the role and the access stay unchanged both here and in SkautIS.
         $roles = $this->userService->getAllSkautisRoles();
         $access = $this->userService->getAccessArrays($this->unitService, $roles, $roleId);
-        $this->userService->updateSkautISRole($roleId);
+
+        try {
+            $this->userService->updateSkautISRole($roleId);
+        } catch (AuthenticationException $exception) {
+            throw $exception; // an expired login goes to the sign-in page
+        } catch (WsdlException $exception) {
+            if (SkautisErrors::isNoAnswer($exception)) {
+                throw $exception; // the error page tells that skautIS is unavailable
+            }
+
+            // skautIS answered and refused, e.g. a role the user no longer has (one that expired, a link from an older page).
+            $this->flashMessage('Na vybranou roli se nepodařilo přepnout, skautIS ji odmítl. Možná už neplatí, vyberte prosím jinou.', 'warning');
+            $this->redirect('this');
+        }
+
         $currentRoleId = $this->userService->getRoleId();
         if ($currentRoleId !== null) {
             $this->preferences->rememberCurrentSkautisRole($currentRoleId);
