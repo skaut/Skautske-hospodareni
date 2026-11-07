@@ -320,7 +320,8 @@ abstract class BasePresenter extends Presenter
 
         $roles = $this->skautisLoginRefresher->freshRoles();
         $identity = $this->getUser()->getIdentity();
-        if ($roles !== null && $identity instanceof SimpleIdentity) {
+        // Not on Auth pages: with no active role left, the "no role" page must still let the user log out.
+        if ($roles !== null && $identity instanceof SimpleIdentity && ! $this->isPublicRequest()) {
             $currentRole = $this->userService->getActualRole($roles);
             if ($currentRole === null) {
                 $this->switchFromEndedRole($identity);
