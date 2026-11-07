@@ -62,7 +62,10 @@ class ErrorPresenter extends Presenter
             }
         }
 
-        if ($exception instanceof UserHasNoUnit) {
+        // A MissingCurrentRole reaching here means the switch above found no role; otherwise it forwarded.
+        if ($exception instanceof UserHasNoRole || $exception instanceof MissingCurrentRole) {
+            $this->setView('noRole');
+        } elseif ($exception instanceof UserHasNoUnit) {
             $this->setView('noUnit');
         } elseif ($exception instanceof Nette\Application\BadRequestException) {
             $code = $exception->getCode();

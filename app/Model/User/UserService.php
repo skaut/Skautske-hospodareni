@@ -93,11 +93,13 @@ class UserService
      * @internal  Use query bus with ActiveSkautisRoleQuery
      *
      * @see ActiveSkautisRoleQuery
+     *
+     * @param stdClass[]|null $roles roles already loaded by getAllSkautisRoles(), saves a SkautIS call
      */
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    public function getActualRole(): ?SkautisRole
+    public function getActualRole(?array $roles = null): ?SkautisRole
     {
-        foreach ($this->getAllSkautisRoles() as $r) {
+        foreach ($roles ?? $this->getAllSkautisRoles() as $r) {
             if ($r->ID === $this->getRoleId()) {
                 return new SkautisRole($r->Key ?? '', $r->DisplayName, $r->ID_Unit, $r->Unit);
             }
@@ -130,13 +132,15 @@ class UserService
     }
 
     /**
+     * @param stdClass[]|null $roles roles already loaded by getAllSkautisRoles(), saves a SkautIS call
+     *
      * @return mixed[]
      *
      * @throws BadRequestException
      */
-    public function getAccessArrays(UnitService $us): array
+    public function getAccessArrays(UnitService $us, ?array $roles = null): array
     {
-        $role = $this->getActualRole();
+        $role = $this->getActualRole($roles);
 
         if ($role !== null) {
             $unitIds = $role->isBasicUnit() || $role->isTroop()
