@@ -65,7 +65,10 @@ abstract class BaseSectionPresenter extends BasePresenter
         $unitId = $this->getParameter('unitId');
         $this->unitId = new UnitId($unitId !== null ? (int) $unitId : $this->unitService->getUnitId());
 
-        $this->userService->updateLogoutTime();
+        // A request on a timer must not keep the login alive; only the keep-alive the user chose does that.
+        if (! $this->isBackgroundRequest()) {
+            $this->userService->updateLogoutTime();
+        }
     }
 
     /** @param string $message */
@@ -100,8 +103,12 @@ abstract class BaseSectionPresenter extends BasePresenter
         return array_keys($editableUnits);
     }
 
-    public function renderAccessDenied(): void
+    /**
+     * Ends the request with 403. A denial must stop the request: Nette processes signals and form
+     * submissions after the action, so only changing the view would still let them run.
+     */
+    protected function denyAccess(string $message = 'Nemáte oprávnění k této stránce.'): never
     {
-        $this->template->setFile(__DIR__.'/accessDenied.latte');
+        throw new AccessDenied($message);
     }
 }

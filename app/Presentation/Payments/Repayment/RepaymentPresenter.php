@@ -37,9 +37,9 @@ final class RepaymentPresenter extends BasePresenter
     {
         $group = $this->payments->getGroup($id);
 
-        if ($group === null) {
-            $this->flashMessage('K této skupině nemáte přístup');
-            $this->redirect('GroupList:');
+        // Repayments send payment orders through the bank token of the group, so they need edit rights to it.
+        if ($group === null || ! $this->canEditGroup($group)) {
+            $this->denyAccess('Nemáte oprávnění pracovat s touto platební skupinou.');
         }
 
         $this->group = $group;
@@ -105,11 +105,6 @@ final class RepaymentPresenter extends BasePresenter
     private function repaymentFormSubmitted(BaseForm $form): void
     {
         $values = $form->getValues(\Nette\Utils\ArrayHash::class);
-
-        if (! $this->isEditable) {
-            $this->flashMessage('Nemáte oprávnění pro práci s platbami jednotky', 'danger');
-            $this->redirect(':Payments:Payment:default', ['id' => $this->group->getId()]);
-        }
 
         $repayments = [];
 

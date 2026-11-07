@@ -17,6 +17,7 @@ use App\Components\Factories\Payment\IPaymentListFactory;
 use App\Components\Factories\Payment\IPaymentNoteDialogFactory;
 use App\Components\Factories\Payment\IRemoveGroupDialogFactory;
 use App\Components\Factories\Payment\ISplitPaymentDialogFactory;
+use App\Components\Factories\TaskQueue\ITaskQueueStatusFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountDetail;
 use App\Components\Payment\BankAccountDetail\BankAccountDetailViewFactory;
 use App\Components\Payment\BankAccountDetail\BankAccountManualPairingOutcome;
@@ -29,11 +30,13 @@ use App\Components\Payment\ImportDialog;
 use App\Components\Payment\MassAddForm;
 use App\Components\Payment\PairButton;
 use App\Components\Payment\PaymentDialog;
+use App\Components\Payment\PaymentEmailMessages;
 use App\Components\Payment\PaymentInfoEmailDialog;
 use App\Components\Payment\PaymentList;
 use App\Components\Payment\PaymentNoteDialog;
 use App\Components\Payment\RemoveGroupDialog;
 use App\Components\Payment\SplitPaymentDialog;
+use App\Components\TaskQueue\TaskQueueStatus;
 use App\Http\ExcelResponse;
 use App\Model\Bank\BankTransactionAmountMismatch;
 use App\Model\Bank\BankTransactionPairingNotAllowed;
@@ -53,6 +56,8 @@ use App\Model\Payment\Payment\State;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\MembersWithoutPaymentInGroupQuery;
 use App\Model\Payment\ReadModel\Queries\PaymentListQuery;
+use App\Model\TaskQueue\ReadModel\Queries\CountWaitingTasksQuery;
+use App\Model\TaskQueue\TaskScope;
 use App\Model\Unit\UnitService;
 use App\Model\User\Manager\PaymentGroupVisitManager;
 use App\Presentation\Payments\PaymentsBasePresenter;
@@ -63,7 +68,6 @@ use Nette\Application\Attributes\Persistent;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use RuntimeException;
 use Skautis\Wsdl\PermissionException;
 
 use function array_filter;
@@ -96,6 +100,8 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     private ?PaymentBankAccount $bankAccount = null;
 
+    private PaymentGroup $group;
+
     public function __construct(
         private PaymentService $model,
         protected UnitService $unitService,
@@ -116,6 +122,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
         private BankAccountService $bankAccounts,
         private BankAccountDetailViewFactory $bankAccountDetailViewFactory,
         private BankAccountManualPairingService $bankAccountManualPairingService,
+        private ITaskQueueStatusFactory $taskQueueStatusFactory,
     ) {
         parent::__construct();
     }
@@ -125,23 +132,23 @@ final class PaymentPresenter extends PaymentsBasePresenter
         parent::startup();
 
         $this->readUnits = $this->unitService->getReadUnits($this->user);
+
+        // Every action, signal and component of this presenter works with the group from the URL,
+        // so its edit rights are checked once here, before any signal can run.
+        $group = $this->model->getGroup($this->id);
+        if ($group === null || ! $this->canEditGroup($group)) {
+            $this->denyAccess('Nemáte oprávnění pracovat s touto platební skupinou.');
+        }
+
+        $this->group = $group;
+        $this->isEditable = true;
     }
 
     public function actionDefault(int $id): void
     {
-        $this->assertCanEditGroup();
-        $group = $this->model->getGroup($id);
+        $group = $this->group;
 
-        if ($group === null || ! $this->hasAccessToGroup($group)) {
-            $this->setView('accessDenied');
-            $this->template->setParameters(['message' => 'Nemáte oprávnění zobrazit detail plateb.']);
-
-            return;
-        }
-
-        if ($this->canEditGroup($group)) {
-            $this['pairButton']->setGroups([$id]);
-        }
+        $this['pairButton']->setGroups([$id]);
 
         $this->paymentGroupVisitManager->markVisited((int) $this->getUser()->getId(), $id);
 
@@ -159,6 +166,8 @@ final class PaymentPresenter extends PaymentsBasePresenter
             $this->publishBankAccountTemplateParameters($group);
         }
 
+        $cronJobs = $this->queryBus->handle(new CronJobsQuery(new DateTimeImmutable()));
+
         $this->template->setParameters([
             'group' => $group,
             'nextVS' => $nextVS,
@@ -166,21 +175,17 @@ final class PaymentPresenter extends PaymentsBasePresenter
             'summarize' => $this->model->getGroupSummaries([$id])[$id],
             'now' => new DateTimeImmutable(),
             'notSentPaymentsCount' => $this->countNotSentPayments($this->payments),
-            'paymentPairingJob' => $this->isPairedByCron($group)
-                ? $this->queryBus->handle(new CronJobsQuery(new DateTimeImmutable()))[CronJobRegistry::PAYMENT_PAIRING] ?? null
+            'paymentPairingJob' => $this->isPairedByCron($group) ? $cronJobs[CronJobRegistry::PAYMENT_PAIRING] ?? null : null,
+            // Mirrors Group::sendsAutomaticReminders(); a missing sender is shown instead of hiding the setting.
+            'automaticRemindersJob' => $group->hasAutomaticRemindersEnabled() && $group->getState() === PaymentGroupEntity::STATE_OPEN
+                ? $cronJobs[CronJobRegistry::PAYMENT_REMINDERS] ?? null
                 : null,
         ]);
     }
 
     public function actionPairTransactionToPayment(int $id, int $accountId, string $transactionKey, ?int $paymentId = null): void
     {
-        $group = $this->model->getGroup($id);
-        if ($group === null || ! $this->canEditGroup($group)) {
-            $this->setView('accessDenied');
-            $this->template->setParameters(['message' => 'Nemáte oprávnění pracovat s touto skupinou.']);
-
-            return;
-        }
+        $group = $this->group;
 
         if ($group->getBankAccountId() !== $accountId) {
             $this->flashMessage('Bankovní transakce nepatří k účtu této platební skupiny.', 'danger');
@@ -214,18 +219,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     public function handleLoadBankAccountTransactions(?int $paymentId = null): void
     {
-        $group = $this->model->getGroup($this->id);
-        if ($group === null || ! $this->canEditGroup($group)) {
-            $this->flashMessage('Nemáte oprávnění pracovat s touto skupinou.', 'danger');
-
-            if ($this->isAjax()) {
-                $this->redrawControl('flash');
-            } else {
-                $this->redirect('default', ['id' => $this->id]);
-            }
-
-            return;
-        }
+        $group = $this->group;
 
         if ($group->getBankAccountId() === null) {
             $this->flashMessage('Platební skupina nemá připojený bankovní účet.', 'warning');
@@ -254,18 +248,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     public function handleHideBankAccountTransactions(): void
     {
-        $group = $this->model->getGroup($this->id);
-        if ($group === null || ! $this->canEditGroup($group)) {
-            $this->flashMessage('Nemáte oprávnění pracovat s touto skupinou.', 'danger');
-
-            if ($this->isAjax()) {
-                $this->redrawControl('flash');
-            } else {
-                $this->redirect('default', ['id' => $this->id]);
-            }
-
-            return;
-        }
+        $group = $this->group;
 
         $this->bankAccountTransactionsLoaded = false;
         $this->bankAccountPaymentId = null;
@@ -285,9 +268,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
     /** @param null $unitId - NEZBYTNÝ PRO FUNKCI VÝBĚRU JINÉ JEDNOTKY */
     public function actionMassAdd(int $id, ?int $unitId = null, bool $directMemberOnly = true): void
     {
-        $this->assertCanEditGroup();
-
-        $group = $this->model->getGroup($id);
+        $group = $this->group;
 
         $form = $this['massAddForm'];
         $list = $this->queryBus->handle(new MembersWithoutPaymentInGroupQuery($this->unitId, $id, $this->directMemberOnly));
@@ -308,22 +289,8 @@ final class PaymentPresenter extends PaymentsBasePresenter
         ]);
     }
 
-    private function assertCanEditGroup(): void
-    {
-        $group = $this->model->getGroup($this->id);
-
-        if ($group !== null && $this->canEditGroup($group)) {
-            return;
-        }
-
-        $this->setView('accessDenied');
-        $this->template->setParameters(['message' => 'Nemáte oprávnění pracovat s touto skupinou.']);
-    }
-
     public function handleGenerateVs(): void
     {
-        $this->assertCanEditGroup();
-
         try {
             $nextVS = $this->model->getNextVS($this->id);
             if ($nextVS === null) {
@@ -340,12 +307,10 @@ final class PaymentPresenter extends PaymentsBasePresenter
         }
     }
 
-    public function handleExport(int $id): void
+    public function handleExport(): void
     {
-        $this->assertCanEditGroup();
-
-        $group = $this->model->getGroup($id) ?? throw new RuntimeException('Platební skupina nebyla nalezena.');
-        $payments = $this->getPaymentsForGroup($id);
+        $group = $this->group;
+        $payments = $this->getPaymentsForGroup($this->id);
         $groupName = substr(Strings::webalize($group->getName(), null, false), 0, Worksheet::SHEET_TITLE_MAXIMUM_LENGTH);
 
         try {
@@ -365,8 +330,6 @@ final class PaymentPresenter extends PaymentsBasePresenter
     // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     public function handleCloseGroup(): void
     {
-        $this->assertCanEditGroup();
-
         $userData = $this->userService->getUserDetail();
         $note = 'Uživatel '.$userData->Person.' uzavřel skupinu plateb dne '.date('j.n.Y H:i');
 
@@ -375,13 +338,22 @@ final class PaymentPresenter extends PaymentsBasePresenter
         } catch (GroupNotFound) {
         }
 
+        $this->warnAboutWaitingEmails();
         $this->redirect('this');
+    }
+
+    /** The user decides about e-mails that still wait: let them go out, or cancel them in the panel. */
+    private function warnAboutWaitingEmails(): void
+    {
+        $waiting = $this->queryBus->handle(new CountWaitingTasksQuery(TaskScope::paymentGroup($this->id)));
+
+        if ($waiting > 0) {
+            $this->flashMessage(PaymentEmailMessages::stillWaiting($waiting), 'warning');
+        }
     }
 
     public function handleOpenGroup(): void
     {
-        $this->assertCanEditGroup();
-
         $userData = $this->userService->getUserDetail();
         $note = 'Uživatel '.$userData->Person.' otevřel skupinu plateb dne '.date('j.n.Y H:i');
 
@@ -393,6 +365,16 @@ final class PaymentPresenter extends PaymentsBasePresenter
         $this->redirect('this');
     }
 
+    /** Loads the payments again after a background batch finished; only on request, the page never reloads them itself. */
+    public function handleRefreshPayments(): void
+    {
+        if (! $this->isAjax()) {
+            $this->redirect('this');
+        }
+
+        $this->redrawPaymentAndBankAccountGrids();
+    }
+
     public function handleOpenRemoveDialog(): void
     {
         $dialog = $this['removeGroupDialog'];
@@ -401,8 +383,6 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     protected function createComponentPaymentDialog(): PaymentDialog
     {
-        $this->assertCanEditGroup();
-
         $dialog = $this->paymentDialogFactory->create($this->id);
 
         $dialog->onSuccess[] = function (): void {
@@ -414,7 +394,6 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     protected function createComponentImportDialog(): ImportDialog
     {
-        $this->assertCanEditGroup();
         $dialog = $this->importDialogFactory->create($this->id);
         $dialog->onSuccess[] = function (): void {
             $this->redrawPaymentGrid();
@@ -425,8 +404,6 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     protected function createComponentPaymentNoteDialog(): PaymentNoteDialog
     {
-        $this->assertCanEditGroup();
-
         $dialog = $this->paymentNoteDialogFactory->create($this->id);
 
         $dialog->onSuccess[] = function (): void {
@@ -464,14 +441,23 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     protected function createComponentSplitPaymentDialog(): SplitPaymentDialog
     {
-        $this->assertCanEditGroup();
-
         $dialog = $this->splitPaymentDialogFactory->create($this->id);
         $dialog->onSuccess[] = function (): void {
             $this->redrawPaymentGrid();
         };
 
         return $dialog;
+    }
+
+    protected function createComponentTaskQueueStatus(): TaskQueueStatus
+    {
+        // The scope is the group checked in startup(), so the panel never shows batches of another group.
+        $status = $this->taskQueueStatusFactory->create(TaskScope::paymentGroup($this->id), $this->isEditable);
+        $status->setFinishedAction('Načíst aktuální seznam plateb', $this->link('refreshPayments!'));
+        // The panel refreshes from its own address, so the poll never runs the action of this page.
+        $status->setRefreshLink(fn (string $followed): string => $this->link('TaskQueueStatus:default', ['id' => $this->id, 'followed' => $followed]));
+
+        return $status;
     }
 
     protected function createComponentPairButton(): PairButton
@@ -487,9 +473,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     protected function createComponentEmailButton(): EmailButton
     {
-        $group = $this->model->getGroup($this->id) ?? throw new RuntimeException('Platební skupina nebyla nalezena.');
-
-        $emailButton = $this->emailButtonFactory->create($this->isEditable, $this->payments, $group);
+        $emailButton = $this->emailButtonFactory->create($this->isEditable, $this->payments, $this->group);
         $emailButton->onSendPaymentInfoRequested[] = function (array $paymentIds): void {
             $this['paymentInfoEmailDialog']->send($paymentIds);
         };
@@ -530,9 +514,7 @@ final class PaymentPresenter extends PaymentsBasePresenter
 
     protected function createComponentRemoveGroupDialog(): RemoveGroupDialog
     {
-        $group = $this->model->getGroup($this->id);
-
-        return $this->removeGroupDialogFactory->create($this->id, $group !== null && $this->canEditGroup($group));
+        return $this->removeGroupDialogFactory->create($this->id, $this->isEditable);
     }
 
     protected function createComponentProgress(): GroupProgress
@@ -580,6 +562,8 @@ final class PaymentPresenter extends PaymentsBasePresenter
         }
 
         $this->redrawControl('flash');
+        // Changes of payments may queue e-mails (confirmations, reminders), so their progress shows right away.
+        $this['taskQueueStatus']->follow();
         $this->publishBankAccountTransactionsUrl();
     }
 
