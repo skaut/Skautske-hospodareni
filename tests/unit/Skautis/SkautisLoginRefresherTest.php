@@ -19,6 +19,8 @@ use Skautis\Wsdl\WsdlException;
 use Skautis\Wsdl\WsdlManager;
 use stdClass;
 
+use function ini_get;
+
 final class SkautisLoginRefresherTest extends Unit
 {
     private const LOGIN_ID = 'login-id';
@@ -170,6 +172,24 @@ final class SkautisLoginRefresherTest extends Unit
         });
 
         self::assertEquals(new DateTime('2026-11-04 12:29:00'), $this->user->getLogoutDate());
+    }
+
+    public function testSkautisCallsRunWithShortSocketTimeout(): void
+    {
+        $this->logInWithLogoutAt('2026-11-04 12:10:00');
+        $timeoutBefore = ini_get('default_socket_timeout');
+        $timeouts = [];
+        $this->webService->shouldReceive('call')->andReturnUsing(static function () use (&$timeouts): array {
+            $timeouts[] = ini_get('default_socket_timeout');
+
+            throw new WsdlException('Error Fetching http headers');
+        });
+
+        $this->refresher->extend(self::USER_ID, static function (): void {
+        });
+
+        self::assertSame(['10'], $timeouts, 'A hanging SkautIS holds the PHP-FPM worker only this long.');
+        self::assertSame($timeoutBefore, ini_get('default_socket_timeout'));
     }
 
     public function testNothingHappensWithoutLogin(): void

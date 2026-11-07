@@ -16,6 +16,8 @@ use Skautis\Wsdl\WsdlException;
 use stdClass;
 use Throwable;
 
+use function ini_get;
+use function ini_set;
 use function str_contains;
 
 /**
@@ -30,6 +32,9 @@ final class SkautisLoginRefresher
     private const EXTEND_WHEN_REMAINING_BELOW = 29 * 60;
 
     private const CACHE_TTL = '30 minutes';
+
+    /** An extension takes about a second; without a limit a hanging SkautIS holds the PHP-FPM worker for 60 s. */
+    private const SKAUTIS_TIMEOUT_SECONDS = 10;
 
     private Cache $cache;
 
@@ -64,6 +69,9 @@ final class SkautisLoginRefresher
         $this->user->updateLoginData(null, null, null, DateTime::createFromImmutable($now)->modify(self::LOGIN_LENGTH));
         $beforeSkautisCall();
 
+        $previousTimeout = ini_get('default_socket_timeout');
+        ini_set('default_socket_timeout', (string) self::SKAUTIS_TIMEOUT_SECONDS);
+
         try {
             // Directly through the web service: Skautis\User::updateLogoutTime() writes to the already closed session.
             $this->userWebService->call('LoginUpdateRefresh', [['ID' => $loginId]]);
@@ -83,6 +91,8 @@ final class SkautisLoginRefresher
         } catch (Throwable $exception) {
             // The optimistic logout time stays (the session is closed); the next due extension, a minute later, tries again.
             $this->logger->error('SkautIS login extension failed.', ['exception' => $exception]);
+        } finally {
+            ini_set('default_socket_timeout', (string) $previousTimeout);
         }
     }
 
