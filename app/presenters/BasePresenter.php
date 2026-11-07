@@ -11,16 +11,14 @@ use App\Components\LoginPanel;
 use App\Model\Auth\IAuthorizator;
 use App\Model\Auth\Resources\Admin;
 use App\Model\Auth\Resources\InvoiceAccess;
-use App\Model\Cashbook\Commands\Cashbook\SelectFirstActiveRole;
 use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\NotificationsCollector;
 use App\Model\Common\Services\QueryBus;
 use App\Model\Help\Manager\PageHelpManager;
 use App\Model\PageView\Services\PageViewTracker;
-use App\Model\Skautis\Exception\MissingCurrentRole;
+use App\Model\Skautis\FreshRolesApplier;
 use App\Model\Skautis\SkautisLoginRefresher;
 use App\Model\Unit\UnitService;
-use App\Model\User\Exception\UserHasNoRole;
 use App\Model\User\Services\LoginTracker;
 use App\Model\User\UserPreferencesService;
 use App\Model\User\UserService;
@@ -107,6 +105,8 @@ abstract class BasePresenter extends Presenter
 
     private SkautisLoginRefresher $skautisLoginRefresher;
 
+    private FreshRolesApplier $freshRolesApplier;
+
     public function injectAll(
         UserService $userService,
         UnitService $unitService,
@@ -145,9 +145,10 @@ abstract class BasePresenter extends Presenter
         $this->pageViewTracker = $pageViewTracker;
     }
 
-    public function injectSkautisLoginRefresher(SkautisLoginRefresher $refresher): void
+    public function injectSkautisLoginRefresher(SkautisLoginRefresher $refresher, FreshRolesApplier $freshRolesApplier): void
     {
         $this->skautisLoginRefresher = $refresher;
+        $this->freshRolesApplier = $freshRolesApplier;
     }
 
     protected function startup(): void
@@ -317,19 +318,11 @@ abstract class BasePresenter extends Presenter
             return;
         }
 
-        $roles = $this->skautisLoginRefresher->freshRoles();
         $identity = $this->getUser()->getIdentity();
         // Not on Auth pages: with no active role left, the "no role" page must still let the user log out.
-        if ($roles !== null && $identity instanceof SimpleIdentity && ! $this->isPublicRequest()) {
-            $currentRole = $this->userService->getActualRole($roles);
-            if ($currentRole === null) {
-                $this->switchFromEndedRole();
-            } else {
-                $identity->skautisRoles = $roles;
-                $identity->currentRole = $currentRole;
-            }
-
-            $this->skautisLoginRefresher->forgetFreshRoles();
+        if ($identity instanceof SimpleIdentity && ! $this->isPublicRequest() && $this->freshRolesApplier->apply($identity)) {
+            // No role names: either can be missing (getActualRole() returns null), and the header shows the new role.
+            $this->flashMessage('Vaše role už ve SkautISu není aktivní, proto jsme vás přepnuli na jinou roli.', 'warning');
         }
 
         $userId = (int) $this->getUser()->getId();
@@ -342,22 +335,6 @@ abstract class BasePresenter extends Presenter
 
             ignore_user_abort(true);
         }));
-    }
-
-    /**
-     * The active role is no longer active in SkautIS. If switching fails, the exception leaves the fresh roles
-     * unapplied, so the next request tries again.
-     */
-    private function switchFromEndedRole(): void
-    {
-        try {
-            $this->commandBus->handle(new SelectFirstActiveRole());
-        } catch (UserHasNoRole) {
-            throw new MissingCurrentRole(); // ErrorPresenter shows the "no role" page
-        }
-
-        // No role names: either can be missing (getActualRole() returns null), and the header shows the new role.
-        $this->flashMessage('Vaše role už ve SkautISu není aktivní, proto jsme vás přepnuli na jinou roli.', 'warning');
     }
 
     private function validateCurrentLogin(): void
