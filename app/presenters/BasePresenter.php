@@ -319,7 +319,7 @@ abstract class BasePresenter extends Presenter
         }
 
         $identity = $this->getUser()->getIdentity();
-        // Not on Auth pages: with no active role left, the "no role" page must still let the user log out.
+        // Not on public pages: they include the logout actions, and a user without an active role must still be able to log out.
         if ($identity instanceof SimpleIdentity && ! $this->isPublicRequest() && $this->freshRolesApplier->apply($identity)) {
             // No role names: either can be missing (getActualRole() returns null), and the header shows the new role.
             $this->flashMessage('Vaše role už ve SkautISu není aktivní, proto jsme vás přepnuli na jinou roli.', 'warning');
