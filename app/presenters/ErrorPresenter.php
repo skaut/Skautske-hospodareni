@@ -62,7 +62,8 @@ class ErrorPresenter extends Presenter
             }
         }
 
-        if ($exception instanceof UserHasNoRole) { // from FreshRolesApplier, which already tried another role
+        // A MissingCurrentRole reaching here means the switch above found no role; otherwise it forwarded.
+        if ($exception instanceof UserHasNoRole || $exception instanceof MissingCurrentRole) {
             $this->setView('noRole');
         } elseif ($exception instanceof UserHasNoUnit) {
             $this->setView('noUnit');
