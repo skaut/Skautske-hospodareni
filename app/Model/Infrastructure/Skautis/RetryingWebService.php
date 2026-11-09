@@ -4,31 +4,20 @@ declare(strict_types=1);
 
 namespace App\Model\Infrastructure\Skautis;
 
+use App\Model\Skautis\SkautisErrors;
 use LogicException;
 use Skautis\Wsdl\AuthenticationException;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
 use Skautis\Wsdl\WsdlException;
 
-use function str_contains;
+use function stripos;
 use function usleep;
 
 final class RetryingWebService implements WebServiceInterface
 {
     private const MAX_ATTEMPTS = 3;
     private const RETRY_DELAY_MICROSECONDS = 250_000;
-
-    private const RETRYABLE_MESSAGES = [
-        'Could not connect to host',
-        'php_network_getaddresses',
-        'getaddrinfo',
-        'Name or service not known',
-        'Temporary failure in name resolution',
-        'Connection timed out',
-        'Failed to connect',
-        'HTTP Error Fetching http headers',
-        'SSL: Handshake timed out',
-    ];
 
     public function __construct(private WebServiceInterface $inner)
     {
@@ -42,7 +31,7 @@ final class RetryingWebService implements WebServiceInterface
      */
     public function call($functionName, array $arguments = []): mixed
     {
-        return $this->runWithRetry(fn (): mixed => $this->inner->call($functionName, $arguments));
+        return $this->runWithRetry($functionName, fn (): mixed => $this->inner->call($functionName, $arguments));
     }
 
     /**
@@ -53,7 +42,7 @@ final class RetryingWebService implements WebServiceInterface
      */
     public function __call($functionName, $arguments): mixed
     {
-        return $this->runWithRetry(fn (): mixed => $this->inner->__call($functionName, $arguments));
+        return $this->runWithRetry($functionName, fn (): mixed => $this->inner->__call($functionName, $arguments));
     }
 
     /**
@@ -67,7 +56,7 @@ final class RetryingWebService implements WebServiceInterface
     }
 
     /** @param callable(): mixed $callback */
-    private function runWithRetry(callable $callback): mixed
+    private function runWithRetry(string $functionName, callable $callback): mixed
     {
         for ($attempt = 1;; ++$attempt) {
             try {
@@ -75,7 +64,7 @@ final class RetryingWebService implements WebServiceInterface
             } catch (AuthenticationException|PermissionException $exception) {
                 throw $exception;
             } catch (WsdlException $exception) {
-                if ($attempt >= self::MAX_ATTEMPTS || ! $this->isRetryable($exception)) {
+                if ($attempt >= self::MAX_ATTEMPTS || ! $this->isRetryable($functionName, $exception)) {
                     throw $exception;
                 }
 
@@ -86,26 +75,16 @@ final class RetryingWebService implements WebServiceInterface
         throw new LogicException('Retry loop ended unexpectedly.');
     }
 
-    private function isRetryable(WsdlException $exception): bool
+    /**
+     * A request that skautIS did not process can always be sent again. When only its answer got lost, skautIS
+     * may have processed it: reads and updates can be repeated, a repeated insert could create a duplicate.
+     */
+    private function isRetryable(string $functionName, WsdlException $exception): bool
     {
-        foreach (self::RETRYABLE_MESSAGES as $message) {
-            if (str_contains($exception->getMessage(), $message)) {
-                return true;
-            }
+        if (SkautisErrors::isNotProcessed($exception)) {
+            return true;
         }
 
-        $previous = $exception->getPrevious();
-
-        if ($previous === null) {
-            return false;
-        }
-
-        foreach (self::RETRYABLE_MESSAGES as $message) {
-            if (str_contains($previous->getMessage(), $message)) {
-                return true;
-            }
-        }
-
-        return false;
+        return SkautisErrors::isNoAnswer($exception) && stripos($functionName, 'Insert') === false;
     }
 }

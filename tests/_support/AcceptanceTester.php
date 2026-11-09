@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\ErrorPresenter;
+use App\Model\Skautis\SkautisErrors;
 use Codeception\Actor;
 use Facebook\WebDriver\Exception\WebDriverException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -39,12 +41,6 @@ class AcceptanceTester extends Actor
     public const PAGE_STATE_EXPECTED = 'expected';
     public const PAGE_STATE_SKAUTIS_UNAVAILABLE = 'skautis-unavailable';
     public const PAGE_STATE_UNKNOWN = 'unknown';
-
-    private const SKAUTIS_CONNECTION_ERROR_TEXTS = [
-        'Could not connect to host',
-        'Error Fetching http headers',
-        'php_network_getaddresses',
-    ];
 
     private const LOGIN = 'crash01';
 
@@ -657,14 +653,19 @@ JS, [$selector]);
         }
     }
 
+    /**
+     * In debug mode a skautIS outage renders the Tracy blue screen with the WsdlException. Without debug mode, as in CI,
+     * the error page redirects to the dashboard with the skautIS unavailable flash message instead.
+     */
     private function buildSkautisWsdlErrorJsCondition(string $textVariable): string
     {
         $conditions = [];
-        foreach (self::SKAUTIS_CONNECTION_ERROR_TEXTS as $errorText) {
+        foreach ([...SkautisErrors::NOT_PROCESSED_MESSAGES, ...SkautisErrors::RESPONSE_LOST_MESSAGES] as $errorText) {
             $conditions[] = $textVariable.'.includes('.json_encode($errorText).')';
         }
 
-        return $textVariable.'.includes("WsdlException") && ('.implode(' || ', $conditions).')';
+        return '('.$textVariable.'.includes("WsdlException") && ('.implode(' || ', $conditions).'))'
+            .' || '.$textVariable.'.includes('.json_encode(ErrorPresenter::SKAUTIS_UNAVAILABLE_MESSAGE).')';
     }
 
     private function scrollElementToCenter(string $locator): void

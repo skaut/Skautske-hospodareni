@@ -9,7 +9,7 @@ Skautske hospodareni is a web application for accounting and financial administr
 ## Target Environment
 
 - The project targets PHP 8.3 exclusively. Do not maintain PHP 8.2 compatibility and do not use features that require PHP 8.4 or newer.
-- The PHP image is based on `thecodingmachine/php:8.3-v4-fpm-node22`.
+- The PHP image is based on `thecodingmachine/php:8.3.36-v5-fpm-node22`. Keep the pinned PHP patch version at or above every security fix required by `roave/security-advisories`, and keep `config.platform.php` in `composer.json` equal to it.
 - The database is MySQL 8.4 (production server lebeda) with `utf8mb4` and `utf8mb4_czech_ci` collation.
 - The web stack consists of Nginx and Traefik.
 - The application time zone is `Europe/Prague`.
@@ -157,6 +157,7 @@ Unify test procedures:
 - When acceptance navigation or a server-side form/action submit can render a transient SkautIS WSDL error page, use the shared SkautIS-aware helper from the acceptance ancestor. The low-level browser detection may live in `AcceptanceTester`, but individual tests should call the shared ancestor method so retry count and delay stay transparent in one place.
 - Common acceptance wait helpers in `AcceptanceTester` should reclassify retryable SkautIS WSDL error pages into explicit SkautIS/WSDL assertion failures. Do not leave these cases as generic timeouts waiting for unrelated text or elements.
 - A SkautIS WSDL communication failure that remains after all configured retries must fail with an explicit assertion message naming SkautIS/WSDL and the last URL. Do not let this case surface as a generic `NoSuchElementException` or timeout waiting for the expected page element.
+- `App\Model\Skautis\SkautisErrors` is the only list of SkautIS outage messages; application retries, the error page and the acceptance detection all use it. CI runs without debug mode, so the acceptance detection recognises an outage by `ErrorPresenter::SKAUTIS_UNAVAILABLE_MESSAGE`, not only by the Tracy blue screen.
 - Tests must be runnable both individually and in sequence. If a test changes data, it must prepare or reset it before running so it does not depend on order and does not leave state that breaks later tests.
 - If a test verifies a process requiring follow-up data, for example a travel order and a vehicle, it should be one uninterrupted test run or use an explicitly prepared isolated fixture.
 
