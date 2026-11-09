@@ -24,8 +24,7 @@ final class QueryBusDynamicReturnTypeProvider implements DynamicMethodReturnType
     /** @var array<string> */
     private $autoloadDirectories;
 
-    /** @var string */
-    private $tempDir;
+    private string $cacheDir;
 
     /** @var string */
     private $queryHandlerClassRegex;
@@ -36,10 +35,10 @@ final class QueryBusDynamicReturnTypeProvider implements DynamicMethodReturnType
      * @param array<string> $autoloadDirectories
      * @param string $queryHandlerClassRegex regex for FQCN of query handlers
      */
-    public function __construct(array $autoloadDirectories, string $tempDir, string $queryHandlerClassRegex, ReflectionProvider $reflectionProvider)
+    public function __construct(array $autoloadDirectories, string $cacheDir, string $queryHandlerClassRegex, ReflectionProvider $reflectionProvider)
     {
         $this->autoloadDirectories    = $autoloadDirectories;
-        $this->tempDir                = $tempDir;
+        $this->cacheDir               = $cacheDir;
         $this->queryHandlerClassRegex = $queryHandlerClassRegex;
         $this->reflectionProvider     = $reflectionProvider;
     }
@@ -119,7 +118,7 @@ final class QueryBusDynamicReturnTypeProvider implements DynamicMethodReturnType
     private function getQueryHandlerClasses(): array
     {
         $loader = (new RobotLoader())
-            ->setTempDirectory($this->tempDir)
+            ->setCacheDirectory($this->cacheDir)
             ->setAutoRefresh(true);
 
         foreach ($this->autoloadDirectories as $directory) {
