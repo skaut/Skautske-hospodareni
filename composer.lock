@@ -10452,16 +10452,16 @@
         },
         {
             "name": "php-vcr/php-vcr",
-            "version": "1.11.2",
+            "version": "1.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-vcr/php-vcr.git",
-                "reference": "f255a2462607fc9ecd8a98c18869078f40ad103b"
+                "reference": "c1f8fd3d767a6a10ea2d33e92855e97d652170b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-vcr/php-vcr/zipball/f255a2462607fc9ecd8a98c18869078f40ad103b",
-                "reference": "f255a2462607fc9ecd8a98c18869078f40ad103b",
+                "url": "https://api.github.com/repos/php-vcr/php-vcr/zipball/c1f8fd3d767a6a10ea2d33e92855e97d652170b4",
+                "reference": "c1f8fd3d767a6a10ea2d33e92855e97d652170b4",
                 "shasum": ""
             },
             "require": {
@@ -10476,7 +10476,7 @@
                 "editorconfig-checker/editorconfig-checker": "^10.3",
                 "ext-soap": "*",
                 "friendsofphp/php-cs-fixer": "^3.0",
-                "guzzlehttp/guzzle": "^7",
+                "guzzlehttp/guzzle": "^7|^8",
                 "mikey179/vfsstream": "^1.6.10",
                 "phpstan/extension-installer": "^1.1",
                 "phpstan/phpstan": "^1",
@@ -10508,11 +10508,12 @@
                 }
             ],
             "description": "Record your test suite's HTTP interactions and replay them during future test runs for fast, deterministic, accurate tests.",
+            "homepage": "https://php-vcr.github.io/php-vcr/",
             "support": {
                 "issues": "https://github.com/php-vcr/php-vcr/issues",
-                "source": "https://github.com/php-vcr/php-vcr/tree/1.11.2"
+                "source": "https://github.com/php-vcr/php-vcr/tree/1.12.0"
             },
-            "time": "2026-07-18T20:32:27+00:00"
+            "time": "2026-08-05T22:08:02+00:00"
         },
         {
             "name": "php-webdriver/webdriver",
@@ -13744,16 +13745,16 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v7.4.14",
+            "version": "v7.4.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "51fe3d170227be8d1772214b82ae506e15ed78ff"
+                "reference": "d269974ee93c61d03620ffee358355bfdb471d66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/51fe3d170227be8d1772214b82ae506e15ed78ff",
-                "reference": "51fe3d170227be8d1772214b82ae506e15ed78ff",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/d269974ee93c61d03620ffee358355bfdb471d66",
+                "reference": "d269974ee93c61d03620ffee358355bfdb471d66",
                 "shasum": ""
             },
             "require": {
@@ -13805,7 +13806,7 @@
             "description": "Provides tools that allow your application components to communicate with each other by dispatching events and listening to them",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/event-dispatcher/tree/v7.4.14"
+                "source": "https://github.com/symfony/event-dispatcher/tree/v7.4.17"
             },
             "funding": [
                 {
@@ -13825,7 +13826,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-06T11:10:32+00:00"
+            "time": "2026-08-21T17:40:08+00:00"
         },
         {
             "name": "symfony/event-dispatcher-contracts",
