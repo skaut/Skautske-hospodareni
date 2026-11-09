@@ -87,7 +87,7 @@
         "process-timeout": 1200,
         "sort-packages": true,
         "platform": {
-            "php": "8.3.0"
+            "php": "8.3.36"
         },
         "allow-plugins": {
             "phpstan/extension-installer": true
