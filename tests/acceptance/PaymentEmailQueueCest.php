@@ -123,6 +123,44 @@ class PaymentEmailQueueCest extends PaymentAcceptanceCest
         $I->dontSeeInDatabase('task_queue_job', ['scope_type' => 'payment_group', 'scope_id' => $groupId]);
     }
 
+    /** @group payment */
+    public function failedEmailsShowTheirReasonOnce(): void
+    {
+        $I = $this->I;
+        $groupId = $this->createSubtypePaymentGroup('event');
+        $reason = 'Propojení účtu test@hospodareni.loc s Gmailem přestalo platit.';
+        $jobId = $I->haveInDatabase('task_queue_job', [
+            'type' => 'payment_email',
+            'scope_type' => 'payment_group',
+            'scope_id' => $groupId,
+            'label' => 'Platební údaje',
+            'created_at' => ChronosDate::today()->format('Y-m-d H:i:s'),
+        ]);
+        foreach (['Platba A', 'Platba B'] as $label) {
+            $I->haveInDatabase('task_queue_item', [
+                'job_id' => $jobId,
+                'state' => 'failed',
+                'payload' => '{}',
+                'label' => $label,
+                'attempts' => 1,
+                'available_at' => ChronosDate::today()->format('Y-m-d H:i:s'),
+                'finished_at' => ChronosDate::today()->format('Y-m-d H:i:s'),
+                'message' => $reason,
+            ]);
+        }
+
+        $I->wantTo('see e-mails that did not go out clearly, with the reason only once');
+
+        $this->openPageAndWaitForElementWithSkautisRetry($I, sprintf('/platby/skupiny/%d/platby', $groupId), '[data-test="task-queue-job-failed"]');
+        $I->seeElement('[data-test="task-queue-job-failed"].alert-danger');
+        $I->see('Nepodařilo se odeslat 2 e-maily.', '[data-test="task-queue-job-failed"]');
+        $I->seeNumberOfElements('[data-test="task-queue-job-failed"] p', 1);
+        $I->seeNumberOfElements('[data-test="task-queue-job-failed"] li', 2);
+        // The batch is finished, so its bar is full; it must not look like a success.
+        $I->seeElement(sprintf('[data-test="task-queue-job-%d"] .progress-bar.bg-danger', $jobId));
+        $I->see($reason, '[data-test="task-queue-job-failed"] p');
+    }
+
     /** A connected account of the unit that Google refuses; removed with the other rows of the scenario. */
     private function haveRefusedSender(string $email): string
     {
