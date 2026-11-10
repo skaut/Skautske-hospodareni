@@ -14,7 +14,7 @@ Platí jedno pravidlo: **každý e-mail plateb odchází přes frontu**, i jeden
 | Dokončení platby (Zaplaceno, párování s bankou, import výpisu) | potvrzení o úhradě |
 | Automatické upomínky (cron) | upomínka |
 
-Upomínka poslaná ručně a automatická upomínka jsou pro frontu stejný e-mail. Ve frontě tak může čekat nebo běžet jen jedna z nich. Když čeká ruční upomínka, automatická se ten den nezařadí, a když ruční upomínka odejde, automatická už se nepošle. Do fronty se dostane jen e-mail, který může odejít. Když skupina nemá odesílatele nebo má šablonu e-mailu vypnutou, nezařadí se nic. Nezařadí se ani e-mail platby bez e-mailové adresy, uzavřené platby a upomínka platby, která ji teď dostat nemůže (není po splatnosti nebo už dnes upomínku dostala). Uživatel se hned dozví, u kolika plateb a proč.
+Upomínka poslaná ručně a automatická upomínka jsou pro frontu stejný e-mail. Ve frontě tak může čekat nebo běžet jen jedna z nich. Když čeká ruční upomínka, automatická se ten den nezařadí, a když ruční upomínka odejde, automatická už se nepošle. Do fronty se dostane jen e-mail, který může odejít. Když skupina nemá odesílatele, Google její odesílatele odmítá (viz [Když Google odmítne e-mail odesílatele](#když-google-odmítne-e-mail-odesílatele)) nebo má šablonu e-mailu vypnutou, nezařadí se nic. Nezařadí se ani e-mail platby bez e-mailové adresy, uzavřené platby a upomínka platby, která ji teď dostat nemůže (není po splatnosti nebo už dnes upomínku dostala). Uživatel se hned dozví, u kolika plateb a proč.
 
 Co se nemění: typy e-mailů, šablony, záznam o odeslání u platby (počet obálek v seznamu) a jméno odesílatele. Do záznamu i do šablony se dosadí jméno toho, kdo e-maily zadal. U automatických úloh je to „AUTOMAT“, jako dřív. Údaje platby (částka, VS, příjemci) se berou až v okamžiku odeslání. Když se platba mezitím zaplatí nebo zruší, upomínka se vynechá.
 
@@ -41,6 +41,25 @@ Každá úloha (např. jeden e-mail) prochází stavy:
 - Když Google před odesláním neodpoví (výpadek spojení, timeout, chyba na jeho straně), nic neodešlo, a tak se celá dávka odloží o 10 minut, nejvýš 6krát.
 - Když nejde poslat nic z dávky (např. neplatný Google účet odesílatele, chybí šablona), zbytek dávky se hned označí jako neproběhlý se stejným důvodem.
 - Stejná úloha (stejný e-mail stejné platby) nemůže čekat ve frontě dvakrát. Hlídá to unikátní klíč, který se po dokončení úlohy uvolní.
+
+## Když Google odmítne e-mail odesílatele
+
+Google může přestat přijímat propojení účtu odesílatele (odpoví `invalid_grant`). Stane se to například tehdy, když majitel aplikaci odebral ve svém Google účtu nebo si změnil heslo. Přesný důvod Google neříká. Aplikace si to zapamatuje u účtu: čas v `google_oauth.invalid_since`, odpověď Googlu pro správce v `invalid_reason`. Do znovupropojení pak platí:
+
+- Ruční e-maily skupin s tímto odesílatelem se nezařadí a uživatel hned dostane chybovou hlášku.
+- Automatické upomínky těchto skupin se vynechají. Zařadí se první den po znovupropojení.
+- Potvrzení o úhradě se zařadí, ale čekají. Po znovupropojení odejdou hned. Když skupina mezitím dostane jiného odesílatele, odejdou do hodiny.
+- E-maily, které už ve frontě byly, skončí jako neproběhlé s návodem, jak účet propojit.
+
+Uživatelé o tom vědí z těchto míst:
+
+- Nástěnka, v oznámeních. Upozornění je vždy první, nezabírá místo oznámením a vidí ho jen ten, kdo vidí otevřenou skupinu s tímto odesílatelem.
+- Detail skupiny.
+- Nastavení → E-maily.
+
+Kdo má aktivní roli v jednotce účtu a smí ji upravovat, dostane tlačítko „Propojit účet znovu“. To rovnou otevře přihlášení k Googlu s nabídnutým účtem. Ostatní se dozví, že to musí udělat někdo s oprávněním upravovat tu jednotku.
+
+Znovupropojení stejného účtu ve stejné jednotce příznak zruší a skupiny si odesílatele ponechají. Odebrat účet nepomůže: odebrání zruší odesílatele ve všech skupinách, které ho používají. Příznak zruší i úspěšné odeslání z účtu, například testovací e-mail, pokud byla chyba na straně Googlu.
 
 ## Časový rozpočet
 
