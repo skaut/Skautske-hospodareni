@@ -71,6 +71,29 @@ class CommandTest extends Unit
         $this->assertEquals(MoneyFactory::floor($total), $command->calculateTotal());
     }
 
+    public function testPricePerKmIsKnownBeforeAnyTravel(): void
+    {
+        $vehicle = Mockery::mock(Vehicle::class);
+        $vehicle->shouldReceive('getConsumption')->andReturn(14.2);
+
+        $command = new Command(
+            123,
+            $vehicle,
+            new Passenger('František Maša', 'Test', 'Test'),
+            '-',
+            'Brno',
+            '',
+            MoneyFactory::fromFloat(7.20),
+            MoneyFactory::fromFloat(1),
+            '',
+            null,
+            [],
+            '',
+        );
+
+        $this->assertEquals(MoneyFactory::fromFloat(2.02), $command->getPricePerKm());
+    }
+
     public function testTotalIsFloored(): void
     {
         $command = new Command(
