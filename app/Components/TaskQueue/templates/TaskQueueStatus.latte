@@ -22,7 +22,8 @@
                     </div>
                     <div class="progress my-2" role="progressbar" aria-label="Průběh: {$job->label}"
                          aria-valuenow="{$percent}" aria-valuemin="0" aria-valuemax="100">
-                        <div n:class="progress-bar, $job->isFinished() && !$job->hasProblems() ? bg-success" style="width: {$percent}%"></div>
+                        {* A finished batch is full even when nothing went out, so a failure must not look like success. *}
+                        <div n:class="progress-bar, $job->isFinished() && !$job->hasProblems() ? bg-success, $job->isFinished() && $job->failed > 0 ? bg-danger" style="width: {$percent}%"></div>
                     </div>
                     <div class="small text-body-secondary">
                         Zadáno {$job->createdAt|date:'j. n. Y H:i'}, {$job->createdByName ?? 'automaticky'}
@@ -33,15 +34,25 @@
                         Odesílání se zastavilo. Dejte prosím vědět správci aplikace.
                     </div>
                     <div n:if="$job->postponedUntil !== null" class="alert alert-info small mt-2 mb-0" data-test="task-queue-job-postponed">
-                        Odesílání je odložené do {$job->postponedUntil|date:'j. n. H:i'}, pak ho fronta zkusí znovu sama.
+                        {if $job->postponedReason !== null}{$job->postponedReason} {/if}Odesílání je odložené do {$job->postponedUntil|date:'j. n. H:i'}, pak ho fronta zkusí znovu sama.
                     </div>
 
-                    {var $failed = $job->getProblems(\App\Model\TaskQueue\TaskItemState::FAILED)}
-                    <div n:if="$failed !== []" class="small mt-2" data-test="task-queue-job-failed">
-                        Nepodařilo se odeslat:
-                        <ul class="mb-0">
-                            <li n:foreach="$failed as $problem">{$problem->label} – {$problem->message}</li>
-                        </ul>
+                    {* A whole batch usually fails for one reason, e.g. a sender Google refuses, so each reason shows once. *}
+                    {var $failedByReason = $job->getProblemsByReason(\App\Model\TaskQueue\TaskItemState::FAILED)}
+                    <div n:if="$failedByReason !== []" class="alert alert-danger small mt-2 mb-0" data-test="task-queue-job-failed">
+                        {* The alert lays its children out in a row, so the reasons are stacked in one block. *}
+                        <div>
+                            <div n:foreach="$failedByReason as $reason => $labels" n:class="!$iterator->last ? 'mb-2'">
+                                {var $count = count($labels)}
+                                <p class="mb-1">
+                                    <strong>Nepodařilo se odeslat {$count} {if $count === 1}e-mail{elseif $count < 5}e-maily{else}e-mailů{/if}.</strong>
+                                    {$reason}
+                                </p>
+                                <ul class="mb-0">
+                                    <li n:foreach="$labels as $label">{$label}</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
 
                     {var $uncertain = $job->getProblems(\App\Model\TaskQueue\TaskItemState::UNCERTAIN)}

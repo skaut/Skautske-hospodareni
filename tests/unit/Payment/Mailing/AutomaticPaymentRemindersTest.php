@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Payment\Mailing;
 
 use App\Model\Common\Repositories\IUserRepository;
+use App\Model\Mail\Repositories\IGoogleRepository;
 use App\Model\Payment\Group;
 use App\Model\Payment\Repositories\IGroupRepository;
 use App\Model\Payment\Repositories\IPaymentRepository;
@@ -71,6 +72,7 @@ final class AutomaticPaymentRemindersTest extends TestCase
             $groups,
             Mockery::mock(IUserRepository::class),
             $entityManager,
+            Mockery::mock(IGoogleRepository::class),
         );
 
         return new AutomaticPaymentReminders($groups, $payments, $emailQueue, $entityManager, $logger);

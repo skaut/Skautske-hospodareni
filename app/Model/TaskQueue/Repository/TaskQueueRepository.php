@@ -418,6 +418,22 @@ final class TaskQueueRepository
         );
     }
 
+    /**
+     * Makes the postponed tasks of a type and scope with the given reason available right away.
+     *
+     * @return int the released tasks
+     */
+    public function releasePostponed(string $type, TaskScope $scope, string $message, DateTimeImmutable $now): int
+    {
+        return (int) $this->connection()->executeStatement(
+            'UPDATE task_queue_item i JOIN task_queue_job j ON j.id = i.job_id
+                SET i.available_at = ?
+                WHERE j.type = ? AND j.scope_type = ? AND j.scope_id = ? AND i.state = ? AND i.available_at > ? AND i.message = ?',
+            [$now, $type, $scope->type, $scope->id, TaskItemState::PENDING->value, $now, $message],
+            [Types::DATETIME_IMMUTABLE, Types::STRING, Types::STRING, Types::INTEGER, Types::STRING, Types::DATETIME_IMMUTABLE, Types::TEXT],
+        );
+    }
+
     /** Tasks of the scope that wait or are being processed. */
     public function countWaiting(TaskScope $scope): int
     {

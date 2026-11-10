@@ -48,6 +48,7 @@ use App\Model\DTO\Payment\Group as PaymentGroup;
 use App\Model\DTO\Payment\Payment;
 use App\Model\DTO\Payment\Person;
 use App\Model\Excel\ExcelService;
+use App\Model\Google\ReadModel\Queries\BrokenSenderAccountsQuery;
 use App\Model\Payment\BankAccountService;
 use App\Model\Payment\Group as PaymentGroupEntity;
 use App\Model\Payment\GroupNotFound;
@@ -167,9 +168,12 @@ final class PaymentPresenter extends PaymentsBasePresenter
         }
 
         $cronJobs = $this->queryBus->handle(new CronJobsQuery(new DateTimeImmutable()));
+        $oAuthId = $group->getOAuthId();
 
         $this->template->setParameters([
             'group' => $group,
+            // A sender Google refuses: nothing can be sent until someone connects it again.
+            'brokenSender' => $oAuthId === null ? null : ($this->queryBus->handle(new BrokenSenderAccountsQuery([$oAuthId]))[0] ?? null),
             'nextVS' => $nextVS,
             'payments' => $this->payments,
             'summarize' => $this->model->getGroupSummaries([$id])[$id],

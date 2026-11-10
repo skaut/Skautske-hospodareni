@@ -10,17 +10,23 @@ use DateTimeImmutable;
 use Nette\SmartObject;
 
 /**
- * @property OAuthId           $id
- * @property string            $email
- * @property UnitId            $unitId
- * @property DateTimeImmutable $updatedAt
+ * @property OAuthId                $id
+ * @property string                 $email
+ * @property UnitId                 $unitId
+ * @property DateTimeImmutable      $updatedAt
+ * @property DateTimeImmutable|null $invalidSince
  */
 class OAuth
 {
     use SmartObject;
 
-    public function __construct(private OAuthId $id, private string $email, private UnitId $unitId, private DateTimeImmutable $updatedAt)
-    {
+    public function __construct(
+        private OAuthId $id,
+        private string $email,
+        private UnitId $unitId,
+        private DateTimeImmutable $updatedAt,
+        private ?DateTimeImmutable $invalidSince = null,
+    ) {
     }
 
     public function getId(): string
@@ -41,5 +47,16 @@ class OAuth
     public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+    /** Since when Google refuses the connection, null while it works. */
+    public function getInvalidSince(): ?DateTimeImmutable
+    {
+        return $this->invalidSince;
+    }
+
+    public function isInvalid(): bool
+    {
+        return $this->invalidSince !== null;
     }
 }

@@ -15,7 +15,8 @@ final class TaskJobStatus
 {
     /**
      * @param list<TaskProblem>      $problems
-     * @param DateTimeImmutable|null $postponedUntil when all waiting tasks were postponed, e.g. by a limit of Gmail
+     * @param DateTimeImmutable|null $postponedUntil  when all waiting tasks were postponed, e.g. by a limit of Gmail
+     * @param string|null            $postponedReason why they were postponed, in words for people
      */
     public function __construct(
         public readonly int $id,
@@ -34,6 +35,7 @@ final class TaskJobStatus
         public readonly bool $stalled,
         public readonly array $problems,
         public readonly ?DateTimeImmutable $postponedUntil = null,
+        public readonly ?string $postponedReason = null,
     ) {
     }
 
@@ -57,5 +59,21 @@ final class TaskJobStatus
     public function getProblems(TaskItemState $state): array
     {
         return array_values(array_filter($this->problems, static fn (TaskProblem $problem): bool => $problem->state === $state));
+    }
+
+    /**
+     * Tasks of one state grouped by why they ended so, e.g. a whole batch failing for one reason shows it once.
+     *
+     * @return array<string, list<string>> reason => labels of the tasks, in the order of the tasks
+     */
+    public function getProblemsByReason(TaskItemState $state): array
+    {
+        $byReason = [];
+
+        foreach ($this->getProblems($state) as $problem) {
+            $byReason[$problem->message ?? ''][] = $problem->label;
+        }
+
+        return $byReason;
     }
 }

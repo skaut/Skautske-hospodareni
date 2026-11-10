@@ -155,6 +155,7 @@ services:
 
     # Google
     - App\Model\Google\GoogleService(%google.credentials%, %google.redirectUri%)
+    - App\Model\Google\OAuthValidity
 
     # FIO bank
     - GuzzleHttp\Client({ timeout: 3 })

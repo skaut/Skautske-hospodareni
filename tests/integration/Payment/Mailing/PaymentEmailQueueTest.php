@@ -11,6 +11,7 @@ use App\Model\Common\User;
 use App\Model\Google\Entity\GoogleOAuth;
 use App\Model\Google\InvalidOAuth;
 use App\Model\Google\OAuthId;
+use App\Model\Google\OAuthValidity;
 use App\Model\Payment\Commands\Payment\CreatePayment;
 use App\Model\Payment\EmailTemplate;
 use App\Model\Payment\EmailType;
@@ -19,6 +20,7 @@ use App\Model\Payment\MailerFactoryStub;
 use App\Model\Payment\Mailing\AutomaticPaymentReminders;
 use App\Model\Payment\Mailing\PaymentEmailDispatch;
 use App\Model\Payment\Mailing\PaymentEmailQueue;
+use App\Model\Payment\Mailing\PaymentEmailTaskHandler;
 use App\Model\Payment\Payment;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\CountAutomaticReminderGroupsQuery;
@@ -251,7 +253,7 @@ final class PaymentEmailQueueTest extends IntegrationTest
     {
         $this->createGroup(reminderDaysAfterDue: 3);
         $paymentId = $this->createPayment(ChronosDate::today()->subDays(5));
-        $this->tester->grabService(MailerFactoryStub::class)->failWith(new InvalidOAuth('invalid_grant => Token has been expired or revoked.'));
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(new InvalidOAuth(self::EMAIL, 'invalid_grant', 'Token has been expired or revoked.'));
 
         $this->queueAutomaticReminders();
         $this->processQueue();
@@ -338,17 +340,111 @@ final class PaymentEmailQueueTest extends IntegrationTest
         self::assertSame(1, $this->tester->grabService(QueryBus::class)->handle(new CountAutomaticReminderGroupsQuery()));
     }
 
-    private function createGroup(?int $reminderDaysAfterDue = null, bool $withSender = true): void
+    /** A sender Google refuses gets nothing new into the queue, the user learns why right away. */
+    public function testRefusedSenderQueuesNothing(): void
     {
+        $this->createGroup();
+        $paymentId = $this->createPayment();
+        $this->refuseSender();
+
+        $dispatch = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), [$paymentId]);
+
+        self::assertSame(0, $dispatch->queued);
+        self::assertStringContainsString('propojení účtu '.self::EMAIL.' s Gmailem přestalo platit', (string) $dispatch->blocked);
+        $this->tester->dontSeeInDatabase('task_queue_item', []);
+    }
+
+    /** E-mails queued before Google refused the sender fail with the way to fix it, without the words of Google. */
+    public function testEmailsOfRefusedSenderFailWithExplanation(): void
+    {
+        $this->createGroup();
+        $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), [$this->createPayment(), $this->createPayment()]);
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(new InvalidOAuth(self::EMAIL, 'invalid_grant', 'Bad Request'));
+
+        $this->processQueue();
+
+        self::assertSame(2, (int) $this->tester->grabNumRecords('task_queue_item', ['state' => TaskItemState::FAILED->value]));
+        $message = (string) $this->tester->grabFromDatabase('task_queue_item', 'message', ['state' => TaskItemState::FAILED->value]);
+        self::assertStringContainsString('Propojte účet znovu', $message);
+        self::assertStringNotContainsString('Bad Request', $message);
+    }
+
+    /** Automatic reminders are left out while Google refuses the sender, the payments wait for a later day. */
+    public function testRefusedSenderGetsNoAutomaticReminders(): void
+    {
+        $this->createGroup(reminderDaysAfterDue: 3);
+        $paymentId = $this->createPayment(ChronosDate::today()->subDays(5));
+        $this->refuseSender();
+
+        $this->queueAutomaticReminders();
+
+        $this->tester->dontSeeInDatabase('task_queue_item', []);
+        $this->tester->seeInDatabase('pa_payment', ['id' => $paymentId, 'automatic_reminder_at' => null]);
+
+        $this->tester->grabService(OAuthValidity::class)->markValid(OAuthId::fromString(self::OAUTH_ID));
+        $this->queueAutomaticReminders();
+
+        $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::PENDING->value]);
+    }
+
+    /** The payer gets the confirmation even when Google refused the sender: it waits until the account works again. */
+    public function testConfirmationWaitsForRefusedSenderAndGoesOutWhenItWorksAgain(): void
+    {
+        $this->createGroup(withConfirmation: true);
+        $paymentId = $this->createPayment();
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(new InvalidOAuth(self::EMAIL, 'invalid_grant', 'Bad Request'));
+
+        $this->paymentService->completePayment($paymentId);
+        $this->processQueue();
+
+        self::assertSame([], $this->mailer->messages);
+        $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::PENDING->value, 'message' => PaymentEmailTaskHandler::WAITING_FOR_SENDER_MESSAGE]);
+        $this->tester->dontSeeInDatabase('task_queue_item', ['state' => TaskItemState::FAILED->value]);
+
+        // A remembered refusal keeps it waiting without asking Google, which would accept nothing anyway.
+        $this->refuseSender();
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(null);
+        $this->entityManager->getConnection()->executeStatement('UPDATE task_queue_item SET available_at = NOW() - INTERVAL 1 MINUTE');
+        $this->processQueue();
+
+        self::assertSame([], $this->mailer->messages);
+        $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::PENDING->value, 'message' => PaymentEmailTaskHandler::WAITING_FOR_SENDER_MESSAGE]);
+
+        // Connecting the account again (or Google accepting it again) lets the confirmation go right away.
+        $this->tester->grabService(OAuthValidity::class)->markValid(OAuthId::fromString(self::OAUTH_ID));
+        $this->processQueue();
+
+        self::assertCount(1, $this->mailer->messages);
+        $this->tester->seeInDatabase('pa_payment_sent_emails', ['payment_id' => $paymentId, 'type' => EmailType::PAYMENT_COMPLETED]);
+    }
+
+    /** A sender Google refused, as the real mailer factory remembers it (the stub does not). */
+    private function refuseSender(): void
+    {
+        $this->entityManager->getConnection()->executeStatement(
+            'UPDATE google_oauth SET invalid_since = NOW(), invalid_reason = ? WHERE id = ?',
+            ['invalid_grant => Bad Request', self::OAUTH_ID],
+        );
+        $this->entityManager->clear();
+    }
+
+    private function createGroup(?int $reminderDaysAfterDue = null, bool $withSender = true, bool $withConfirmation = false): void
+    {
+        $emails = [
+            EmailType::PAYMENT_INFO => new EmailTemplate('Platba %name%', 'Zaplaťte prosím %amount%.'),
+            EmailType::PAYMENT_REMINDER => new EmailTemplate('Upomínka %name%', 'Připomínáme platbu.'),
+        ];
+
+        if ($withConfirmation) {
+            $emails[EmailType::PAYMENT_COMPLETED] = new EmailTemplate('Zaplaceno %name%', 'Děkujeme za platbu.');
+        }
+
         $this->groupId = $this->paymentService->createGroup(
             11,
             null,
             'Test',
             Helpers::createEmptyPaymentDefaults(),
-            [
-                EmailType::PAYMENT_INFO => new EmailTemplate('Platba %name%', 'Zaplaťte prosím %amount%.'),
-                EmailType::PAYMENT_REMINDER => new EmailTemplate('Upomínka %name%', 'Připomínáme platbu.'),
-            ],
+            $emails,
             $withSender ? OAuthId::fromString(self::OAUTH_ID) : null,
             null,
             remindersEnabled: true,

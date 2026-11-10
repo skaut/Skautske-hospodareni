@@ -6,7 +6,10 @@ namespace acceptance;
 
 use AcceptanceTester;
 use Cake\Chronos\ChronosDate;
+use PHPUnit\Framework\Assert;
+use Ramsey\Uuid\Uuid;
 
+use function sprintf;
 use function uniqid;
 
 /**
@@ -76,6 +79,103 @@ class PaymentEmailQueueCest extends PaymentAcceptanceCest
             // Deployed paused, other scenarios must not see it running.
             $I->updateInDatabase('cron_job', ['paused' => 1], ['name' => 'paymentReminders']);
         }
+    }
+
+    /**
+     * A sender Google refuses: the dashboard and the group tell the user, offer to connect it again and
+     * nothing new gets into the queue.
+     *
+     * @group payment
+     */
+    public function refusedSenderIsShownAndBlocksSending(): void
+    {
+        $I = $this->I;
+        $email = uniqid('refused-', false).'@hospodareni.loc';
+        $oAuthId = $this->haveRefusedSender($email);
+        $groupId = $this->createSubtypePaymentGroup('event');
+        $I->updateInDatabase('pa_group', ['oauth_id' => $oAuthId], ['id' => $groupId]);
+        $this->havePaymentWithEmail($groupId, '910003');
+
+        $I->wantTo('learn that the sender of my group stopped working and how to fix it');
+
+        // The dashboard shows it first, before the announcements, with a button straight to Google.
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/nastenka', '[data-test="dashboard-broken-sender"]');
+        $I->see('Propojení e-mailu '.$email.' přestalo platit', '[data-test="dashboard-broken-sender"]');
+        $I->seeElement('[data-test="dashboard-announcements"] article:first-of-type[data-test="dashboard-broken-sender"]');
+        $I->seeElement('[data-test="dashboard-broken-sender"] .dashboard-announcement-category.text-danger');
+        $reconnectUrl = (string) $I->grabAttributeFrom('[data-test="dashboard-broken-sender-reconnect"]', 'href');
+        Assert::assertStringContainsString('/google/oauth', $reconnectUrl);
+        Assert::assertStringContainsString('email=', $reconnectUrl);
+
+        // The mail settings mark the account, connecting it again there clears the mark.
+        $this->openPageAndWaitForElementWithSkautisRetry($I, '/nastaveni/emaily', '[data-test="settings-mail-invalid-'.$oAuthId.'"]');
+        $I->see('Propojení neplatí', '[data-test="settings-mail-invalid-'.$oAuthId.'"]');
+        $I->see('Klikněte nahoře na „Propojit účet“', '[data-test="settings-mail-invalid-help-'.$oAuthId.'"]');
+
+        // The group shows it too, and sending gets nothing into the queue.
+        $this->openPageAndWaitForElementWithSkautisRetry($I, sprintf('/platby/skupiny/%d/platby', $groupId), '[data-test="payment-group-broken-sender"]');
+        $I->see($email, '[data-test="payment-group-broken-sender"]');
+        $I->seeElement('[data-test="payment-group-broken-sender-reconnect"]');
+        $I->clickStable('[data-test="payment-group-email-toggle"]');
+        $I->clickStable('[data-test="payment-group-email-send-all"]');
+
+        $I->waitForText('E-maily nejde odeslat: propojení účtu '.$email.' s Gmailem přestalo platit.', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        $I->dontSeeInDatabase('task_queue_job', ['scope_type' => 'payment_group', 'scope_id' => $groupId]);
+    }
+
+    /** @group payment */
+    public function failedEmailsShowTheirReasonOnce(): void
+    {
+        $I = $this->I;
+        $groupId = $this->createSubtypePaymentGroup('event');
+        $reason = 'Propojení účtu test@hospodareni.loc s Gmailem přestalo platit.';
+        $jobId = $I->haveInDatabase('task_queue_job', [
+            'type' => 'payment_email',
+            'scope_type' => 'payment_group',
+            'scope_id' => $groupId,
+            'label' => 'Platební údaje',
+            'created_at' => ChronosDate::today()->format('Y-m-d H:i:s'),
+        ]);
+        foreach (['Platba A', 'Platba B'] as $label) {
+            $I->haveInDatabase('task_queue_item', [
+                'job_id' => $jobId,
+                'state' => 'failed',
+                'payload' => '{}',
+                'label' => $label,
+                'attempts' => 1,
+                'available_at' => ChronosDate::today()->format('Y-m-d H:i:s'),
+                'finished_at' => ChronosDate::today()->format('Y-m-d H:i:s'),
+                'message' => $reason,
+            ]);
+        }
+
+        $I->wantTo('see e-mails that did not go out clearly, with the reason only once');
+
+        $this->openPageAndWaitForElementWithSkautisRetry($I, sprintf('/platby/skupiny/%d/platby', $groupId), '[data-test="task-queue-job-failed"]');
+        $I->seeElement('[data-test="task-queue-job-failed"].alert-danger');
+        $I->see('Nepodařilo se odeslat 2 e-maily.', '[data-test="task-queue-job-failed"]');
+        $I->seeNumberOfElements('[data-test="task-queue-job-failed"] p', 1);
+        $I->seeNumberOfElements('[data-test="task-queue-job-failed"] li', 2);
+        // The batch is finished, so its bar is full; it must not look like a success.
+        $I->seeElement(sprintf('[data-test="task-queue-job-%d"] .progress-bar.bg-danger', $jobId));
+        $I->see($reason, '[data-test="task-queue-job-failed"] p');
+    }
+
+    /** A connected account of the unit that Google refuses; removed with the other rows of the scenario. */
+    private function haveRefusedSender(string $email): string
+    {
+        $oAuthId = Uuid::uuid4()->toString();
+        $this->I->haveInDatabase('google_oauth', [
+            'id' => $oAuthId,
+            'unit_id' => AcceptanceTester::UNIT_ID,
+            'email' => $email,
+            'token' => 'refused-token',
+            'updated_at' => '2026-01-01 00:00:00',
+            'invalid_since' => '2026-11-09 10:00:00',
+            'invalid_reason' => 'invalid_grant => Bad Request',
+        ]);
+
+        return $oAuthId;
     }
 
     private function havePaymentWithEmail(int $groupId, string $variableSymbol): int

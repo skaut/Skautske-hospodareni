@@ -52,6 +52,7 @@ final class TaskJobStatusReader
                     SUM(i.state = :uncertain) AS uncertain,
                     SUM(i.state IN (:active) AND (i.state <> :pending OR i.available_at <= :now)) AS due,
                     MIN(CASE WHEN i.state = :pending AND i.available_at > :now THEN i.available_at END) AS postponed_until,
+                    MAX(CASE WHEN i.state = :pending AND i.available_at > :now THEN i.message END) AS postponed_reason,
                     GREATEST(
                         j.created_at,
                         COALESCE(MAX(i.claimed_at), j.created_at),
@@ -116,6 +117,7 @@ final class TaskJobStatusReader
                     (int) $row['due'] > 0 && new DateTimeImmutable((string) $row['last_activity']) < $stalledBefore,
                     $problems[(int) $row['id']] ?? [],
                     (int) $row['due'] === 0 && $row['postponed_until'] !== null ? new DateTimeImmutable((string) $row['postponed_until']) : null,
+                    (int) $row['due'] === 0 && $row['postponed_reason'] !== null ? (string) $row['postponed_reason'] : null,
                 );
             },
             $rows,
