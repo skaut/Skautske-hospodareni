@@ -224,7 +224,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
             self::EMAIL,
             $this->createOAuth(),
         );
-        $this->tester->grabService(MailerFactoryStub::class)->failWith(new InvalidOAuth('invalid_grant => Token has been expired or revoked.'));
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(new InvalidOAuth(self::EMAIL, 'invalid_grant', 'Token has been expired or revoked.'));
 
         $this->paymentService->completePayment(1);
         $this->processQueue();

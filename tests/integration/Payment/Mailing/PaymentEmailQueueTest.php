@@ -251,7 +251,7 @@ final class PaymentEmailQueueTest extends IntegrationTest
     {
         $this->createGroup(reminderDaysAfterDue: 3);
         $paymentId = $this->createPayment(ChronosDate::today()->subDays(5));
-        $this->tester->grabService(MailerFactoryStub::class)->failWith(new InvalidOAuth('invalid_grant => Token has been expired or revoked.'));
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(new InvalidOAuth(self::EMAIL, 'invalid_grant', 'Token has been expired or revoked.'));
 
         $this->queueAutomaticReminders();
         $this->processQueue();
