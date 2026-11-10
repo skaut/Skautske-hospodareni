@@ -86,6 +86,20 @@ final class TaskQueue
         return $this->repository->cancelWaitingOfJob($jobId, $scope, $message, new DateTimeImmutable());
     }
 
+    /**
+     * Lets tasks that wait for something outside the queue go right away once it is fixed, e.g. e-mails
+     * waiting until the sender's account is connected again. Only tasks postponed with this exact reason
+     * are released; e.g. e-mails postponed by a limit of Gmail keep waiting.
+     *
+     * @param string $message the reason the handler postponed the tasks with, see {@see Exception\TaskRetryLater}
+     *
+     * @return int the released tasks
+     */
+    public function releasePostponed(string $type, TaskScope $scope, string $message): int
+    {
+        return $this->repository->releasePostponed($type, $scope, $message, new DateTimeImmutable());
+    }
+
     /** Hides a finished batch of the scope from the overview. */
     public function acknowledge(int $jobId, TaskScope $scope, ?string $userName): bool
     {

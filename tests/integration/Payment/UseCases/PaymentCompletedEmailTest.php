@@ -16,6 +16,7 @@ use App\Model\Payment\EmailTemplate;
 use App\Model\Payment\EmailType;
 use App\Model\Payment\Group;
 use App\Model\Payment\MailerFactoryStub;
+use App\Model\Payment\Mailing\PaymentEmailTaskHandler;
 use App\Model\Payment\Payment;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\RecordingMailer;
@@ -213,6 +214,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
         ]);
     }
 
+    /** The payment is completed and its confirmation waits until the sender's account is connected again. */
     public function testPaymentIsCompletedWhenGroupOAuthIsInvalid(): void
     {
         $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
@@ -230,7 +232,8 @@ class PaymentCompletedEmailTest extends IntegrationTest
         $this->processQueue();
 
         $this->assertPaymentWasCompleted();
-        $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::FAILED->value]);
+        $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::PENDING->value, 'message' => PaymentEmailTaskHandler::WAITING_FOR_SENDER_MESSAGE]);
+        $this->tester->dontSeeInDatabase('task_queue_item', ['state' => TaskItemState::FAILED->value]);
         $this->tester->dontSeeInDatabase('pa_payment_sent_emails', ['payment_id' => 1]);
     }
 
