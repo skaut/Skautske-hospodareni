@@ -7,7 +7,7 @@ namespace App\Model\Skautis\ReadModel\QueryHandlers;
 use App\Model\DTO\Skautis\BudgetEntry;
 use App\Model\Skautis\ReadModel\Queries\EducationBudgetQuery;
 use App\Model\Utils\MoneyFactory;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 
 use function array_map;

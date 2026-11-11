@@ -19,8 +19,8 @@ use Nette\Http\UrlScript;
 use Nette\Utils\FileSystem;
 use Psr\Log\NullLogger;
 use RuntimeException;
-use Skautis\Skautis;
-use Skautis\User;
+use Skaut\Skautis\Skautis;
+use Skaut\Skautis\User;
 
 use function sys_get_temp_dir;
 

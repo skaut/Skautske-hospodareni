@@ -7,10 +7,10 @@ namespace App\Model\Event\ReadModel\QueryHandlers;
 use App\Model\Event\EducationFunctions as EFunctions;
 use App\Model\Event\ReadModel\PersonFactory;
 use App\Model\Event\ReadModel\Queries\EducationFunctions;
-use Skautis\Skautis;
-use stdClass;
+use Skaut\Skautis\Skautis;
 
 use function array_map;
+use function is_array;
 
 class EducationFunctionsQueryHandler
 {
@@ -28,7 +28,7 @@ class EducationFunctionsQueryHandler
             'ID_EventEducation' => $query->getEducationId()->toInt(),
         ]);
 
-        if ($assistants instanceof stdClass) {
+        if (! is_array($assistants)) {
             $assistants = [];
         }
 

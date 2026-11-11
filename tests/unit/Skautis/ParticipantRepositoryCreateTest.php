@@ -13,10 +13,10 @@ use App\Model\Participant\Repositories\IPaymentRepository;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
 use Mockery;
-use Skautis\Skautis;
-use Skautis\Wsdl\PermissionException;
-use Skautis\Wsdl\WebServiceInterface;
-use Skautis\Wsdl\WsdlException;
+use Skaut\Skautis\Skautis;
+use Skaut\Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\WsdlException;
 
 final class ParticipantRepositoryCreateTest extends Unit
 {

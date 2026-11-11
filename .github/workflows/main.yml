@@ -16,7 +16,7 @@ jobs:
     name: Prepare working directory
     runs-on: [self-hosted, docker, x64]
     container:
-      image: skaut/lebeda:8.3-ci
+      image: webwingscz/builder-hskauting-php85-node22
     env:
       COMPOSER_ALLOW_SUPERUSER: "1"
     steps:
@@ -265,12 +265,12 @@ jobs:
           - label: Rest grouped
             shard: rest-grouped
             port: 8086
-            build_services: php-test nginx
+            build_services: php-test apache
             command: make ci-acceptance TEST='--skip-group payment --skip-group invoice --skip-group settings --skip-group admin --group announcements --group bug-report --group dashboard --group unit --group cashbook --group cashbooks'
           - label: Rest other
             shard: rest-other
             port: 8087
-            build_services: php-test nginx
+            build_services: php-test apache
             command: make ci-acceptance TEST='--skip-group payment --skip-group invoice --skip-group settings --skip-group admin --skip-group announcements --skip-group bug-report --skip-group dashboard --skip-group unit --skip-group cashbook --skip-group cashbooks'
     env:
       COMPOSE_PROJECT_NAME: "test-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.shard }}"
@@ -296,7 +296,7 @@ jobs:
     needs: [quick-checks, tests]
     runs-on: [self-hosted, docker, x64]
     container:
-      image: skaut/lebeda:8.3-ci
+      image: webwingscz/builder-hskauting-php85-node22
     steps:
       - run: true
 
@@ -307,7 +307,7 @@ jobs:
     runs-on: [self-hosted, docker, x64]
     environment: beta
     container:
-      image: skaut/lebeda:8.3-ci
+      image: webwingscz/builder-hskauting-php85-node22
     env:
       DEPLOY_TARGET: beta
       PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
@@ -357,11 +357,8 @@ jobs:
           tar -tzf workdir.tar.gz >/dev/null
           tar --no-overwrite-dir --no-same-owner --no-same-permissions -xzf workdir.tar.gz
           rm -f workdir.tar.gz workdir.tar.gz.sha256
-      - name: Install deploy tools
+      - name: Install Deployer
         run: |
-          rm -f /etc/apt/sources.list.d/google-chrome.list
-          apt-get update && apt-get install -y --no-install-recommends rsync
-          rm -rf /var/lib/apt/lists/*
           curl -fsSL https://deployer.org/releases/v7.5.12/deployer.phar -o /usr/local/bin/dep
           chmod +x /usr/local/bin/dep
       - name: Run deploy
@@ -380,7 +377,7 @@ jobs:
     runs-on: [self-hosted, docker, x64]
     environment: test
     container:
-      image: skaut/lebeda:8.3-ci
+      image: webwingscz/builder-hskauting-php85-node22
     env:
       DEPLOY_TARGET: test
       PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
@@ -425,7 +422,7 @@ jobs:
     runs-on: [self-hosted, docker, x64]
     environment: production
     container:
-      image: skaut/lebeda:8.3-ci
+      image: webwingscz/builder-hskauting-php85-node22
     env:
       DEPLOY_TARGET: production
       PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}

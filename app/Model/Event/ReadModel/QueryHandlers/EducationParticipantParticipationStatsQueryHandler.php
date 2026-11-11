@@ -8,9 +8,9 @@ use App\Model\Event\EducationParticipantParticipationStats;
 use App\Model\Event\ReadModel\Queries\EducationParticipantParticipationStatsQuery;
 use App\Model\Skautis\Factory\EducationParticipantParticipationStatsFactory;
 use LogicException;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
-use function is_object;
+use function is_array;
 
 class EducationParticipantParticipationStatsQueryHandler
 {
@@ -25,7 +25,7 @@ class EducationParticipantParticipationStatsQueryHandler
             'ID_Grant' => $query->getGrantId(),
         ]);
 
-        if (is_object($participantParticipationStats)) {
+        if (! is_array($participantParticipationStats)) {
             return [];
         }
 

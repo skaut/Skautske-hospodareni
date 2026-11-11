@@ -7,11 +7,11 @@ namespace App\Model\Skautis\Common\Repositories;
 use App\Model\Common\Registration;
 use App\Model\Common\Repositories\IRegistrationRepository;
 use App\Model\Common\UnitId;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 use stdClass;
 
 use function array_map;
-use function is_object;
+use function is_array;
 
 final class SkautisRegistrationRepository implements IRegistrationRepository
 {
@@ -24,8 +24,8 @@ final class SkautisRegistrationRepository implements IRegistrationRepository
     {
         $registrations = $this->skautis->org->UnitRegistrationAll(['ID_Unit' => $unitId->toInt()]);
 
-        if (is_object($registrations)) {
-            return []; // API returns empty object when there are no results
+        if (! is_array($registrations)) {
+            return []; // no results
         }
 
         return array_map(

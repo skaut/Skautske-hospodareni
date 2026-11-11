@@ -7,9 +7,9 @@ namespace App\Model\Event\ReadModel\QueryHandlers;
 use App\Model\Event\Camp;
 use App\Model\Event\ReadModel\Queries\CampListQuery;
 use App\Model\Skautis\Factory\CampFactory;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
-use function is_object;
+use function is_array;
 
 class CampListQueryHandler
 {
@@ -25,7 +25,7 @@ class CampListQueryHandler
             'ID_EventCampState' => $query->getState(),
         ]);
 
-        if (is_object($camps)) {
+        if (! is_array($camps)) {
             return [];
         }
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ff906aaa4c35fddb69f6d7c2849eb6d8",
+    "content-hash": "d0f610ce8878e97f325f513ed610e7f9",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -5633,6 +5633,56 @@
             "time": "2021-11-05T16:47:00+00:00"
         },
         {
+            "name": "psr/event-dispatcher",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/event-dispatcher.git",
+                "reference": "dbefd12671e8a14ec7f180cab83036ed26714bb0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/event-dispatcher/zipball/dbefd12671e8a14ec7f180cab83036ed26714bb0",
+                "reference": "dbefd12671e8a14ec7f180cab83036ed26714bb0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\EventDispatcher\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Standard interfaces for event handling.",
+            "keywords": [
+                "events",
+                "psr",
+                "psr-14"
+            ],
+            "support": {
+                "issues": "https://github.com/php-fig/event-dispatcher/issues",
+                "source": "https://github.com/php-fig/event-dispatcher/tree/1.0.0"
+            },
+            "time": "2019-01-08T18:20:26+00:00"
+        },
+        {
             "name": "psr/http-client",
             "version": "1.0.3",
             "source": {
@@ -6493,35 +6543,42 @@
         },
         {
             "name": "skautis/skautis",
-            "version": "v2.3.0",
+            "version": "3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/skaut/Skautis.git",
-                "reference": "a676c628c8f6bd074eb0650b47688b9fd1dce905"
+                "reference": "4ec9ca3a28c91041d3c90c9c94cb431f0ea7e6ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/skaut/Skautis/zipball/a676c628c8f6bd074eb0650b47688b9fd1dce905",
-                "reference": "a676c628c8f6bd074eb0650b47688b9fd1dce905",
+                "url": "https://api.github.com/repos/skaut/Skautis/zipball/4ec9ca3a28c91041d3c90c9c94cb431f0ea7e6ea",
+                "reference": "4ec9ca3a28c91041d3c90c9c94cb431f0ea7e6ea",
                 "shasum": ""
             },
             "require": {
                 "ext-soap": "*",
-                "php": ">=5.6"
+                "php": "^8.4",
+                "psr/event-dispatcher": "^1.0",
+                "psr/simple-cache": "^1.0 || ^2.0 || ^3.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.15",
-                "mockery/mockery": "^1.2",
-                "phpunit/phpunit": "^5.7"
+                "friendsofphp/php-cs-fixer": "^3.75",
+                "mockery/mockery": "^1.6",
+                "php-parallel-lint/php-parallel-lint": "^1.4",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-mockery": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpunit/phpunit": "^12.0"
             },
             "suggest": {
-                "skautis/nette": "Integrace Skautis do Nette",
-                "skautis/skautis-bundle": "Integrace Skautis do Symfony"
+                "crell/tukio": "Samostatná implementace PSR-14 EventDispatcher",
+                "skautis/nette": "Integrace Skautis do Nette"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Skautis\\": "src/"
+                    "Skaut\\Skautis\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -6536,6 +6593,10 @@
                 {
                     "name": "Jindřich Pilař",
                     "homepage": "https://github.com/JindrichPilar"
+                },
+                {
+                    "name": "Jiří Dorazil",
+                    "homepage": "https://github.com/juradee"
                 }
             ],
             "description": "Library for API calls to SkautIS",
@@ -6552,7 +6613,7 @@
                 "source": "https://github.com/skaut/Skautis",
                 "wiki": "http://is.skaut.cz/napoveda/"
             },
-            "time": "2023-04-02T19:19:57+00:00"
+            "time": "2026-10-07T12:04:29+00:00"
         },
         {
             "name": "symfony/cache",
@@ -11318,56 +11379,6 @@
             "time": "2026-07-25T06:54:13+00:00"
         },
         {
-            "name": "psr/event-dispatcher",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-fig/event-dispatcher.git",
-                "reference": "dbefd12671e8a14ec7f180cab83036ed26714bb0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/event-dispatcher/zipball/dbefd12671e8a14ec7f180cab83036ed26714bb0",
-                "reference": "dbefd12671e8a14ec7f180cab83036ed26714bb0",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Psr\\EventDispatcher\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
-                }
-            ],
-            "description": "Standard interfaces for event handling.",
-            "keywords": [
-                "events",
-                "psr",
-                "psr-14"
-            ],
-            "support": {
-                "issues": "https://github.com/php-fig/event-dispatcher/issues",
-                "source": "https://github.com/php-fig/event-dispatcher/tree/1.0.0"
-            },
-            "time": "2019-01-08T18:20:26+00:00"
-        },
-        {
             "name": "psy/psysh",
             "version": "v0.12.24",
             "source": {
@@ -14263,7 +14274,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "~8.3.0",
+        "php": "^8.5",
         "ext-iconv": "*",
         "ext-simplexml": "*"
     },
@@ -14271,7 +14282,7 @@
         "ext-pdo": "*"
     },
     "platform-overrides": {
-        "php": "8.3.36"
+        "php": "8.5.12"
     },
     "plugin-api-version": "2.9.0"
 }

@@ -7,11 +7,11 @@ namespace App\Model\Skautis;
 use App\Model\Unit\Repositories\IUnitRepository;
 use App\Model\Unit\Unit;
 use App\Model\Unit\UnitNotFound;
-use Skautis\Wsdl\PermissionException;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 
-use function is_object;
+use function is_array;
 
 final class UnitRepository implements IUnitRepository
 {
@@ -27,8 +27,8 @@ final class UnitRepository implements IUnitRepository
             ['ID_UnitParent' => $parentId],
         ]);
 
-        if (is_object($units)) {
-            return []; // API returns empty object when there are no results
+        if (! is_array($units)) {
+            return []; // no results
         }
 
         $res = [];
@@ -50,13 +50,19 @@ final class UnitRepository implements IUnitRepository
     private function findAsStdClass(int $id): stdClass
     {
         try {
-            return $this->webService->call('UnitDetail', [
+            $unit = $this->webService->call('UnitDetail', [
                 ['ID' => $id],
             ]);
         } catch (PermissionException $e) {
             // Unit doesn't exist (access to all units is public)
             throw new UnitNotFound('', 0, $e);
         }
+
+        if (! $unit instanceof stdClass) {
+            throw new UnitNotFound();
+        }
+
+        return $unit;
     }
 
     private function createUnit(stdClass $unit): Unit

@@ -20,7 +20,7 @@ use Mockery;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
 use Nette\Security\UserStorage;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 
 final class CompositeAuthorizatorTest extends Unit

@@ -7,7 +7,7 @@ namespace App\Model\Event\ReadModel\QueryHandlers;
 use App\Model\Event\Functions;
 use App\Model\Event\ReadModel\PersonFactory;
 use App\Model\Event\ReadModel\Queries\EventFunctions;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
 use function array_map;
 

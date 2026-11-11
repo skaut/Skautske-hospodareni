@@ -10,7 +10,7 @@ use Codeception\Test\Unit;
 use Mockery;
 use Psr\Log\NullLogger;
 use ReflectionMethod;
-use Skautis\Wsdl\WsdlException;
+use Skaut\Skautis\Wsdl\WsdlException;
 
 /**
  * A skautIS that did not answer or failed is shown with the skautIS unavailable message, not as a server error.

@@ -6,7 +6,7 @@ namespace App\Model\Skautis\ReadModel\QueryHandlers;
 
 use App\Model\DTO\Event\StatisticsItem;
 use App\Model\Skautis\ReadModel\Queries\EventStatisticsQuery;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 
 final class EventStatisticsQueryHandler
 {

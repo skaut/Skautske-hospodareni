@@ -9,7 +9,7 @@ use App\Model\Event\SkautisCampId;
 use App\Model\Skautis\ReadModel\Queries\CampBudgetQuery;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 
 use function array_filter;

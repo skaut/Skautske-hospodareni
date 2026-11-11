@@ -13,7 +13,7 @@ use DateTimeImmutable;
 use Nette\Http\Session;
 use Nette\Http\SessionSection;
 use Psr\Log\LoggerInterface;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 use Throwable;
 
 use function hash;

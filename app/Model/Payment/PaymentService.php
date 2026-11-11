@@ -27,7 +27,7 @@ use Assert\Assert;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use LogicException;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 use stdClass;
 
 use function array_filter;

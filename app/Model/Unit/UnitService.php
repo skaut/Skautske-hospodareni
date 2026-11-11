@@ -13,7 +13,7 @@ use LogicException;
 use Nette\Application\BadRequestException;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
-use Skautis;
+use Skaut\Skautis;
 
 class UnitService
 {

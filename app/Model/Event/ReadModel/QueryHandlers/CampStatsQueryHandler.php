@@ -6,7 +6,7 @@ namespace App\Model\Event\ReadModel\QueryHandlers;
 
 use App\Model\Event\Enum\CampState;
 use App\Model\Event\ReadModel\Queries\CampStatsQuery;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 class CampStatsQueryHandler

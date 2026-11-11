@@ -6,8 +6,8 @@ namespace App\Model\Infrastructure\Skautis;
 
 use Codeception\Test\Unit;
 use Mockery;
-use Skautis\Skautis;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Skautis;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 
 final class LazyWebServiceTest extends Unit
 {

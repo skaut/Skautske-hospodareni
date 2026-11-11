@@ -31,7 +31,7 @@ use DateTimeImmutable;
 use Helpers;
 use IntegrationTest;
 use RuntimeException;
-use Skautis\Wsdl\WsdlException;
+use Skaut\Skautis\Wsdl\WsdlException;
 
 use function microtime;
 

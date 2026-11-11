@@ -28,7 +28,7 @@ use App\Presentation\Camps\BasePresenter;
 use Assert\Assertion;
 use LogicException;
 use Nette\Utils\Strings;
-use Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Wsdl\PermissionException;
 
 use function date;
 use function in_array;

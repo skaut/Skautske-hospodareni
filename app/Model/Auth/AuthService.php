@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Model\Auth;
 
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
 class AuthService
 {
@@ -17,7 +17,7 @@ class AuthService
      */
     public function getLoginUrl(?string $backlink): string
     {
-        return $this->skautis->getLoginUrl($backlink);
+        return $this->skautis->getLoginUrl($backlink ?? '');
     }
 
     /**

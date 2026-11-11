@@ -20,9 +20,9 @@ x-php-base:
         - traefik
     volumes:
         - ../:/app
-        - ./containers/php/docker.conf:/etc/php/8.3/fpm/pool.d/www.conf
-        - ./containers/php/ini/php.ini:/etc/php/8.3/fpm/conf.d/php.ini
-        - ./containers/php/ini/php.ini:/etc/php/8.3/cli/conf.d/php.ini
+        - ./containers/php/docker.conf:/etc/php/8.5/fpm/pool.d/www.conf
+        - ./containers/php/ini/php.ini:/etc/php/8.5/fpm/conf.d/php.ini
+        - ./containers/php/ini/php.ini:/etc/php/8.5/cli/conf.d/php.ini
 
 x-mysql-base:
   &mysql-base
@@ -72,22 +72,28 @@ services:
             - mysql
         env_file:
             - containers/php/ini/image.ini
-            - containers/php/ini/xdebug.ini
+        volumes:
+            - ../:/app
+            - ./containers/php/docker.conf:/etc/php/8.5/fpm/pool.d/www.conf
+            - ./containers/php/ini/php.ini:/etc/php/8.5/fpm/conf.d/php.ini
+            - ./containers/php/ini/php.ini:/etc/php/8.5/cli/conf.d/php.ini
+            - ./containers/php/ini/xdebug.ini:/etc/php/8.5/fpm/conf.d/99-xdebug.ini
+            - ./containers/php/ini/xdebug.ini:/etc/php/8.5/cli/conf.d/99-xdebug.ini
 
-    nginx:
-        image: nginx:latest
+    apache:
+        build:
+            context: ./containers/apache
+            target: base
         restart: unless-stopped
-        working_dir: /
         hostname: moje-hospodareni.cz
         networks:
             - traefik
         volumes:
-            - ../:/app
-            - ./containers/nginx/conf.d:/etc/nginx/conf.d
+            - ../www:/app/www:ro
         labels:
             traefik.enable: true
-            traefik.http.routers.nginx.rule: Host(`moje-hospodareni.cz`)
-            traefik.http.routers.nginx.entrypoints: web
+            traefik.http.routers.apache.rule: Host(`moje-hospodareni.cz`)
+            traefik.http.routers.apache.entrypoints: web
         depends_on:
             - php
             - php-xdebug

@@ -7,7 +7,7 @@ namespace App\Model\Grant\ReadModel\QueryHandlers;
 use App\Model\Grant\Grant;
 use App\Model\Grant\ReadModel\Queries\GrantQuery;
 use App\Model\Skautis\Factory\GrantFactory;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
 class GrantQueryHandler
 {

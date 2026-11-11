@@ -15,9 +15,9 @@ use Nette;
 use Nette\Application\Request;
 use Nette\Application\UI\Presenter;
 use Psr\Log\LoggerInterface;
-use Skautis\Wsdl\AuthenticationException;
-use Skautis\Wsdl\PermissionException;
-use Skautis\Wsdl\WsdlException;
+use Skaut\Skautis\Wsdl\AuthenticationException;
+use Skaut\Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Wsdl\WsdlException;
 
 use function in_array;
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Skautis;
 
 use Codeception\Test\Unit;
-use Skautis\Wsdl\WsdlException;
+use Skaut\Skautis\Wsdl\WsdlException;
 use SoapFault;
 
 final class SkautisErrorsTest extends Unit

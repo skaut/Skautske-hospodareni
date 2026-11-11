@@ -9,8 +9,8 @@ use App\Model\Event\Exception\CampNotFound;
 use App\Model\Event\Repositories\ICampRepository;
 use App\Model\Event\SkautisCampId;
 use App\Model\Skautis\Factory\CampFactory;
-use Skautis\Wsdl\PermissionException;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 
 final class CampRepository implements ICampRepository
 {

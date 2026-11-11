@@ -15,7 +15,7 @@ use App\Model\Event\Commands\CancelEvent;
 use App\Model\Event\ReadModel\Queries\EventStates;
 use App\Model\Event\SkautisEventId;
 use Cake\Chronos\ChronosDate;
-use Skautis\Exception;
+use Skaut\Skautis\Exception;
 
 use function array_merge;
 use function sprintf;

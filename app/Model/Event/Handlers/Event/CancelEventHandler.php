@@ -7,7 +7,7 @@ namespace App\Model\Event\Handlers\Event;
 use App\Model\Common\Services\EventBus;
 use App\Model\Event\Commands\CancelEvent;
 use App\Model\Events\Events\EventWasCanceled;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
 final class CancelEventHandler
 {

@@ -17,7 +17,7 @@ use App\Model\Google\ReadModel\Queries\BrokenSenderAccountsQuery;
 use App\Model\Payment\ReadModel\Queries\GetGroupList;
 use DateTimeImmutable;
 use Nette\Utils\DateTime;
-use Skautis\Wsdl\AuthenticationException;
+use Skaut\Skautis\Wsdl\AuthenticationException;
 
 use function array_filter;
 use function array_keys;

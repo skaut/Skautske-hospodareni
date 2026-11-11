@@ -6,9 +6,9 @@ namespace App\Model\Event\ReadModel\QueryHandlers;
 
 use App\Model\Event\Enum\EventState;
 use App\Model\Event\ReadModel\Queries\EventStatsQuery;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
-use function is_object;
+use function is_array;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 class EventStatsQueryHandler
@@ -30,7 +30,7 @@ class EventStatsQueryHandler
             $counters[$event] = 0;
         }
 
-        if (is_object($events)) {
+        if (! is_array($events)) {
             return $counters;
         }
 

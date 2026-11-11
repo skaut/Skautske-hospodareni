@@ -6,10 +6,10 @@ namespace App\Model\Infrastructure\Skautis;
 
 use App\Model\Skautis\SkautisErrors;
 use LogicException;
-use Skautis\Wsdl\AuthenticationException;
-use Skautis\Wsdl\PermissionException;
-use Skautis\Wsdl\WebServiceInterface;
-use Skautis\Wsdl\WsdlException;
+use Skaut\Skautis\Wsdl\AuthenticationException;
+use Skaut\Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\WsdlException;
 
 use function stripos;
 use function usleep;
@@ -23,36 +23,16 @@ final class RetryingWebService implements WebServiceInterface
     {
     }
 
-    /**
-     * @param string  $functionName
-     * @param mixed[] $arguments
-     *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-     */
-    public function call($functionName, array $arguments = []): mixed
+    /** @param array<int|string, mixed> $arguments */
+    public function call(string $functionName, array $arguments = []): mixed
     {
         return $this->runWithRetry($functionName, fn (): mixed => $this->inner->call($functionName, $arguments));
     }
 
-    /**
-     * @param string  $functionName
-     * @param mixed[] $arguments
-     *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-     */
-    public function __call($functionName, $arguments): mixed
+    /** @param array<int|string, mixed> $arguments */
+    public function __call(string $functionName, array $arguments): mixed
     {
         return $this->runWithRetry($functionName, fn (): mixed => $this->inner->__call($functionName, $arguments));
-    }
-
-    /**
-     * @param string $eventName
-     *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-     */
-    public function subscribe($eventName, callable $callback): void
-    {
-        $this->inner->subscribe($eventName, $callback);
     }
 
     /** @param callable(): mixed $callback */

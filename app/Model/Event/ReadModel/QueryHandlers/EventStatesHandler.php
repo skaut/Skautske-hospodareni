@@ -7,7 +7,7 @@ namespace App\Model\Event\ReadModel\QueryHandlers;
 use App\Model\Event\ReadModel\Helpers;
 use App\Model\Event\ReadModel\Queries\EventStates;
 use Nette\Caching\Cache;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 
 final class EventStatesHandler
 {
