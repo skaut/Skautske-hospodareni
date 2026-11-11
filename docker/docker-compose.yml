@@ -74,20 +74,20 @@ services:
             - containers/php/ini/image.ini
             - containers/php/ini/xdebug.ini
 
-    nginx:
-        image: nginx:latest
+    apache:
+        build:
+            context: ./containers/apache
+            target: base
         restart: unless-stopped
-        working_dir: /
         hostname: moje-hospodareni.cz
         networks:
             - traefik
         volumes:
-            - ../:/app
-            - ./containers/nginx/conf.d:/etc/nginx/conf.d
+            - ../www:/app/www:ro
         labels:
             traefik.enable: true
-            traefik.http.routers.nginx.rule: Host(`moje-hospodareni.cz`)
-            traefik.http.routers.nginx.entrypoints: web
+            traefik.http.routers.apache.rule: Host(`moje-hospodareni.cz`)
+            traefik.http.routers.apache.entrypoints: web
         depends_on:
             - php
             - php-xdebug

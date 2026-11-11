@@ -29,9 +29,9 @@ RUN_PHP_CI = $(CI_COMPOSE) run --rm -T --no-deps --entrypoint '' --user docker p
 COMPOSER_ROOT_VERSION ?= dev-master
 COMPOSER_ENV = env COMPOSER_ROOT_VERSION=$(COMPOSER_ROOT_VERSION)
 
-DEV_SERVICES = traefik php php-xdebug nginx mysql adminer gotenberg
+DEV_SERVICES = traefik php php-xdebug apache mysql adminer gotenberg
 CI_PHP_SERVICES = mysql-test php-test gotenberg
-CI_ACCEPTANCE_SERVICES = mysql-test php-test nginx selenium gotenberg
+CI_ACCEPTANCE_SERVICES = mysql-test php-test apache selenium gotenberg
 CI_ARTIFACT_DIR ?= artifacts/$(CI_PROJECT_NAME)
 CI_INPUTS_PREPARED ?= 0
 
@@ -98,7 +98,7 @@ define ci_run
 	cleanup_ci; \
 	trap 'status=$$?; if [ "$$status" -ne 0 ]; then collect_failure; fi; cleanup_ci; exit "$$status"' EXIT; \
 	$(CI_COMPOSE) build php-test; \
-	if [ -n "$(filter nginx,$(1))" ]; then $(CI_COMPOSE) build nginx; fi; \
+	if [ -n "$(filter apache,$(1))" ]; then $(CI_COMPOSE) build apache; fi; \
 	$(CI_COMPOSE) up -d $(1); \
 	$(2)
 endef
@@ -107,7 +107,7 @@ help: ## Zobrazí kompletní seznam příkazů
 	@grep -E '^[a-zA-Z0-9_-]+:.*## ' Makefile | awk -F ':[^#]*## ' '{printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 build: ## Sestaví Docker image pro vývoj
-	$(DEV_COMPOSE) build php php-xdebug nginx
+	$(DEV_COMPOSE) build php php-xdebug apache
 
 up: ## Spustí vývojový stack
 	$(DEV_COMPOSE) up -d $(DEV_SERVICES)
@@ -164,7 +164,7 @@ ci-clean: ## Odstraní CI kontejnery, síť a volumes aktuálního namespace
 	@$(CI_COMPOSE) down --remove-orphans -v || true
 
 ci-image-clean: ## Odstraní CI image aktuálního namespace
-	@docker image rm "$(CI_PROJECT_NAME)-php-test" "$(CI_PROJECT_NAME)-nginx" 2>/dev/null || true
+	@docker image rm "$(CI_PROJECT_NAME)-php-test" "$(CI_PROJECT_NAME)-apache" 2>/dev/null || true
 
 test-unit: ci-prepare ## Spustí unit testy v čistém CI prostředí
 	$(call ci_run,php-test,$(RUN_PHP_CI) vendor/bin/codecept run unit $(TEST_ARGS))

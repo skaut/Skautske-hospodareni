@@ -58,15 +58,17 @@ services:
             - --sync-binlog=0
             - --innodb-use-native-aio=0
 
-    nginx:
-        image: ${COMPOSE_PROJECT_NAME:-hskauting-ci}-nginx
+    apache:
+        image: ${COMPOSE_PROJECT_NAME:-hskauting-ci}-apache
         build:
-            context: ./containers/nginx
-            dockerfile: Dockerfile.ci
+            context: ./containers/apache
+            target: ci
             additional_contexts:
                 application: service:php-test
+        environment:
+            PHP_FPM_ADDRESS: php-test:9000
+            PHP_FPM_XDEBUG_ADDRESS: php-test:9000
         restart: !reset null
-        working_dir: !reset null
         hostname: !reset null
         labels: !reset {}
         volumes: !reset []
