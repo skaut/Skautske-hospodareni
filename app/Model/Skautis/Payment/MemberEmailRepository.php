@@ -9,11 +9,12 @@ use App\Model\DTO\Payment\MemberEmailType;
 use App\Model\Payment\Repositories\IMemberEmailRepository;
 use LogicException;
 use Nette\Utils\Strings;
-use Skautis\Skautis;
-use Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Skautis;
+use Skaut\Skautis\Wsdl\PermissionException;
 use stdClass;
 
 use function array_values;
+use function is_array;
 use function is_string;
 
 final class MemberEmailRepository implements IMemberEmailRepository
@@ -81,16 +82,12 @@ final class MemberEmailRepository implements IMemberEmailRepository
     }
 
     /**
-     * @param stdClass|stdClass[] $response
+     * skautIS returns no rows as an empty array and an empty response as null.
      *
      * @return stdClass[]
      */
-    private function toArray(stdClass|array $response): array
+    private function toArray(mixed $response): array
     {
-        if ($response instanceof stdClass) {
-            return [];
-        }
-
-        return $response;
+        return is_array($response) ? $response : [];
     }
 }

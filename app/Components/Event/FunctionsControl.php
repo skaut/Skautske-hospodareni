@@ -24,7 +24,7 @@ use Nette\Application\Attributes\Persistent;
 use Nette\Forms\Controls\SelectBox;
 use Nette\Forms\Form;
 use Nette\Utils\ArrayHash;
-use Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Wsdl\PermissionException;
 
 class FunctionsControl extends BaseControl
 {
@@ -153,7 +153,7 @@ class FunctionsControl extends BaseControl
             if (! $selectbox instanceof SelectBox) {
                 throw new LogicException('Assertion failed.');
             }
-            $selectbox->setDefaultValue(isset($selectbox->getItems()[$personId]) ? $personId : null);
+            $selectbox->setDefaultValue($personId !== null && isset($selectbox->getItems()[$personId]) ? $personId : null);
         }
     }
 

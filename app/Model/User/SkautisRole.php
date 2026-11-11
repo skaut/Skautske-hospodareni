@@ -53,7 +53,7 @@ class SkautisRole
         $values = [];
         foreach ($data as $k => $v) {
             // Strip \0ClassName\0 prefix to get the bare property name
-            $bare = preg_replace('/^\x00.*\x00/', '', $k);
+            $bare = preg_replace('/^\x00.*\x00/', '', $k) ?? $k;
             $values[$bare] = $v;
         }
 

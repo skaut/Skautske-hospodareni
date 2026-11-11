@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Event\Handlers\Event;
 
 use App\Model\Event\Commands\Event\ActivateStatistics;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
 class ActivateStatisticsHandler
 {

@@ -8,8 +8,8 @@ Skautske hospodareni is a web application for accounting and financial administr
 
 ## Target Environment
 
-- The project targets PHP 8.3 exclusively. Do not maintain PHP 8.2 compatibility and do not use features that require PHP 8.4 or newer.
-- The PHP image is based on `thecodingmachine/php:8.3.36-v5-fpm-node22`. Keep the pinned PHP patch version at or above every security fix required by `roave/security-advisories`, and keep `config.platform.php` in `composer.json` equal to it.
+- The project targets PHP 8.5 and newer (`"php": "^8.5"`). Do not maintain compatibility with older PHP versions and do not use features that require a newer PHP than `config.platform.php`.
+- The PHP image is based on `webwingscz/builder-hskauting-php85-node22` (Debian 13, PHP-FPM with the settings of the h.skauting.cz hosting); the project Dockerfiles add the `docker` user (UID 1000) and Xdebug, disabled until loaded. Keep `config.platform.php` in `composer.json` equal to the image's PHP version and at or above every security fix required by `roave/security-advisories`.
 - The database is MySQL 8.4 (production server lebeda) with `utf8mb4` and `utf8mb4_czech_ci` collation.
 - The web stack mirrors the h.skauting.cz hosting: Apache 2.4 from Debian 13 (trixie) with PHP-FPM through `mod_proxy_fcgi`, so `www/.htaccess` applies in development and CI. Traefik routes `moje-hospodareni.cz` to it in development.
 - The application time zone is `Europe/Prague`.
@@ -49,7 +49,7 @@ CI commands always use the base and CI Compose files, without the rootless overr
 
 ## Backend
 
-- PHP 8.3 with `declare(strict_types=1)`.
+- PHP 8.5 with `declare(strict_types=1)`.
 - Nette 3.1 for the application, DI, forms, HTTP, security, and presenters.
 - Latte 3 for server-side templates.
 - Configuration and DI are in NEON files under `app/config`.
@@ -214,7 +214,7 @@ docker compose -f docker/docker-compose.yml exec -T php-test \
 ## Implementation Consistency And Best Practices
 
 - Unify how things are implemented. When more than one pattern exists for the same job (form value access, DI service wiring, session handling, HTTP responses, validators, routing), pick the one that matches current best practice and converge on it instead of adding a third variant.
-- Follow current best practices for the stack in use: modern, non-deprecated Nette APIs compatible with the installed version and its approved upgrade path, Latte 3, RESTful conventions for HTTP endpoints, and idiomatic PHP 8.3+ (typed properties, enums, constructor promotion, first-class callables, `readonly` where it fits). Prefer non-deprecated framework APIs (for example `RouteList::addRoute()`/`add()` over `$router[]`, `SessionSection::get()/set()` over magic properties, `getConfigSchema()` over legacy `$defaults`).
+- Follow current best practices for the stack in use: modern, non-deprecated Nette APIs compatible with the installed version and its approved upgrade path, Latte 3, RESTful conventions for HTTP endpoints, and idiomatic PHP 8.5+ (typed properties, enums, constructor promotion, first-class callables, `readonly` where it fits). Prefer non-deprecated framework APIs (for example `RouteList::addRoute()`/`add()` over `$router[]`, `SessionSection::get()/set()` over magic properties, `getConfigSchema()` over legacy `$defaults`).
 - Keep it simple (KISS). Prefer the smallest, most direct solution that reads like the surrounding code. Do not add abstraction, indirection, configuration, or a wrapper package for a problem the framework already solves. Inline a trivial dependency rather than keeping a self-serving one.
 - Do not mix idioms within a change. If you touch a file that uses an outdated idiom relevant to your change, migrate that usage to the unified approach rather than matching the old style.
 

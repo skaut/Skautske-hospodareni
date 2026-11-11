@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Event\Handlers\Camp;
 
 use App\Model\Event\Commands\Camp\ActivateAutocomputedCashbook;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
 class ActivateAutocomputedCashbookHandler
 {

@@ -279,7 +279,7 @@ function addEnvHost(string $name, array $defaults): void {
         ->set('remote_user', $user)
         ->setPort($port)
         ->set('deploy_path', $deployPath)
-        ->set('bin/php', '/usr/bin/php8.3');
+        ->set('bin/php', '/usr/bin/php8.5');
 }
 
 // === Definice prostředí ===

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Model\Skautis\DI;
 
+use App\Model\Infrastructure\Skautis\SkautisEventDispatcher;
 use App\Model\Skautis\DI\Tracy\Panel;
 use Nette\DI\CompilerExtension;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
-use Skautis;
+use Skaut\Skautis;
 use stdClass;
 use Tracy\Debugger;
 
@@ -42,12 +43,16 @@ final class SkautisExtension extends CompilerExtension
         $profiler = $config->profiler ?? ! empty($builder->parameters['debugMode']);
 
         $builder->addDefinition($this->prefix('config'))
-            ->setFactory(Skautis\Config::class, [$config->applicationId, $config->testMode, $config->cache, $config->compression]);
+            ->setFactory(Skautis\Config::class, [$config->applicationId ?? '', $config->testMode, $config->cache, $config->compression]);
+
+        $dispatcher = $builder->addDefinition($this->prefix('eventDispatcher'))
+            ->setFactory(SkautisEventDispatcher::class)
+            ->setAutowired(SkautisEventDispatcher::class);
 
         $builder->addDefinition($this->prefix('webServiceFactory'))
-            ->setFactory(Skautis\Wsdl\WebServiceFactory::class);
+            ->setFactory(Skautis\Wsdl\WebServiceFactory::class, [Skautis\Wsdl\WebService::class, $dispatcher]);
 
-        $manager = $builder->addDefinition($this->prefix('wsdlManager'))
+        $builder->addDefinition($this->prefix('wsdlManager'))
             ->setFactory(Skautis\Wsdl\WsdlManager::class);
 
         $builder->addDefinition($this->prefix('session'))
@@ -62,7 +67,7 @@ final class SkautisExtension extends CompilerExtension
         if ($profiler && class_exists(Debugger::class)) {
             $builder->addDefinition($this->prefix('panel'))
                 ->setFactory(Panel::class);
-            $manager->addSetup(['@'.$this->prefix('panel'), 'register'], ['@'.$this->prefix('wsdlManager')]);
+            $dispatcher->addSetup(['@'.$this->prefix('panel'), 'register'], ['@self']);
         }
     }
 }

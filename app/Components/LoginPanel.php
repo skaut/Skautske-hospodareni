@@ -11,8 +11,8 @@ use App\Model\User\UserService;
 use LogicException;
 use Nette\Security\SimpleIdentity;
 use Nette\Security\User;
-use Skautis\Wsdl\AuthenticationException;
-use Skautis\Wsdl\WsdlException;
+use Skaut\Skautis\Wsdl\AuthenticationException;
+use Skaut\Skautis\Wsdl\WsdlException;
 
 final class LoginPanel extends BaseControl
 {

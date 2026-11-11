@@ -8,9 +8,9 @@ use App\Model\Event\EducationLocation;
 use App\Model\Event\ReadModel\Queries\EducationLocationsQuery;
 use App\Model\Skautis\Factory\EducationLocationFactory;
 use LogicException;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
-use function is_object;
+use function is_array;
 
 class EducationLocationsQueryHandler
 {
@@ -25,7 +25,7 @@ class EducationLocationsQueryHandler
             'ID_EventEducation' => $query->getEventEducationId(),
         ]);
 
-        if (is_object($locations)) {
+        if (! is_array($locations)) {
             return [];
         }
 

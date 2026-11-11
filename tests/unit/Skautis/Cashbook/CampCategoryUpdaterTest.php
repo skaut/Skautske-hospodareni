@@ -18,7 +18,7 @@ use App\Model\Event\SkautisCampId;
 use App\Model\Utils\MoneyFactory;
 use Codeception\Test\Unit;
 use Mockery as m;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 
 final class CampCategoryUpdaterTest extends Unit
 {

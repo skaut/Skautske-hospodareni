@@ -11,8 +11,8 @@ use App\Model\Auth\Resources\Event;
 use App\Model\Auth\Resources\Grant;
 use App\Model\Auth\Resources\Unit;
 use InvalidArgumentException;
-use Skautis\Wsdl\PermissionException;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 
 use function count;

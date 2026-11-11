@@ -23,9 +23,9 @@ use App\Model\Participant\Repositories\IPaymentRepository;
 use App\Model\Skautis\Factory\ParticipantFactory;
 use App\Utils\CzechStringComparator;
 use Cake\Chronos\ChronosDate;
-use Skautis\Skautis;
-use Skautis\Wsdl\PermissionException;
-use Skautis\Wsdl\WsdlException;
+use Skaut\Skautis\Skautis;
+use Skaut\Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Wsdl\WsdlException;
 use stdClass;
 
 use function array_diff_key;

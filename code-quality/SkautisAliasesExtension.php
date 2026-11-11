@@ -5,8 +5,8 @@ use PHPStan\Reflection\Nette\NetteObjectPropertyReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
 use PHPStan\Type\ObjectType;
-use Skautis\Skautis;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Skautis;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 
 class SkautisAliasesExtension implements PropertiesClassReflectionExtension
 {

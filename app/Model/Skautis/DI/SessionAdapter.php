@@ -6,7 +6,7 @@ namespace App\Model\Skautis\DI;
 
 use Nette\Http\Session;
 use Nette\Http\SessionSection;
-use Skautis\SessionAdapter\AdapterInterface;
+use Skaut\Skautis\SessionAdapter\AdapterInterface;
 
 /**
  * Adaptér ukládající přihlášení do Skautisu do Nette session.
@@ -29,24 +29,17 @@ final class SessionAdapter implements AdapterInterface
         $this->sessionSection = $session->getSection(self::SECTION_NAME);
     }
 
-    /**
-     * @param string $name
-     */
-    public function set($name, mixed $object): void
+    public function set(string $name, mixed $object): void
     {
         $this->sessionSection->set($name, $object);
     }
 
-    /** @param string $name */
-    public function has($name): bool
+    public function has(string $name): bool
     {
         return $this->sessionSection->get($name) !== null;
     }
 
-    /**
-     * @param string $name
-     */
-    public function get($name)
+    public function get(string $name): mixed
     {
         return $this->sessionSection->get($name);
     }

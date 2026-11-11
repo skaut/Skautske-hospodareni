@@ -6,9 +6,9 @@ namespace App\Model\Infrastructure\Skautis;
 
 use Codeception\Test\Unit;
 use Mockery;
-use Skautis\Wsdl\PermissionException;
-use Skautis\Wsdl\WebServiceInterface;
-use Skautis\Wsdl\WsdlException;
+use Skaut\Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\WsdlException;
 use SoapFault;
 
 final class RetryingWebServiceTest extends Unit

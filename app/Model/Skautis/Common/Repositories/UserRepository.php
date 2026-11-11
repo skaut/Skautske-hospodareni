@@ -7,9 +7,9 @@ namespace App\Model\Skautis\Common\Repositories;
 use App\Model\Common\Repositories\IUserRepository;
 use App\Model\Common\User;
 use App\Model\Common\UserNotFound;
-use Skautis\User as SkautisUser;
-use Skautis\Wsdl\PermissionException;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\User as SkautisUser;
+use Skaut\Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 
 final class UserRepository implements IUserRepository

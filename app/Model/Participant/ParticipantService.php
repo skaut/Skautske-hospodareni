@@ -10,7 +10,7 @@ use App\Model\Participant\Payment\EventType;
 use App\Model\Participant\Repositories\IPaymentRepository;
 use App\Model\Utils\MoneyFactory;
 use InvalidArgumentException;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
 use function sprintf;
 use function ucfirst;

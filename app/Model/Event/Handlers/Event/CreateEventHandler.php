@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Model\Event\Handlers\Event;
 
 use App\Model\Event\Commands\Event\CreateEvent;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
 final class CreateEventHandler
 {

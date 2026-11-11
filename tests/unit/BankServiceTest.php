@@ -320,7 +320,7 @@ final class BankServiceTest extends Unit
         $paymentRepository->shouldReceive('saveMany');
 
         $bankService = $this->createBankService(
-            $this->mockGroupRepository([$group1->getId() => $group1]),
+            $this->mockGroupRepository([(int) $group1->getId() => $group1]),
             $bank,
             $paymentRepository,
             $bankAccounts,
@@ -364,8 +364,8 @@ final class BankServiceTest extends Unit
 
         $bankService = $this->createBankService(
             $this->mockGroupRepository([
-                $group1->getId() => $group1,
-                $group2->getId() => $group2,
+                (int) $group1->getId() => $group1,
+                (int) $group2->getId() => $group2,
             ]),
             $bank,
             $paymentRepository,

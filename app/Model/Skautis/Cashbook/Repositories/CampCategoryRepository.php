@@ -10,10 +10,10 @@ use App\Model\Cashbook\ParticipantType;
 use App\Model\Cashbook\Repositories\ICampCategoryRepository;
 use App\Model\Utils\MoneyFactory;
 use LogicException;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 
-use function is_object;
+use function is_array;
 
 final class CampCategoryRepository implements ICampCategoryRepository
 {
@@ -35,8 +35,8 @@ final class CampCategoryRepository implements ICampCategoryRepository
             'IsEstimate' => false,
         ]);
 
-        if (is_object($skautisCategories)) {
-            return []; // API returns empty object when there are no results
+        if (! is_array($skautisCategories)) {
+            return []; // no results
         }
 
         $categories = [];

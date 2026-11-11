@@ -1,6 +1,6 @@
 # Instalace pro lokální vývoj
 
-Pro práci na vlastním počítači potřebujete Docker Engine nebo Docker Desktop s Docker Compose a volný HTTP port. PHP, databáze, Composer, Node.js, npm i webový server běží v připravených kontejnerech, proto je kvůli tomuto projektu neinstalujte přímo do počítače.
+Pro práci na vlastním počítači potřebujete Docker Engine nebo Docker Desktop s Docker Compose a volný HTTP port. PHP, databáze, Composer, Node.js, npm i webový server běží v připravených kontejnerech, proto je kvůli tomuto projektu neinstalujte přímo do počítače. Kontejnery odpovídají hostingu: PHP 8.5 v PHP-FPM za Apachem 2.4 na Debianu 13 a MySQL 8.4.
 
 ## Příprava projektu
 

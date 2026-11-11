@@ -7,7 +7,7 @@ namespace App\Model\Skautis;
 use ErrorException;
 use Nette\Caching\Cache;
 use Nette\Caching\Storage;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 use Throwable;
 
 class SkautisMaintenanceChecker

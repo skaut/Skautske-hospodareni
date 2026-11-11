@@ -7,8 +7,8 @@ namespace App\Model\Event\Handlers\Event;
 use App\Model\Event\AssistantNotAdult;
 use App\Model\Event\Commands\Event\UpdateFunctions;
 use App\Model\Event\LeaderNotAdult;
-use Skautis\Skautis;
-use Skautis\Wsdl\WsdlException;
+use Skaut\Skautis\Skautis;
+use Skaut\Skautis\Wsdl\WsdlException;
 
 use function strpos;
 

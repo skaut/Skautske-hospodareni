@@ -8,9 +8,9 @@ use App\Model\Event\Education;
 use App\Model\Event\ReadModel\Queries\EducationListQuery;
 use App\Model\Skautis\Factory\EducationFactory;
 use LogicException;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
-use function is_object;
+use function is_array;
 
 class EducationListQueryHandler
 {
@@ -25,7 +25,7 @@ class EducationListQueryHandler
             'Year' => $query->getYear(),
         ]);
 
-        if (is_object($educations)) {
+        if (! is_array($educations)) {
             return [];
         }
 

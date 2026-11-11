@@ -7,7 +7,7 @@ namespace App;
 use App\Model\Auth\AuthService;
 use App\Model\User\UserPreferencesService;
 use Nette\Security\SimpleIdentity;
-use Skautis\Wsdl\AuthenticationException;
+use Skaut\Skautis\Wsdl\AuthenticationException;
 
 use function array_map;
 use function strlen;

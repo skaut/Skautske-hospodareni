@@ -8,7 +8,7 @@ use App\Model\Event\Functions;
 use App\Model\Event\Person;
 use App\Model\Event\ReadModel\PersonFactory;
 use App\Model\Event\ReadModel\Queries\CampFunctions;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 use stdClass;
 
 class CampFunctionsHandler

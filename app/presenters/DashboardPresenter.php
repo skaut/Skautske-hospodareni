@@ -14,7 +14,7 @@ use App\Model\Event\ReadModel\Queries\EventStatsQuery;
 use App\Model\Payment\ReadModel\Queries\GetGroupList;
 use DateTimeImmutable;
 use Nette\Utils\DateTime;
-use Skautis\Wsdl\AuthenticationException;
+use Skaut\Skautis\Wsdl\AuthenticationException;
 
 use function array_keys;
 use function array_slice;

@@ -9,8 +9,8 @@ use App\Model\Event\Exception\EducationNotFound;
 use App\Model\Event\Repositories\IEducationRepository;
 use App\Model\Event\SkautisEducationId;
 use App\Model\Skautis\Factory\EducationFactory;
-use Skautis\Wsdl\PermissionException;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 
 final class EducationRepository implements IEducationRepository
 {

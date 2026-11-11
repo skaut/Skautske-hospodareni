@@ -9,8 +9,8 @@ use App\Model\Event\EventNotFound;
 use App\Model\Event\Repositories\IEventRepository;
 use App\Model\Event\SkautisEventId;
 use App\Model\Skautis\Factory\EventFactory;
-use Skautis\Wsdl\PermissionException;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 
 use function array_column;

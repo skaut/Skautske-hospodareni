@@ -10,23 +10,23 @@ use App\Model\Participant\Payment\EventType;
 use App\Model\Participant\Repositories\IPaymentRepository;
 use Codeception\Test\Unit;
 use Mockery;
-use Skautis\Skautis;
-use stdClass;
+use Skaut\Skautis\Skautis;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 
 final class ParticipantRepositoryRealCampTest extends Unit
 {
     public function testFindRealByCampRequestsOnlyRealParticipants(): void
     {
-        $eventService = new class {
-            /** @var array<string, int|bool> */
+        $eventService = new class implements WebServiceInterface {
+            public string $functionName = '';
+
+            /** @var array<int|string, mixed> */
             public array $arguments = [];
 
-            /**
-             * @param  array<string, int|bool> $arguments
-             * @return stdClass[]
-             */
-            public function ParticipantCampAll(array $arguments): array
+            /** @param array<int|string, mixed> $arguments */
+            public function call(string $functionName, array $arguments = []): mixed
             {
+                $this->functionName = $functionName;
                 $this->arguments = $arguments;
 
                 return [(object) [
@@ -40,13 +40,19 @@ final class ParticipantRepositoryRealCampTest extends Unit
                     'IsAccepted' => true,
                 ]];
             }
+
+            /** @param array<int|string, mixed> $arguments */
+            public function __call(string $functionName, array $arguments): mixed
+            {
+                return $this->call($functionName, $arguments[0] ?? []);
+            }
         };
         $skautis = new class($eventService) extends Skautis {
-            public function __construct(private object $eventService)
+            public function __construct(private WebServiceInterface $eventService)
             {
             }
 
-            public function getWebService($name): object
+            public function getWebService(string $name): WebServiceInterface
             {
                 return $this->eventService;
             }
@@ -60,6 +66,7 @@ final class ParticipantRepositoryRealCampTest extends Unit
 
         $participants = (new ParticipantRepository($skautis, $payments))->findRealByCamp(new SkautisCampId(42));
 
+        self::assertSame('ParticipantCampAll', $eventService->functionName);
         self::assertSame(['ID_EventCamp' => 42, 'Real' => true], $eventService->arguments);
         self::assertCount(1, $participants);
     }

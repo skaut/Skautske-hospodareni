@@ -19,7 +19,7 @@ use App\Model\TaskQueue\TaskQueue;
 use App\Model\TaskQueue\TaskScope;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Skautis\Exception as SkautisException;
+use Skaut\Skautis\Exception as SkautisException;
 
 use function array_filter;
 use function array_map;

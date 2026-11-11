@@ -14,8 +14,8 @@ use App\Model\Cashbook\Repositories\ICampRepository;
 use App\Model\Cashbook\Services\ICampCategoryUpdater;
 use App\Model\Event\SkautisCampId;
 use App\Model\Utils\MoneyFactory;
-use Skautis\Wsdl\WebServiceInterface;
-use Skautis\Wsdl\WsdlException;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\WsdlException;
 
 use function array_diff_key;
 use function array_fill_keys;

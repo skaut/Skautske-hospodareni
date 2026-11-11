@@ -49,7 +49,7 @@ use Nette\Forms\Form;
 use Nette\Http\IResponse;
 use Nette\Utils\ArrayHash;
 use Psr\Log\LoggerInterface;
-use Skautis\Wsdl\WsdlException;
+use Skaut\Skautis\Wsdl\WsdlException;
 
 use function array_values;
 use function ctype_digit;

@@ -33,7 +33,7 @@ use App\Presentation\Camps\BasePresenter;
 use Component\Forms\BaseForm;
 use LogicException;
 use Money\Money;
-use Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Wsdl\PermissionException;
 
 use function count;
 

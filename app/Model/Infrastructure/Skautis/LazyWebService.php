@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Model\Infrastructure\Skautis;
 
-use Skautis\Skautis;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Skautis;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 
 /**
  * Skautis knihovna při vytvoření instance libovolné webservisy této webservise předává aktuální SOAP options.
@@ -23,36 +23,16 @@ final class LazyWebService implements WebServiceInterface
     {
     }
 
-    /**
-     * @param string  $functionName
-     * @param mixed[] $arguments
-     *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-     */
-    public function call($functionName, array $arguments = []): mixed
+    /** @param array<int|string, mixed> $arguments */
+    public function call(string $functionName, array $arguments = []): mixed
     {
         return $this->getWebservice()->call($functionName, $arguments);
     }
 
-    /**
-     * @param string  $functionName
-     * @param mixed[] $arguments
-     *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-     */
-    public function __call($functionName, $arguments): mixed
+    /** @param array<int|string, mixed> $arguments */
+    public function __call(string $functionName, array $arguments): mixed
     {
         return $this->getWebservice()->__call($functionName, $arguments);
-    }
-
-    /**
-     * @param string $eventName
-     *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-     */
-    public function subscribe($eventName, callable $callback): void
-    {
-        $this->getWebservice()->subscribe($eventName, $callback);
     }
 
     private function getWebservice(): WebServiceInterface

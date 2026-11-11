@@ -7,7 +7,7 @@ namespace App\Model\Skautis;
 use App\Model\Common\Embeddable\AccountNumber;
 use App\Model\Payment\BankAccount\IBankAccountImporter;
 use App\Model\Payment\InvalidBankAccountNumber;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 use stdClass;
 
 class BankAccountImporter implements IBankAccountImporter

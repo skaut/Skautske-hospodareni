@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Model\Skautis;
 
-use Skautis\Wsdl\WsdlException;
+use Skaut\Skautis\Wsdl\WsdlException;
 
 use function str_starts_with;
 

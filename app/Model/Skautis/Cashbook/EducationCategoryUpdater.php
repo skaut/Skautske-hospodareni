@@ -11,8 +11,8 @@ use App\Model\Cashbook\Services\IEducationCategoryUpdater;
 use App\Model\Event\SkautisEducationId;
 use App\Model\Skautis\Exception\AmountMustBeGreaterThanZero;
 use App\Model\Utils\MoneyFactory;
-use Skautis\Skautis;
-use Skautis\Wsdl\WsdlException;
+use Skaut\Skautis\Skautis;
+use Skaut\Skautis\Wsdl\WsdlException;
 
 use function array_diff_key;
 use function array_fill_keys;

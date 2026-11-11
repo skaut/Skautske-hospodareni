@@ -9,7 +9,7 @@ use App\Model\Cashbook\Operation;
 use App\Model\DTO\Skautis\BudgetEntry;
 use App\Model\Skautis\ReadModel\Queries\CampBudgetQuery;
 use App\Model\Utils\MoneyFactory;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 
 use function array_column;
 use function usort;

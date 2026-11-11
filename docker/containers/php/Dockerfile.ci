@@ -1,11 +1,23 @@
-FROM thecodingmachine/php:8.3.36-v5-fpm-node22
+FROM webwingscz/builder-hskauting-php85-node22
+
+# Same additions as the development Dockerfile: the docker user (UID 1000) and Xdebug, disabled until loaded.
+RUN groupadd --gid 1000 docker \
+    && useradd --uid 1000 --gid docker --create-home --shell /bin/bash docker \
+    && install -d -o docker -g docker /app \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends "php${PHP_VERSION}-xdebug" \
+    && rm -rf /var/lib/apt/lists/* \
+    && phpdismod -v "${PHP_VERSION}" -s ALL xdebug
+
+ENV FPM_USER=docker \
+    FPM_GROUP=docker
 
 WORKDIR /app
 
 COPY --chown=docker:docker . /app/
-COPY docker/containers/php/docker.conf /etc/php/8.3/fpm/pool.d/www.conf
-COPY docker/containers/php/ini/php.ini /etc/php/8.3/fpm/conf.d/php.ini
-COPY docker/containers/php/ini/php.ini /etc/php/8.3/cli/conf.d/php.ini
+COPY docker/containers/php/docker.conf /etc/php/8.5/fpm/pool.d/www.conf
+COPY docker/containers/php/ini/php.ini /etc/php/8.5/fpm/conf.d/php.ini
+COPY docker/containers/php/ini/php.ini /etc/php/8.5/cli/conf.d/php.ini
 
 USER docker
 

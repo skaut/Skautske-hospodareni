@@ -34,7 +34,7 @@ use Nette\Http\IResponse;
 use Nette\Security\IIdentity;
 use Nette\Security\SimpleIdentity;
 use Psr\Log\LoggerInterface;
-use Skautis\Wsdl\AuthenticationException;
+use Skaut\Skautis\Wsdl\AuthenticationException;
 
 use function array_key_last;
 use function dirname;
@@ -360,7 +360,7 @@ abstract class BasePresenter extends Presenter
             return in_array(strtolower($this->getAction()), self::AUTH_ACTIONS, true);
         }
 
-        return in_array($this->getAction(), self::PUBLIC_ACTIONS[$this->getName()] ?? [], true);
+        return in_array($this->getAction(), self::PUBLIC_ACTIONS[$this->getName() ?? ''] ?? [], true);
     }
 
     /**

@@ -9,10 +9,10 @@ use App\Model\Cashbook\Operation;
 use App\Model\Cashbook\Repositories\IEducationCategoryRepository;
 use App\Model\Utils\MoneyFactory;
 use LogicException;
-use Skautis\Wsdl\WebServiceInterface;
+use Skaut\Skautis\Wsdl\WebServiceInterface;
 use stdClass;
 
-use function is_object;
+use function is_array;
 
 final class EducationCategoryRepository implements IEducationCategoryRepository
 {
@@ -30,8 +30,8 @@ final class EducationCategoryRepository implements IEducationCategoryRepository
             'Year' => $year,
         ]);
 
-        if (is_object($skautisCategories)) {
-            return []; // API returns empty object when there are no results
+        if (! is_array($skautisCategories)) {
+            return []; // no results
         }
 
         $categories = [];

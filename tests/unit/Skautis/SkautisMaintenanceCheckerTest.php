@@ -8,7 +8,7 @@ use Codeception\Test\Unit;
 use Mockery;
 use Nette\Caching\Storages\MemoryStorage;
 use RuntimeException;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
 final class SkautisMaintenanceCheckerTest extends Unit
 {

@@ -9,11 +9,12 @@ use App\Model\Unit\ReadModel\Queries\UnitQuery;
 use App\Model\Unit\UnitService;
 use App\Model\User\ReadModel\Queries\ActiveSkautisRoleQuery;
 use Nette\Application\BadRequestException;
-use Skautis\Skautis;
-use Skautis\User;
+use Skaut\Skautis\Skautis;
+use Skaut\Skautis\User;
 use stdClass;
 
 use function array_key_exists;
+use function is_array;
 
 class UserService
 {
@@ -54,7 +55,7 @@ class UserService
     {
         $res = $this->skautis->user->UserRoleAll(['ID_User' => $this->getUserDetail()->ID, 'IsActive' => $activeOnly]);
 
-        return $res instanceof stdClass ? [] : $res;
+        return is_array($res) ? $res : [];
     }
 
     public function getUserDetail(): stdClass
@@ -126,7 +127,7 @@ class UserService
 
     public function updateLogoutTime(): void
     {
-        $this->skautis->getUser()->updateLogoutTime()->getLogoutDate();
+        $this->skautis->getUser()->updateLogoutTime();
     }
 
     /**

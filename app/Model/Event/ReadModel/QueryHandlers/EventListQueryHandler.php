@@ -7,9 +7,9 @@ namespace App\Model\Event\ReadModel\QueryHandlers;
 use App\Model\Event\Event;
 use App\Model\Event\ReadModel\Queries\EventListQuery;
 use App\Model\Skautis\Factory\EventFactory;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
-use function is_object;
+use function is_array;
 
 class EventListQueryHandler
 {
@@ -26,7 +26,7 @@ class EventListQueryHandler
             'Year' => $query->getYear(),
         ]);
 
-        if (is_object($events)) {
+        if (! is_array($events)) {
             return [];
         }
 

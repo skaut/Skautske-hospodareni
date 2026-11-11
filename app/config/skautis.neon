@@ -76,6 +76,6 @@ services:
               bus: queryBus
 
     # Skautis call listener
-    @Skautis\Wsdl\WsdlManager:
+    @App\Model\Infrastructure\Skautis\SkautisEventDispatcher:
         setup:
             - @App\Model\Infrastructure\Services\SkautisCallListener::register

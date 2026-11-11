@@ -8,9 +8,9 @@ use App\Model\Event\EducationInstructor;
 use App\Model\Event\ReadModel\Queries\EducationInstructorsQuery;
 use App\Model\Skautis\Factory\EducationInstructorFactory;
 use LogicException;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
-use function is_object;
+use function is_array;
 
 class EducationInstructorsQueryHandler
 {
@@ -25,7 +25,7 @@ class EducationInstructorsQueryHandler
             'ID_EventEducation' => $query->getEventEducationId(),
         ]);
 
-        if (is_object($instructors)) {
+        if (! is_array($instructors)) {
             return [];
         }
 

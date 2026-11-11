@@ -9,7 +9,7 @@ use App\Model\Common\Repositories\IMemberRepository;
 use App\Model\Common\UnitId;
 use App\Utils\CzechStringComparator;
 use Cake\Chronos\ChronosDate;
-use Skautis\Skautis;
+use Skaut\Skautis\Skautis;
 
 use function usort;
 

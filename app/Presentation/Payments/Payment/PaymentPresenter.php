@@ -68,7 +68,7 @@ use Nette\Application\Attributes\Persistent;
 use Nette\Utils\Strings;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Skautis\Wsdl\PermissionException;
+use Skaut\Skautis\Wsdl\PermissionException;
 
 use function array_filter;
 use function count;

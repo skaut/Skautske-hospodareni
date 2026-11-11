@@ -2,10 +2,9 @@
 x-rootless-php: &rootless-php
     user: root
     environment:
-        DOCKER_USER: root
+        FPM_USER: root
+        FPM_GROUP: root
         COMPOSER_ALLOW_SUPERUSER: "1"
-    volumes:
-        - ./containers/php/rootless.conf:/etc/php/8.3/fpm/pool.d/zz-rootless.conf:ro
 
 services:
     php:
