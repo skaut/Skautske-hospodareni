@@ -4413,22 +4413,22 @@
         },
         {
             "name": "nette/mail",
-            "version": "v4.2.0",
+            "version": "v4.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/mail.git",
-                "reference": "6dd1042fb3cb95ebd3c6ca79507154dc74215bd2"
+                "reference": "ad6b20edcc1d79932456c92c7c4bc213570a7674"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/mail/zipball/6dd1042fb3cb95ebd3c6ca79507154dc74215bd2",
-                "reference": "6dd1042fb3cb95ebd3c6ca79507154dc74215bd2",
+                "url": "https://api.github.com/repos/nette/mail/zipball/ad6b20edcc1d79932456c92c7c4bc213570a7674",
+                "reference": "ad6b20edcc1d79932456c92c7c4bc213570a7674",
                 "shasum": ""
             },
             "require": {
                 "ext-iconv": "*",
                 "nette/utils": "^4.1",
-                "php": "8.2 - 8.5"
+                "php": "8.2 - 8.6"
             },
             "require-dev": {
                 "nette/di": "^3.1 || ^4.0",
@@ -4469,26 +4469,26 @@
                 {
                     "name": "David Grudl",
                     "homepage": "https://davidgrudl.com"
-                },
-                {
-                    "name": "Nette Community",
-                    "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "📧 Nette Mail: A handy library for creating and sending emails in PHP.",
-            "homepage": "https://nette.org",
+            "description": "📧 Nette Mail: composes and sends emails. HTML with images embedded automatically, attachments, Latte templates, SMTP with OAuth 2.0 and DKIM signing.",
+            "homepage": "https://doc.nette.org/mail",
             "keywords": [
+                "attachments",
+                "dkim",
+                "email",
                 "mail",
                 "mailer",
-                "mime",
                 "nette",
+                "oauth2",
+                "phpmailer",
                 "smtp"
             ],
             "support": {
                 "issues": "https://github.com/nette/mail/issues",
-                "source": "https://github.com/nette/mail/tree/v4.2.0"
+                "source": "https://github.com/nette/mail/tree/v4.2.3"
             },
-            "time": "2026-07-27T15:28:54+00:00"
+            "time": "2026-11-06T01:09:26+00:00"
         },
         {
             "name": "nette/neon",
