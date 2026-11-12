@@ -4327,21 +4327,21 @@
         },
         {
             "name": "nette/http",
-            "version": "v3.4.0",
+            "version": "v3.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/http.git",
-                "reference": "de5988d8802e76d9bda85fe5a871d29c794684f4"
+                "reference": "9dc3e7e8713c54024a612496a45ef06a1a2b0595"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/http/zipball/de5988d8802e76d9bda85fe5a871d29c794684f4",
-                "reference": "de5988d8802e76d9bda85fe5a871d29c794684f4",
+                "url": "https://api.github.com/repos/nette/http/zipball/9dc3e7e8713c54024a612496a45ef06a1a2b0595",
+                "reference": "9dc3e7e8713c54024a612496a45ef06a1a2b0595",
                 "shasum": ""
             },
             "require": {
                 "nette/utils": "^4.1",
-                "php": "8.3 - 8.5"
+                "php": "8.3 - 8.6"
             },
             "conflict": {
                 "nette/di": "<3.0.3",
@@ -4386,30 +4386,26 @@
                 {
                     "name": "David Grudl",
                     "homepage": "https://davidgrudl.com"
-                },
-                {
-                    "name": "Nette Community",
-                    "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "🌐 Nette Http: abstraction for HTTP request, response and session. Provides careful data sanitization and utility for URL and cookies manipulation.",
-            "homepage": "https://nette.org",
+            "description": "🌐 Nette HTTP: the request, response, URL, cookies, sessions and file uploads as objects, with sanitized input and same-origin protection against CSRF.",
+            "homepage": "https://doc.nette.org/http",
             "keywords": [
                 "cookies",
+                "csrf",
+                "file upload",
                 "http",
                 "nette",
-                "proxy",
                 "request",
                 "response",
-                "security",
                 "session",
                 "url"
             ],
             "support": {
                 "issues": "https://github.com/nette/http/issues",
-                "source": "https://github.com/nette/http/tree/v3.4.0"
+                "source": "https://github.com/nette/http/tree/v3.4.2"
             },
-            "time": "2026-06-13T01:04:19+00:00"
+            "time": "2026-10-23T13:29:19+00:00"
         },
         {
             "name": "nette/mail",
