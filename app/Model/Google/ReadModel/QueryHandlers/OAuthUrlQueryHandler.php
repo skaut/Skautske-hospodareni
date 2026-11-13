@@ -18,6 +18,10 @@ final class OAuthUrlQueryHandler
         $client = $this->service->getClient();
         $client->setState($query->getState());
 
+        if ($query->getLoginHint() !== null) {
+            $client->setLoginHint($query->getLoginHint());
+        }
+
         return $client->createAuthUrl();
     }
 }

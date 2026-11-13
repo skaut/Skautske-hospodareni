@@ -21,14 +21,15 @@ final class GooglePresenter extends SettingsBasePresenter
     private const STATE_SESSION_SECTION = 'googleOAuth';
     private const STATE_KEY = 'state';
 
-    public function actionOAuth(): void
+    /** @param string|null $email account to offer first, e.g. one that has to be connected again */
+    public function actionOAuth(?string $email = null): void
     {
         $this->assertCanConnectAccount();
 
         $state = Random::generate(32);
         $this->getSession(self::STATE_SESSION_SECTION)->set(self::STATE_KEY, $state);
 
-        $this->redirectUrl($this->queryBus->handle(new OAuthUrlQuery($state)));
+        $this->redirectUrl($this->queryBus->handle(new OAuthUrlQuery($state, $email === '' ? null : $email)));
     }
 
     /**

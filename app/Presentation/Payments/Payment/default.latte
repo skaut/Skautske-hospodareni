@@ -32,6 +32,8 @@
                             Automatické upomínky jsou pozastavené
                         {elseif $group->getOAuthId() === null}
                             Automatické upomínky nemohou odejít, skupina nemá e-mail odesílatele
+                        {elseif $brokenSender !== null}
+                            Automatické upomínky nemohou odejít, propojení e-mailu odesílatele přestalo platit
                         {else}
                             {var $reminderDays = (int) $group->getReminderDaysAfterDue()}
                             Automatické upomínky {$reminderDays} {if $reminderDays === 1}den{elseif $reminderDays < 5}dny{else}dní{/if} po splatnosti
@@ -115,6 +117,17 @@
                 {/if}
             </div>
         </section>
+    </div>
+
+    {* The alert lays its children out in a row, so its content stays in one block. *}
+    <div n:if="$brokenSender !== null" class="alert alert-danger mb-4" role="alert" data-test="payment-group-broken-sender">
+        <div>
+            <p class="mb-2">
+                <strong>Propojení e-mailu odesílatele {$brokenSender->email} přestalo platit ({$brokenSender->invalidSince|date:'j. n. Y'}).</strong>
+                E-maily skupiny teď neodejdou. Potvrzení o úhradě počkají, až se účet znovu propojí.
+            </p>
+            {include '../../../Components/templates/BrokenSenderFix.latte', sender => $brokenSender, dataTest => 'payment-group-broken-sender'}
+        </div>
     </div>
 
     {control taskQueueStatus}

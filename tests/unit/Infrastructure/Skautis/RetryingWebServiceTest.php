@@ -9,6 +9,7 @@ use Mockery;
 use Skautis\Wsdl\PermissionException;
 use Skautis\Wsdl\WebServiceInterface;
 use Skautis\Wsdl\WsdlException;
+use SoapFault;
 
 final class RetryingWebServiceTest extends Unit
 {
@@ -32,6 +33,43 @@ final class RetryingWebServiceTest extends Unit
         $webService = new RetryingWebService($inner);
 
         self::assertSame('result', $webService->call('eventGeneralAll'));
+    }
+
+    public function testLostResponseOfReadIsRetried(): void
+    {
+        $inner = Mockery::mock(WebServiceInterface::class);
+        $attempt = 0;
+        $inner->shouldReceive('call')
+            ->twice()
+            ->withArgs(['UnitDetail', []])
+            ->andReturnUsing(static function () use (&$attempt): string {
+                ++$attempt;
+
+                if ($attempt === 1) {
+                    throw self::lostResponse();
+                }
+
+                return 'result';
+            });
+
+        $webService = new RetryingWebService($inner);
+
+        self::assertSame('result', $webService->call('UnitDetail'));
+    }
+
+    public function testLostResponseOfInsertIsNotRetried(): void
+    {
+        $inner = Mockery::mock(WebServiceInterface::class);
+        $inner->shouldReceive('call')
+            ->once()
+            ->andThrow(self::lostResponse());
+
+        $webService = new RetryingWebService($inner);
+
+        $this->expectException(WsdlException::class);
+        $this->expectExceptionMessage('Error Fetching http headers');
+
+        $webService->call('ParticipantGeneralInsert');
     }
 
     public function testNonRetryableWsdlExceptionIsNotRetried(): void
@@ -61,5 +99,11 @@ final class RetryingWebServiceTest extends Unit
         $this->expectException(PermissionException::class);
 
         $webService->call('eventGeneralAll');
+    }
+
+    /** The exception skautis/skautis throws when skautIS does not answer: the SoapFault message without its "HTTP" fault code. */
+    private static function lostResponse(): WsdlException
+    {
+        return new WsdlException('Error Fetching http headers', 0, new SoapFault('HTTP', 'Error Fetching http headers'));
     }
 }

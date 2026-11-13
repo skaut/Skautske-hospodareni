@@ -35,6 +35,17 @@ class GoogleOAuth extends Aggregate
     #[Column(type: 'datetime_immutable')]
     private DateTimeImmutable $updatedAt;
 
+    /**
+     * Since when Google refuses the token (e.g. the owner revoked the access), null while it works.
+     * Written by {@see \App\Model\Google\OAuthValidity}, connecting the account again clears it.
+     */
+    #[Column(type: 'datetime_immutable', nullable: true)]
+    private ?DateTimeImmutable $invalidSince = null;
+
+    /** What Google answered, for the administrators only. */
+    #[Column(type: 'string', length: 255, nullable: true)]
+    private ?string $invalidReason = null;
+
     private function __construct(OAuthId $id, UnitId $unitId, string $code, string $email, DateTimeImmutable $updatedAt)
     {
         $this->id = $id;
@@ -49,10 +60,28 @@ class GoogleOAuth extends Aggregate
         return new self(OAuthId::generate(), $unitId, $code, $email, new DateTimeImmutable());
     }
 
+    /** A new token comes from connecting the account again, so Google accepts it. */
     public function setToken(string $token): void
     {
         $this->token = $token;
         $this->updatedAt = new DateTimeImmutable();
+        $this->invalidSince = null;
+        $this->invalidReason = null;
+    }
+
+    public function isInvalid(): bool
+    {
+        return $this->invalidSince !== null;
+    }
+
+    public function getInvalidSince(): ?DateTimeImmutable
+    {
+        return $this->invalidSince;
+    }
+
+    public function getInvalidReason(): ?string
+    {
+        return $this->invalidReason;
     }
 
     public function getId(): OAuthId

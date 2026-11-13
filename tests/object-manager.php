@@ -29,7 +29,7 @@ $configurator->setTempDirectory($tempDir);
 
 $configurator->createRobotLoader()
     ->addDirectory(__DIR__.'/../app')
-    ->register(true);
+    ->register();
 
 $configurator->defaultExtensions = [
     'extensions' => ExtensionsExtension::class,

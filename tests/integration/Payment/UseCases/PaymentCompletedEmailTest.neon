@@ -16,7 +16,9 @@ services:
     - Stubs\BankAccountAccessCheckerStub
     - Stubs\OAuthsAccessCheckerStub
     - App\Model\Payment\PaymentService
-    - Stubs\GoogleRepositoryStub
+    # The real accounts: a sender Google refuses is remembered in the database.
+    - App\Model\Infrastructure\Repositories\Mail\GoogleRepository
+    - App\Model\Google\OAuthValidity
     - App\Model\Google\GoogleService('', '')
 
     - factory: App\Model\Payment\MailerFactoryStub
@@ -43,6 +45,11 @@ services:
               bus: commandBus
 
     - class: App\Model\Payment\Subscribers\PaymentMailSubscriber
+      tags:
+          messenger.messageHandler:
+              bus: eventBus
+
+    - class: App\Model\Payment\Subscribers\OAuthRestoredSubscriber
       tags:
           messenger.messageHandler:
               bus: eventBus

@@ -36,6 +36,8 @@ use function in_array;
 use function is_array;
 use function sprintf;
 
+use const PHP_INT_MAX;
+
 /**
  * Sends one e-mail of a payment from the task queue. The state of the payment is checked again right
  * before sending, so e.g. a reminder of a payment paid meanwhile is left out.
@@ -52,6 +54,15 @@ final class PaymentEmailTaskHandler implements TaskHandler
     private const GMAIL_LIMIT_MAX_ATTEMPTS = 26;
     private const GOOGLE_UNAVAILABLE_RETRY_SECONDS = 600;
     private const GOOGLE_UNAVAILABLE_MAX_ATTEMPTS = 6;
+
+    /**
+     * Why confirmations wait while Google refuses the sender. They are released by this exact reason once
+     * the account works again, see {@see PaymentEmailQueue::releaseWaitingForSender()}.
+     */
+    public const WAITING_FOR_SENDER_MESSAGE = 'Propojení e-mailu odesílatele s Gmailem přestalo platit. Potvrzení o úhradě počkají, až ho někdo znovu propojí.';
+
+    /** Only a fallback, e.g. for a group that got another sender; reconnecting the account releases them at once. */
+    private const WAITING_FOR_SENDER_RETRY_SECONDS = 3600;
 
     public function __construct(
         private IPaymentRepository $payments,
@@ -87,10 +98,14 @@ final class PaymentEmailTaskHandler implements TaskHandler
 
         $email = $this->compose($payment, $group, $task->emailType, $senderName);
 
+        if ($email->sender->isInvalid()) {
+            $this->handleInvalidSender($task, InvalidOAuth::remembered($email->sender->getEmail()));
+        }
+
         try {
             $mailer = $this->mailerFactory->create($email->sender);
         } catch (InvalidOAuth $exception) {
-            throw new TaskFailed($exception->getExplainedMessage(), abortJob: true, previous: $exception);
+            $this->handleInvalidSender($task, $exception);
         } catch (GuzzleException|GoogleServiceException $exception) {
             $this->handleUnavailableGoogle($exception);
         }
@@ -195,6 +210,20 @@ final class PaymentEmailTaskHandler implements TaskHandler
         } catch (InvalidBankAccount|BankAccountNotFound) {
             throw new TaskFailed('Šablona e-mailu potřebuje bankovní účet, který skupina nemá.', abortJob: true);
         }
+    }
+
+    /**
+     * Nothing can be sent from the sender until someone connects it again. A confirmation of a payment waits
+     * for that, the payer would get nothing otherwise; other e-mails fail with the batch and people can send
+     * them again (new ones are not even queued meanwhile, see {@see PaymentEmailQueue}).
+     */
+    private function handleInvalidSender(PaymentEmailTask $task, InvalidOAuth $exception): never
+    {
+        if ($exception->isRevoked() && $task->emailType->equalsValue(EmailType::PAYMENT_COMPLETED)) {
+            throw new TaskRetryLater(self::WAITING_FOR_SENDER_MESSAGE, self::WAITING_FOR_SENDER_RETRY_SECONDS, $exception, wholeBatch: true, maxAttempts: PHP_INT_MAX);
+        }
+
+        throw new TaskFailed($exception->getExplainedMessage(), abortJob: true, previous: $exception);
     }
 
     /**
