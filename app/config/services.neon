@@ -115,6 +115,7 @@ services:
           environmentMode: %environmentMode%
       )
     - App\RouterFactory
+    - Cake\Chronos\ClockFactory
     router: @App\RouterFactory::createRouter
 
     # Help

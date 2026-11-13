@@ -15,6 +15,8 @@ use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\NotificationsCollector;
 use App\Model\Common\Services\QueryBus;
 use App\Model\Help\Manager\PageHelpManager;
+use App\Model\Skautis\FreshRolesApplier;
+use App\Model\Skautis\SkautisLoginRefresher;
 use App\Model\Unit\UnitService;
 use App\Model\Usage\Services\UsageTracker;
 use App\Model\User\Services\LoginTracker;
@@ -39,10 +41,14 @@ use Skautis\Wsdl\AuthenticationException;
 use function array_key_last;
 use function dirname;
 use function explode;
+use function fastcgi_finish_request;
+use function function_exists;
+use function ignore_user_abort;
 use function in_array;
 use function is_file;
 use function is_numeric;
 use function preg_match;
+use function register_shutdown_function;
 use function sprintf;
 use function str_contains;
 use function str_replace;
@@ -100,6 +106,10 @@ abstract class BasePresenter extends Presenter
 
     private UsageTracker $usageTracker;
 
+    private SkautisLoginRefresher $skautisLoginRefresher;
+
+    private FreshRolesApplier $freshRolesApplier;
+
     public function injectAll(
         UserService $userService,
         UnitService $unitService,
@@ -138,6 +148,12 @@ abstract class BasePresenter extends Presenter
         $this->usageTracker = $usageTracker;
     }
 
+    public function injectSkautisLogin(SkautisLoginRefresher $refresher, FreshRolesApplier $freshRolesApplier): void
+    {
+        $this->skautisLoginRefresher = $refresher;
+        $this->freshRolesApplier = $freshRolesApplier;
+    }
+
     protected function startup(): void
     {
         parent::startup();
@@ -166,7 +182,9 @@ abstract class BasePresenter extends Presenter
             $this->redirect(':Default:', ['backlink' => $backlink]);
         }
 
+        // Not on a timer request: it must not keep the SkautIS login alive, only the keep-alive the user chose does that.
         if ($this->getUser()->isLoggedIn() && ! $this->isBackgroundRequest()) {
+            $this->syncSkautisLogin();
             $this->loginTracker->touch();
         }
 
@@ -228,20 +246,6 @@ abstract class BasePresenter extends Presenter
                 ? $this->linkGenerator->link('ThemeReport:default')
                 : null,
         ]);
-
-        if (! $this->getUser()->isLoggedIn()) {
-            return;
-        }
-
-        try {
-            $this->template->setParameters([
-                'currentUnitId' => $this->unitService->getUnitId(),
-                'myRoles' => $this->userService->getAllSkautisRoles(),
-                'myRole' => $this->userService->getRoleId(),
-            ]);
-        } catch (AuthenticationException) {
-            $this->getUser()->logout(true);
-        }
     }
 
     public function handleChangeRole(?int $roleId = null): void
@@ -306,6 +310,37 @@ abstract class BasePresenter extends Presenter
         }
 
         return (int) $identity->getId();
+    }
+
+    /**
+     * Applies what the previous background extension learned from SkautIS and schedules the next one,
+     * so pages show current SkautIS state without waiting for SkautIS.
+     */
+    private function syncSkautisLogin(): void
+    {
+        if ($this->skautisLoginRefresher->isLoginDead()) {
+            $this->logoutInvalidUser();
+
+            return;
+        }
+
+        $identity = $this->getUser()->getIdentity();
+        // Not on public pages: they include the logout actions, and a user without an active role must still be able to log out.
+        if ($identity instanceof SimpleIdentity && ! $this->isPublicRequest() && $this->freshRolesApplier->apply($identity)) {
+            // No role names: either can be missing (getActualRole() returns null), and the header shows the new role.
+            $this->flashMessage('Vaše role už ve SkautISu není aktivní, proto jsme vás přepnuli na jinou roli.', 'warning');
+        }
+
+        $userId = (int) $this->getUser()->getId();
+        // Registered at runtime, so it runs after Tracy's shutdown handler has written the bar.
+        register_shutdown_function(fn () => $this->skautisLoginRefresher->extend($userId, function (): void {
+            $this->getSession()->close();
+            if (function_exists('fastcgi_finish_request')) { // without PHP-FPM the extension runs before the response ends
+                fastcgi_finish_request();
+            }
+
+            ignore_user_abort(true);
+        }));
     }
 
     private function validateCurrentLogin(): void
