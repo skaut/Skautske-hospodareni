@@ -129,6 +129,18 @@ jobs:
         name: Extract workdir
         shell: bash
         run: |
+          # Při selhání vypíše stav workspace: menší tarball znamená přerušené stažení,
+          # úplný tarball bez .sha256 znamená, že soubory smazal jiný job.
+          diagnose_workdir() {
+            local status=$?
+            if [ "$status" -ne 0 ]; then
+              echo "Extract workdir failed (exit $status) on runner ${RUNNER_NAME:-unknown} at $(date --iso-8601=ns)"
+              echo "Workspace: $(pwd -P)"
+              ls -la --time-style=full-iso || true
+              df -h . || true
+            fi
+          }
+          trap diagnose_workdir EXIT
           rm -rf _tmp_unpack
           mkdir _tmp_unpack
           test -s workdir.tar.gz
@@ -176,6 +188,10 @@ jobs:
         if: always()
         shell: bash
         run: |
+          if [ ! -f Makefile ]; then
+            echo "Workdir was not extracted, make did not run in this job - nothing to clean up."
+            exit 0
+          fi
           make ci-clean
           make ci-image-clean
 
@@ -304,6 +320,7 @@ jobs:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
       CRON_TOKEN_SHA256: ${{ secrets.CRON_TOKEN_SHA256 }}
+      APP_KEY: ${{ secrets.APP_KEY }}
       SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
       SEND_EMAIL: ${{ vars.SEND_EMAIL }}
       ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
@@ -376,6 +393,7 @@ jobs:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
       CRON_TOKEN_SHA256: ${{ secrets.CRON_TOKEN_SHA256 }}
+      APP_KEY: ${{ secrets.APP_KEY }}
       SKAUTIS_TEST_MODE: ${{ vars.SKAUTIS_TEST_MODE }}
       SEND_EMAIL: ${{ vars.SEND_EMAIL }}
       ERROR_EMAILS: ${{ vars.ERROR_EMAILS }}
@@ -420,6 +438,7 @@ jobs:
       APPLICATION_ID: ${{ secrets.APPLICATION_ID }}
       DB_FIX_TOKEN_SHA256: ${{ secrets.DB_FIX_TOKEN_SHA256 }}
       CRON_TOKEN_SHA256: ${{ secrets.CRON_TOKEN_SHA256 }}
+      APP_KEY: ${{ secrets.APP_KEY }}
       SKAUTIS_TEST_MODE: "false"
       SEND_EMAIL: "true"
       ERROR_EMAILS: alex@skaut.cz

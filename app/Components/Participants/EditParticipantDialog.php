@@ -13,7 +13,6 @@ use App\Model\Participant\NonMemberParticipantService;
 use App\Model\Participant\PersonAccessNotAllowed;
 use App\Model\Participant\PersonAddressChangeNotAllowed;
 use App\Model\Utils\MoneyFactory;
-use Assert\Assertion;
 use Cake\Chronos\ChronosDate;
 use Closure;
 use Component\Forms\BaseForm;
@@ -60,6 +59,22 @@ final class EditParticipantDialog extends Dialog
         $this->show();
     }
 
+    /**
+     * The address may still carry a participant who is not in the list any more, e.g. kept by the redirect after
+     * they were removed. The dialog then stays closed instead of failing.
+     *
+     * @param array<string, mixed> $params
+     */
+    public function loadState(array $params): void
+    {
+        parent::loadState($params);
+
+        if ($this->participantId !== null && ! isset($this->participants[$this->participantId])) {
+            $this->participantId = null;
+            $this->opened = false;
+        }
+    }
+
     protected function beforeRender(): void
     {
         parent::beforeRender();
@@ -88,10 +103,14 @@ final class EditParticipantDialog extends Dialog
 
     protected function createComponentForm(): BaseForm
     {
-        Assertion::notNull($this->participantId);
-        Assertion::keyExists($this->participants, $this->participantId);
+        $participant = $this->participantId === null ? null : ($this->participants[$this->participantId] ?? null);
 
-        $participant = $this->participants[$this->participantId];
+        if ($participant === null) {
+            // Saving a participant who was removed meanwhile.
+            $this->flashMessage('Účastník už v seznamu není, nejspíš ho mezitím někdo odebral.', 'warning');
+            $this->redirect('this');
+        }
+
         if (! $participant instanceof Participant) {
             throw new LogicException('Assertion failed.');
         }

@@ -15,8 +15,8 @@ use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\NotificationsCollector;
 use App\Model\Common\Services\QueryBus;
 use App\Model\Help\Manager\PageHelpManager;
-use App\Model\PageView\Services\PageViewTracker;
 use App\Model\Unit\UnitService;
+use App\Model\Usage\Services\UsageTracker;
 use App\Model\User\Services\LoginTracker;
 use App\Model\User\UserPreferencesService;
 use App\Model\User\UserService;
@@ -52,6 +52,9 @@ use function strtolower;
 abstract class BasePresenter extends Presenter
 {
     private const SESSION_KEEP_ALIVE_INTERVAL_MS = 1_200_000;
+
+    /** Presenters a page calls on a timer, see isBackgroundRequest(). */
+    private const BACKGROUND_PRESENTERS = ['SessionKeepAlive', 'Payments:TaskQueueStatus'];
 
     private const PUBLIC_ACTIONS = [
         'Default' => ['default', 'about', 'supporters', 'reinforcement', 'privacy'],
@@ -95,7 +98,7 @@ abstract class BasePresenter extends Presenter
 
     protected LoginTracker $loginTracker;
 
-    private PageViewTracker $pageViewTracker;
+    private UsageTracker $usageTracker;
 
     public function injectAll(
         UserService $userService,
@@ -114,7 +117,7 @@ abstract class BasePresenter extends Presenter
         UserPreferencesService $userPreferences,
         PageHelpManager $pageHelp,
         LoginTracker $loginTracker,
-        PageViewTracker $pageViewTracker,
+        UsageTracker $usageTracker,
     ): void {
         $this->userService = $userService;
         $this->unitService = $unitService;
@@ -132,7 +135,7 @@ abstract class BasePresenter extends Presenter
         $this->userPreferences = $userPreferences;
         $this->pageHelp = $pageHelp;
         $this->loginTracker = $loginTracker;
-        $this->pageViewTracker = $pageViewTracker;
+        $this->usageTracker = $usageTracker;
     }
 
     protected function startup(): void
@@ -163,7 +166,7 @@ abstract class BasePresenter extends Presenter
             $this->redirect(':Default:', ['backlink' => $backlink]);
         }
 
-        if ($this->getUser()->isLoggedIn() && ! $this->isSessionKeepAliveRequest()) {
+        if ($this->getUser()->isLoggedIn() && ! $this->isBackgroundRequest()) {
             $this->loginTracker->touch();
         }
 
@@ -173,34 +176,33 @@ abstract class BasePresenter extends Presenter
     }
 
     /**
-     * Counts the page for the usage statistics. Only a plain page load counts:
-     * an AJAX snippet redraw is one page being used further, not another view,
-     * and a form submission is counted by the page it lands on.
+     * Counts the page for the usage statistics, only for a signed-in user. Only a page load counts: an AJAX
+     * snippet redraw is one page being used further, and a background refresh of a panel must not count as work.
      */
-    private function recordPageView(): void
+    private function recordUsage(): void
     {
-        if ($this->isAjax() || ! $this->getHttpRequest()->isMethod('GET')) {
+        if (! $this->getUser()->isLoggedIn() || $this->isAjax()) {
             return;
         }
 
-        $this->pageViewTracker->record($this->getPageHelpKey());
+        $this->usageTracker->record((string) $this->getName(), $this->getAction());
     }
 
     /**
-     * The keep-alive ping fires on a timer whether or not anyone is at the
-     * keyboard, so it must not count as activity — otherwise every user who
-     * opted into it would appear to work for as long as the tab stays open.
+     * A request a page sends on a timer (the keep-alive ping, the refresh of the panel of background e-mails)
+     * fires whether or not anyone is at the keyboard, so it must not count as activity — otherwise every user
+     * would appear to work for as long as the tab stays open.
      */
-    private function isSessionKeepAliveRequest(): bool
+    protected function isBackgroundRequest(): bool
     {
-        return $this->getName() === 'SessionKeepAlive';
+        return in_array($this->getName(), self::BACKGROUND_PRESENTERS, true);
     }
 
     protected function beforeRender(): void
     {
         parent::beforeRender();
 
-        $this->recordPageView();
+        $this->recordUsage();
 
         [$module, $presenterName] = $this->resolveTemplateSection();
         $sessionKeepAliveEnabled = $this->getUser()->isLoggedIn()
@@ -221,6 +223,9 @@ abstract class BasePresenter extends Presenter
             'sessionKeepAliveInterval' => self::SESSION_KEEP_ALIVE_INTERVAL_MS,
             'sessionKeepAliveUrl' => $sessionKeepAliveEnabled
                 ? $this->linkGenerator->link('SessionKeepAlive:default')
+                : null,
+            'themeReportUrl' => $this->getUser()->isLoggedIn() && $this->loginTracker->needsThemeReport()
+                ? $this->linkGenerator->link('ThemeReport:default')
                 : null,
         ]);
 

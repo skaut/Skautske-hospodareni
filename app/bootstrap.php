@@ -31,7 +31,7 @@ FileSystem::createDir($tempDir.'/sessions');
 
 $configurator->createRobotLoader()
     ->addDirectory(__DIR__)
-    ->register(true);
+    ->register();
 
 $configurator->addStaticParameters([
     'envConfig' => $environment,

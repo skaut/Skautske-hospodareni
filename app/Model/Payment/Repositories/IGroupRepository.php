@@ -22,8 +22,12 @@ interface IGroupRepository
      */
     public function findByIds(array $ids): array;
 
-    /** @return Group[] */
-    public function findByReminder(): array;
+    /**
+     * Open groups with automatic reminders switched on, with the days chosen and a sender set.
+     *
+     * @return Group[]
+     */
+    public function findSendingAutomaticReminders(): array;
 
     /**
      * @param int[] $unitIds

@@ -27,6 +27,10 @@ final class RegistrationCreateGroupPresenter extends BasePresenter
 
     public function actionDefault(): void
     {
+        if (! $this->isEditable) {
+            $this->denyAccess('Nemáte oprávnění zakládat skupiny plateb v této jednotce.');
+        }
+
         $registration = $this->queryBus->handle(
             new RegistrationWithoutGroupQuery(new UnitId($this->unitService->getUnitId())),
         );

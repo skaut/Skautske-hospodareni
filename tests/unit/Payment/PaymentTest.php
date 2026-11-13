@@ -493,6 +493,44 @@ class PaymentTest extends Unit
         $this->assertTrue($payment->canSendReminder(new DateTimeImmutable('2026-07-14 08:00:00')));
     }
 
+    public function testAutomaticReminderIsDueOnceTheChosenDaysPassed(): void
+    {
+        $today = new ChronosDate('2026-11-20');
+        $payment = $this->createPaymentWithDueDate(new ChronosDate('2026-11-13'));
+
+        self::assertFalse($payment->isAutomaticReminderDue(8, $today));
+        self::assertTrue($payment->isAutomaticReminderDue(7, $today));
+        self::assertTrue($payment->isAutomaticReminderDue(1, $today));
+    }
+
+    public function testAutomaticReminderIsQueuedOnlyOnce(): void
+    {
+        $payment = $this->createPaymentWithDueDate(new ChronosDate('2026-11-01'));
+
+        $payment->markAutomaticReminderQueued(new DateTimeImmutable('2026-11-05 06:00'));
+
+        self::assertFalse($payment->isAutomaticReminderDue(3, new ChronosDate('2026-11-20')));
+    }
+
+    public function testReminderSentByHandCancelsAutomaticReminder(): void
+    {
+        $payment = $this->createPaymentWithDueDate(new ChronosDate('2026-11-01'));
+
+        $payment->recordSentEmail(EmailType::get(EmailType::PAYMENT_REMINDER), new DateTimeImmutable('2026-11-02 10:00'), 'Jan Novák');
+
+        self::assertTrue($payment->hasSentReminder());
+        self::assertFalse($payment->isAutomaticReminderDue(3, new ChronosDate('2026-11-20')));
+    }
+
+    public function testAutomaticReminderIsNotDueForPaidPayment(): void
+    {
+        $payment = $this->createPaymentWithDueDate(new ChronosDate('2026-11-01'));
+
+        $payment->completeManually(new DateTimeImmutable(), 'Jan Novák');
+
+        self::assertFalse($payment->isAutomaticReminderDue(3, new ChronosDate('2026-11-20')));
+    }
+
     public function testDuplicityEmailAddress(): void
     {
         $email1 = new EmailAddress('test@gmail.com');

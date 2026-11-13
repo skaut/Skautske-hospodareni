@@ -8,12 +8,13 @@
                 <span>Texty kontextové nápovědy, které se uživatelům zobrazují v pravém panelu stránky. Vyplněno {$filledCount} ze {$totalCount} stránek.</span>
             </div>
             <p class="text-body-secondary small mb-0">
-                Sloupec Zobrazení říká, kolikrát se stránka za posledních {$viewWindowDays} dní otevřela — počítá se na serveru,
-                bez cookies a bez údajů o uživateli. Stránky bez nápovědy jsou seřazené od nejpoužívanějších, takže se dá psát v tom pořadí, v jakém se to vyplatí.
-                {if $viewsSince === null}
-                    Zatím se nic nezaznamenalo; počítání začne po nasazení migrace.
+                Sloupec Sezení říká, v kolika přihlášeních se stránka za posledních {$sessionWindowDays} dní otevřela. Jedno přihlášení
+                se u stránky počítá jednou za den, počítají se jen přihlášení uživatelé a administrace se nepočítá.
+                Stránky bez nápovědy jsou seřazené od nejpoužívanějších, takže se dá psát v tom pořadí, v jakém se to vyplatí.
+                {if $sessionsSince === null}
+                    Zatím se nic nezaznamenalo.
                 {else}
-                    Zaznamenává se od {$viewsSince|date:'j. n. Y'}.
+                    Zaznamenává se od {$sessionsSince|date:'j. n. Y'}.
                 {/if}
             </p>
         </div>
@@ -29,7 +30,7 @@
                             <th>Modul</th>
                             <th>Proužek</th>
                             <th>Bloků</th>
-                            <th class="text-end">Zobrazení</th>
+                            <th class="text-end">Sezení</th>
                             <th>Naposledy upraveno</th>
                             <th class="text-end">Akce</th>
                         </tr>
@@ -53,9 +54,9 @@
                                     <span class="text-body-secondary">—</span>
                                 {/if}
                             </td>
-                            <td class="text-end" data-test="admin-help-views-{$row['pageKey']}">
-                                {if $row['views'] > 0}
-                                    {$row['views']|num}
+                            <td class="text-end" data-test="admin-help-sessions-{$row['pageKey']}">
+                                {if $row['sessions'] > 0}
+                                    {$row['sessions']|num}
                                 {else}
                                     <span class="text-body-secondary">—</span>
                                 {/if}

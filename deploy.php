@@ -151,6 +151,12 @@ task('build:runtime_files', function () {
         $values['CRON_TOKEN_SHA256'] = $cronTokenSha256;
     }
 
+    // Secret key of the application, e.g. for the keyed hashes; without it the logins are not recorded.
+    $appKey = optionalEnv('APP_KEY');
+    if ($appKey !== null) {
+        $values['APP_KEY'] = $appKey;
+    }
+
     file_put_contents($runtimeDir.'/.env.local', buildDotenvContent($values));
     file_put_contents($runtimeDir.'/google-credentials.json', requiredEnv('GOOGLE_CREDENTIALS'));
 

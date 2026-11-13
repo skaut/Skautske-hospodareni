@@ -15,6 +15,13 @@ final class OAuthUrlQueryHandler
 
     public function __invoke(OAuthUrlQuery $query): string
     {
-        return $this->service->getClient()->createAuthUrl();
+        $client = $this->service->getClient();
+        $client->setState($query->getState());
+
+        if ($query->getLoginHint() !== null) {
+            $client->setLoginHint($query->getLoginHint());
+        }
+
+        return $client->createAuthUrl();
     }
 }

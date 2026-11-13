@@ -95,6 +95,12 @@ class Unit
         return $this->parentId;
     }
 
+    /** SkautIS type of the unit, e.g. stredisko, oddil, okres, ustredi. */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
     public function isOfficial(): bool
     {
         return in_array($this->type, self::OFFICIAL_UNIT_TYPES, true);

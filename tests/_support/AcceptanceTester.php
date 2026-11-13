@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\ErrorPresenter;
+use App\Model\Skautis\SkautisErrors;
 use Codeception\Actor;
 use Facebook\WebDriver\Exception\WebDriverException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -39,12 +41,6 @@ class AcceptanceTester extends Actor
     public const PAGE_STATE_EXPECTED = 'expected';
     public const PAGE_STATE_SKAUTIS_UNAVAILABLE = 'skautis-unavailable';
     public const PAGE_STATE_UNKNOWN = 'unknown';
-
-    private const SKAUTIS_CONNECTION_ERROR_TEXTS = [
-        'Could not connect to host',
-        'Error Fetching http headers',
-        'php_network_getaddresses',
-    ];
 
     private const LOGIN = 'crash01';
 
@@ -459,6 +455,17 @@ class AcceptanceTester extends Actor
      * Lokátory rozbalovacích tlačítek se před měřením postupně otevřou (např. menu a v něm vnořená šipka)
      * a po měření zase zavřou; velikost okna se vrátí na původní.
      */
+    /**
+     * Runs a scheduler job right away, the way www/cron.php would, e.g. the task queue. The tests run in
+     * the same container as the application, so the console reaches the same database.
+     */
+    public function runCronJob(string $name): void
+    {
+        exec(sprintf('php %s scheduler:force-run %s 2>&1', escapeshellarg(__DIR__.'/../../bin/console'), escapeshellarg($name)), $output, $exitCode);
+
+        Assert::assertSame(0, $exitCode, sprintf('Cron job "%s" failed: %s', $name, implode("\n", $output)));
+    }
+
     public function seeNoHorizontalOverflowOnPhone(string $context, string ...$dropdownToggles): void
     {
         $size = $this->executeInSelenium(static fn (RemoteWebDriver $webDriver) => $webDriver->manage()->window()->getSize());
@@ -646,14 +653,19 @@ JS, [$selector]);
         }
     }
 
+    /**
+     * In debug mode a skautIS outage renders the Tracy blue screen with the WsdlException. Without debug mode, as in CI,
+     * the error page redirects to the dashboard with the skautIS unavailable flash message instead.
+     */
     private function buildSkautisWsdlErrorJsCondition(string $textVariable): string
     {
         $conditions = [];
-        foreach (self::SKAUTIS_CONNECTION_ERROR_TEXTS as $errorText) {
+        foreach ([...SkautisErrors::NOT_PROCESSED_MESSAGES, ...SkautisErrors::RESPONSE_LOST_MESSAGES] as $errorText) {
             $conditions[] = $textVariable.'.includes('.json_encode($errorText).')';
         }
 
-        return $textVariable.'.includes("WsdlException") && ('.implode(' || ', $conditions).')';
+        return '('.$textVariable.'.includes("WsdlException") && ('.implode(' || ', $conditions).'))'
+            .' || '.$textVariable.'.includes('.json_encode(ErrorPresenter::SKAUTIS_UNAVAILABLE_MESSAGE).')';
     }
 
     private function scrollElementToCenter(string $locator): void

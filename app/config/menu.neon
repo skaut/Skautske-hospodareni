@@ -262,6 +262,15 @@ menu:
                     test: admin-nav-cron
                     icon: fi fi-rr-time-check
                     requiresAdmin: true
+            taskQueue:
+                title: Fronta úloh
+                action: 'Admin:TaskQueue:default'
+                include:
+                    - '^Admin:TaskQueue:.*$'
+                data:
+                    test: admin-nav-task-queue
+                    icon: fi fi-rr-paper-plane
+                    requiresAdmin: true
             invoiceAccess:
                 title: Fakturace
                 action: 'Admin:InvoiceAccess:default'

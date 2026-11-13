@@ -26,9 +26,7 @@ final class MailsPresenter extends \App\Presentation\Settings\SettingsBasePresen
         }
 
         if (! $this->isEditable) {
-            $this->setView('accessDenied');
-
-            return;
+            $this->denyAccess();
         }
 
         $this->template->setParameters([

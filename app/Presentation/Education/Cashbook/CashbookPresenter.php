@@ -114,7 +114,11 @@ final class CashbookPresenter extends BasePresenter
 
         $amount = $this->queryBus->handle(new EducationParticipantIncomeQuery(new SkautisEducationId((int) $this->aid)));
 
-        if ($amount === 0.0) {
+        if (! $amount instanceof Money) {
+            throw new LogicException('Assertion failed.');
+        }
+
+        if ($amount->isZero()) {
             $this->flashMessage('Nemáte žádné příjmy od účastníků, které by bylo možné importovat.', 'warning');
             $this->redirect('default', ['aid' => $this->aid]);
         }
@@ -127,9 +131,6 @@ final class CashbookPresenter extends BasePresenter
         );
         $categoriesDto = $this->queryBus->handle(new CategoryListQuery($this->getCashbookId()));
 
-        if (! $amount instanceof Money) {
-            throw new LogicException('Assertion failed.');
-        }
         $items = [new ChitItem(Amount::fromMoney($amount), $categoriesDto[$categoryId], $purpose)];
         $this->commandBus->handle(new AddChitToCashbook($this->getCashbookId(), $body, $values->isAccount === 'Y' ? PaymentMethod::BANK() : PaymentMethod::CASH(), $items));
 

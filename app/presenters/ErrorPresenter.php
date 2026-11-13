@@ -7,6 +7,7 @@ namespace App;
 use App\Model\Cashbook\Commands\Cashbook\SelectFirstActiveRole;
 use App\Model\Common\Services\CommandBus;
 use App\Model\Skautis\Exception\MissingCurrentRole;
+use App\Model\Skautis\SkautisErrors;
 use App\Model\Unit\UserHasNoUnit;
 use App\Model\User\Exception\UserHasNoRole;
 use LogicException;
@@ -22,11 +23,8 @@ use function in_array;
 
 class ErrorPresenter extends Presenter
 {
-    private const SKAUTIS_UNAVAILABLE_ERRORS = [
-        'Server was unable to process request.',
-        'Could not connect to host',
-        'Service Unavailable',
-    ];
+    /** Shown when skautIS did not answer or failed; the acceptance tests recognise a skautIS outage by it. */
+    public const SKAUTIS_UNAVAILABLE_MESSAGE = 'Nepodařilo se připojit ke Skautisu. Zkuste to prosím za chvíli nebo zkontrolujte, zda neprobíhá jeho údržba.';
 
     public function __construct(private LoggerInterface $logger, protected CommandBus $commandBus)
     {
@@ -37,7 +35,7 @@ class ErrorPresenter extends Presenter
     public function renderDefault(mixed $exception, ?Request $request = null): void
     {
         if ($exception instanceof SkautisMaintenance || $exception instanceof WsdlException && $this->isSkautisUnavailable($exception)) {
-            $this->flashMessage('Nepodařilo se připojit ke Skautisu. Zkuste to prosím za chvíli nebo zkontrolujte, zda neprobíhá jeho údržba.', 'danger');
+            $this->flashMessage(self::SKAUTIS_UNAVAILABLE_MESSAGE, 'danger');
             $this->redirect(':Default:');
         }
 
@@ -66,6 +64,8 @@ class ErrorPresenter extends Presenter
             $this->setView('noUnit');
         } elseif ($exception instanceof Nette\Application\BadRequestException) {
             $code = $exception->getCode();
+            // Only a denial written for the user is shown; other messages are technical.
+            $this->template->setParameters(['reason' => $exception instanceof AccessDenied ? $exception->getMessage() : null]);
             // load template 403.latte or 404.latte or ... 4xx.latte
             $this->setView(in_array($code, [403, 404, 405, 410, 500], true) ? (string) $code : '4xx');
         } else {
@@ -84,12 +84,6 @@ class ErrorPresenter extends Presenter
 
     private function isSkautisUnavailable(WsdlException $exception): bool
     {
-        foreach (self::SKAUTIS_UNAVAILABLE_ERRORS as $message) {
-            if (Nette\Utils\Strings::startsWith($exception->getMessage(), $message)) {
-                return true;
-            }
-        }
-
-        return false;
+        return SkautisErrors::isNoAnswer($exception) || SkautisErrors::isServerError($exception);
     }
 }

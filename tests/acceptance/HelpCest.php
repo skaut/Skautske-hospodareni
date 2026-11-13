@@ -43,7 +43,7 @@ class HelpCest extends BaseAcceptanceCest
     public function _after(AcceptanceTester $I): void
     {
         $I->deleteFromDatabase('page_help', ['page_key' => self::PAGE_KEY]);
-        $I->deleteFromDatabase('page_view_daily', ['page_key' => self::PAGE_KEY]);
+        $I->deleteFromDatabase('usage_session_daily', ['page' => self::PAGE_KEY]);
     }
 
     /** @group help */
@@ -238,17 +238,20 @@ JS);
 
         $I->wantTo('see how much a page is used next to its help');
 
-        $I->haveInDatabase('page_view_daily', [
-            'page_key' => self::PAGE_KEY,
+        $I->haveInDatabase('usage_session_daily', [
             'day' => date('Y-m-d', strtotime('-10 days')),
-            'views' => 4242,
+            'unit_code' => '',
+            'section' => 'settings',
+            'screen' => 'Settings:User',
+            'page' => self::PAGE_KEY,
+            'sessions' => 4242,
         ]);
 
         $this->openPageAndWaitForElementWithSkautisRetry($I, '/admin/napovedy', '[data-test="admin-help-list"]');
 
         // The column is a 90 day sum, and the other scenarios open this very page,
-        // so the only stable expectation is that the seeded views are included.
-        $shown = (int) preg_replace('~\D~', '', $I->grabTextFrom('[data-test="admin-help-views-'.self::PAGE_KEY.'"]'));
+        // so the only stable expectation is that the seeded sessions are included.
+        $shown = (int) preg_replace('~\D~', '', $I->grabTextFrom('[data-test="admin-help-sessions-'.self::PAGE_KEY.'"]'));
         Assert::assertGreaterThanOrEqual(4242, $shown);
     }
 
