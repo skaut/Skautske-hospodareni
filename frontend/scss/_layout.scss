@@ -18,6 +18,12 @@ html {
   // Foreground for surfaces that stay light in both themes, such as info and
   // warning badges. Unlike --app-ink this must not flip with the theme.
   --app-ink-on-light: #302821;
+
+  // Tabler shifts the page right by the scrollbar width on desktop
+  // (margin-left: calc(100vw - 100%)), which leaves an empty strip on the
+  // left. Reserve the scrollbar space on the right instead.
+  margin-left: 0;
+  scrollbar-gutter: stable;
 }
 
 ::selection {
