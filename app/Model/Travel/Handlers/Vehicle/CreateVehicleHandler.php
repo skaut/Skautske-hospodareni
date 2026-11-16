@@ -35,6 +35,7 @@ final class CreateVehicleHandler
             $subunit,
             $command->getRegistration(),
             $command->getConsumption(),
+            $command->getFuelType(),
             $metadata,
         );
 

@@ -346,6 +346,7 @@ final class TravelServiceIntegrationTest extends IntegrationTest
             null,
             $registration,
             5.6,
+            Vehicle\FuelType::COMBUSTION,
             new Vehicle\Metadata(new DateTimeImmutable('2026-01-01'), 'Tester'),
         );
 
