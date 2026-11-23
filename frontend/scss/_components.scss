@@ -144,7 +144,13 @@
   background: transparent;
   color: var(--app-green);
   font-size: 1rem;
+  line-height: 1;
   cursor: pointer;
+}
+
+// The icon is moved here from `.page-lead` by script; keep it centred like `.page-lead > i` did.
+.page-help-toggle > i {
+  display: inline-flex;
 }
 
 .page-help-toggle:hover {
