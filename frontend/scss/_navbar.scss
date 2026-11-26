@@ -422,3 +422,26 @@
     position: static;
   }
 }
+
+// Context submenus (camp, event, education, unit): even 2-column grid of 44 px targets on phones.
+@media (max-width: 575.98px) {
+  .site-submenu nav {
+    display: grid !important; // overrides the template's .d-flex utility
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 0.5rem 0;
+  }
+
+  // Flatten the template's grouping wrappers so every action is one grid cell.
+  .site-submenu nav > div:not(.dropdown),
+  .site-submenu nav > div > span {
+    display: contents !important;
+  }
+
+  .site-submenu nav .btn {
+    width: 100%;
+    min-height: 2.75rem;
+    justify-content: flex-start;
+    text-align: left;
+    white-space: normal;
+  }
+}
