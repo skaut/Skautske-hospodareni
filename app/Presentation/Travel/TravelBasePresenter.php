@@ -11,6 +11,7 @@ use Nette\Security\SimpleIdentity;
 
 use function array_keys;
 use function array_map;
+use function in_array;
 use function is_array;
 
 class TravelBasePresenter extends BaseSectionPresenter
@@ -39,6 +40,16 @@ class TravelBasePresenter extends BaseSectionPresenter
         } else {
             $this->redirect('Default:');
         }
+    }
+
+    /** Contracts and vehicles are created for the official unit, so creating them needs edit rights to it. */
+    protected function assertCanEditOfficialUnit(): void
+    {
+        if (in_array($this->officialUnit->getId(), $this->getEditableUnitIds(), true)) {
+            return;
+        }
+
+        $this->denyAccess('Nemáte oprávnění upravovat cestovní náhrady této jednotky.');
     }
 
     /** @return int[] */

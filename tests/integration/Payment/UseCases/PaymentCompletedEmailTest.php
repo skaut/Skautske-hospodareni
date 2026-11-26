@@ -16,16 +16,24 @@ use App\Model\Payment\EmailTemplate;
 use App\Model\Payment\EmailType;
 use App\Model\Payment\Group;
 use App\Model\Payment\MailerFactoryStub;
+use App\Model\Payment\Mailing\PaymentEmailTaskHandler;
 use App\Model\Payment\Payment;
 use App\Model\Payment\PaymentService;
+use App\Model\Payment\RecordingMailer;
 use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Payment\UserRepositoryStub;
+use App\Model\TaskQueue\Entity\TaskItem;
+use App\Model\TaskQueue\Entity\TaskQueueRun;
+use App\Model\TaskQueue\TaskItemState;
+use App\Model\TaskQueue\TaskQueueProcessor;
 use App\Model\Utils\MoneyFactory;
 use DateTimeImmutable;
 use Helpers;
 use IntegrationTest;
-use Mockery as m;
-use Nette\Mail\Mailer;
+use RuntimeException;
+use Skautis\Wsdl\WsdlException;
+
+use function microtime;
 
 class PaymentCompletedEmailTest extends IntegrationTest
 {
@@ -44,6 +52,8 @@ class PaymentCompletedEmailTest extends IntegrationTest
             Group::class,
             Payment::class,
             GoogleOAuth::class,
+            TaskItem::class,
+            TaskQueueRun::class,
         ];
     }
 
@@ -75,6 +85,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
         $this->paymentService->completePayment(1);
 
         $this->assertPaymentWasCompleted();
+        $this->tester->dontSeeInDatabase('task_queue_item', []);
     }
 
     /** @see bug https://github.com/skaut/Skautske-hospodareni/pull/511 */
@@ -105,8 +116,45 @@ class PaymentCompletedEmailTest extends IntegrationTest
         );
 
         $this->users->setUser(new User(1, 'František Maša', self::EMAIL));
+        $mailer = $this->useRecordingMailer();
 
         $this->paymentService->completePayment(1);
+
+        // The e-mail waits in the queue and keeps the name of who completed the payment.
+        self::assertSame([], $mailer->messages);
+        $this->users->setUser(null);
+        $this->processQueue();
+
+        self::assertCount(1, $mailer->messages);
+        $this->tester->seeInDatabase('pa_payment_sent_emails', [
+            'payment_id' => 1,
+            'type' => EmailType::PAYMENT_COMPLETED,
+            'sender_name' => 'František Maša',
+        ]);
+    }
+
+    public function testNothingIsQueuedWhenCompletionIsRolledBack(): void
+    {
+        $this->users->setUser(new User(1, 'František Maša', self::EMAIL));
+        $this->initEntities(
+            [
+                EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
+                EmailType::PAYMENT_COMPLETED => new EmailTemplate('subject', 'body'),
+            ],
+            self::EMAIL,
+            $this->createOAuth(),
+        );
+
+        try {
+            $this->entityManager->wrapInTransaction(function (): void {
+                $this->paymentService->completePayment(1);
+
+                throw new RuntimeException('Saving failed.');
+            });
+        } catch (RuntimeException) {
+        }
+
+        $this->tester->dontSeeInDatabase('task_queue_item', []);
     }
 
     public function testEmailIsSentAsAutomatWhenNobodyIsLoggedIn(): void
@@ -126,6 +174,7 @@ class PaymentCompletedEmailTest extends IntegrationTest
 
         $payment->pairWithTransaction(new DateTimeImmutable(), new Transaction('21924318042', '123456789/0800', 'Joe Doe', null, null));
         $payments->save($payment);
+        $this->processQueue();
 
         $this->assertPaymentWasCompleted();
         $this->tester->seeInDatabase('pa_payment_sent_emails', [
@@ -135,6 +184,37 @@ class PaymentCompletedEmailTest extends IntegrationTest
         ]);
     }
 
+    /** Who completed the payment is only for the record; skautIS failing to tell must not roll back the payment. */
+    public function testPaymentIsCompletedWhenSkautisCannotTellWhoCompletedIt(): void
+    {
+        $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
+        $this->initEntities(
+            [
+                EmailType::PAYMENT_INFO => new EmailTemplate('', ''),
+                EmailType::PAYMENT_COMPLETED => new EmailTemplate('subject', 'body'),
+            ],
+            self::EMAIL,
+            $this->createOAuth(),
+        );
+        $this->users->failWith(new WsdlException('Service Unavailable'));
+        $mailer = $this->useRecordingMailer();
+
+        $this->paymentService->completePayment(1);
+
+        $this->users->failWith(null);
+        $this->users->setUser(null);
+        $this->processQueue();
+
+        $this->assertPaymentWasCompleted();
+        self::assertCount(1, $mailer->messages);
+        $this->tester->seeInDatabase('pa_payment_sent_emails', [
+            'payment_id' => 1,
+            'type' => EmailType::PAYMENT_COMPLETED,
+            'sender_name' => 'AUTOMAT',
+        ]);
+    }
+
+    /** The payment is completed and its confirmation waits until the sender's account is connected again. */
     public function testPaymentIsCompletedWhenGroupOAuthIsInvalid(): void
     {
         $this->users->setUser(new User(10, 'František Maša', self::EMAIL));
@@ -146,13 +226,15 @@ class PaymentCompletedEmailTest extends IntegrationTest
             self::EMAIL,
             $this->createOAuth(),
         );
-        $mailer = m::mock(Mailer::class);
-        $mailer->shouldReceive('send')->andThrow(new InvalidOAuth('invalid_grant => Token has been expired or revoked.'));
-        $this->tester->grabService(MailerFactoryStub::class)->setMailer($mailer);
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(new InvalidOAuth(self::EMAIL, 'invalid_grant', 'Token has been expired or revoked.'));
 
         $this->paymentService->completePayment(1);
+        $this->processQueue();
 
         $this->assertPaymentWasCompleted();
+        $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::PENDING->value, 'message' => PaymentEmailTaskHandler::WAITING_FOR_SENDER_MESSAGE]);
+        $this->tester->dontSeeInDatabase('task_queue_item', ['state' => TaskItemState::FAILED->value]);
+        $this->tester->dontSeeInDatabase('pa_payment_sent_emails', ['payment_id' => 1]);
     }
 
     /** @param EmailTemplate[]|null $emails */
@@ -185,6 +267,19 @@ class PaymentCompletedEmailTest extends IntegrationTest
         ]);
 
         return OAuthId::fromString('42288e92-27fb-453c-9904-36a7ebd14fe2');
+    }
+
+    private function useRecordingMailer(): RecordingMailer
+    {
+        $mailer = new RecordingMailer();
+        $this->tester->grabService(MailerFactoryStub::class)->setMailer($mailer);
+
+        return $mailer;
+    }
+
+    private function processQueue(): void
+    {
+        $this->tester->grabService(TaskQueueProcessor::class)->processDue(microtime(true) + 60);
     }
 
     private function assertPaymentWasCompleted(): void

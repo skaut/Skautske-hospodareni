@@ -9,8 +9,8 @@ Skautske hospodareni is a web application for accounting and financial administr
 ## Target Environment
 
 - The project targets PHP 8.3 exclusively. Do not maintain PHP 8.2 compatibility and do not use features that require PHP 8.4 or newer.
-- The PHP image is based on `thecodingmachine/php:8.3-v4-fpm-node22`.
-- The database is MySQL 8.0 with `utf8mb4` and `utf8mb4_czech_ci` collation.
+- The PHP image is based on `thecodingmachine/php:8.3.36-v5-fpm-node22`. Keep the pinned PHP patch version at or above every security fix required by `roave/security-advisories`, and keep `config.platform.php` in `composer.json` equal to it.
+- The database is MySQL 8.4 (production server lebeda) with `utf8mb4` and `utf8mb4_czech_ci` collation.
 - The web stack consists of Nginx and Traefik.
 - The application time zone is `Europe/Prague`.
 
@@ -61,6 +61,17 @@ CI commands always use the base and CI Compose files, without the rootless overr
 - SkautIS is an external integration system; isolate communication in infrastructure services and map it to DTOs.
 - For dates without time, use the established `Cake\Chronos\ChronosDate`; for points in time, use `DateTimeImmutable`.
 - Use existing domain value objects and custom Doctrine types instead of bypassing the domain model with primitive values.
+
+### Access Control
+
+- An access denial must end the request: call `denyAccess()` (403) in presenters or throw `BadRequestException` with 403 in components. Never only switch the view; Nette still runs signals and form submissions after the action.
+- Check rights to the entity the request works with (group, payment, bank account, cashbook), not to the unit from the URL. Filter IDs coming from the request, including datagrid group actions, to that entity.
+
+### Background Work And Bulk Emails
+
+- A web request on production may run at most 30 s and there is no CLI or worker. Work that may take longer goes to the task queue in `app/Model/TaskQueue`, processed by the `taskQueue` cron job (see `.docs/fronta-uloh.md`).
+- Sending more than one email at once always goes through the queue; payment emails use `PaymentEmailQueue`. A single email sent by a button may run right away through the same queue record.
+- A task handler calls `TaskContext::beginIrreversible()` right before the irreversible effect and records the result with `complete()`. Never retry a task that may have had its effect.
 
 ### Service Emails
 
@@ -146,6 +157,7 @@ Unify test procedures:
 - When acceptance navigation or a server-side form/action submit can render a transient SkautIS WSDL error page, use the shared SkautIS-aware helper from the acceptance ancestor. The low-level browser detection may live in `AcceptanceTester`, but individual tests should call the shared ancestor method so retry count and delay stay transparent in one place.
 - Common acceptance wait helpers in `AcceptanceTester` should reclassify retryable SkautIS WSDL error pages into explicit SkautIS/WSDL assertion failures. Do not leave these cases as generic timeouts waiting for unrelated text or elements.
 - A SkautIS WSDL communication failure that remains after all configured retries must fail with an explicit assertion message naming SkautIS/WSDL and the last URL. Do not let this case surface as a generic `NoSuchElementException` or timeout waiting for the expected page element.
+- `App\Model\Skautis\SkautisErrors` is the only list of SkautIS outage messages; application retries, the error page and the acceptance detection all use it. CI runs without debug mode, so the acceptance detection recognises an outage by `ErrorPresenter::SKAUTIS_UNAVAILABLE_MESSAGE`, not only by the Tracy blue screen.
 - Tests must be runnable both individually and in sequence. If a test changes data, it must prepare or reset it before running so it does not depend on order and does not leave state that breaks later tests.
 - If a test verifies a process requiring follow-up data, for example a travel order and a vehicle, it should be one uninterrupted test run or use an explicitly prepared isolated fixture.
 

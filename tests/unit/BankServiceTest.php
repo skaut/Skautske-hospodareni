@@ -16,6 +16,7 @@ use App\Model\Bank\Services\BankTransactionPairingService;
 use App\Model\Bank\Services\BankTransactionService;
 use App\Model\Bank\Transaction;
 use App\Model\DTO\Payment\PairingResult;
+use App\Model\Payment\BankAccountNotFound;
 use App\Model\Payment\EmailTemplate;
 use App\Model\Payment\EmailType;
 use App\Model\Payment\Group;
@@ -35,8 +36,11 @@ use Psr\Log\NullLogger;
 use Stubs\BankAccountAccessCheckerStub;
 use Stubs\OAuthsAccessCheckerStub;
 
+use function array_flip;
+use function array_intersect_key;
 use function array_keys;
 use function array_map;
+use function array_unique;
 use function count;
 
 final class BankServiceTest extends Unit
@@ -403,7 +407,7 @@ final class BankServiceTest extends Unit
         $pairingService->shouldReceive('pairAutomatically')->once()->andReturn(['payments' => [$pairedPayment], 'invoices' => []]);
 
         $payments = m::mock(IPaymentRepository::class);
-        $payments->shouldReceive('findOpenByGroups')->once()->with([12, 34])->andReturn([$failingPayment, $pairedPayment]);
+        $payments->shouldReceive('findGroupIdsWithOpenPayments')->once()->with([12, 34])->andReturn([12, 34]);
         $payments->shouldReceive('saveMany')->once()->with([$pairedPayment]);
 
         $logger = m::mock(LoggerInterface::class);
@@ -437,7 +441,6 @@ final class BankServiceTest extends Unit
         $gpcGroup = $this->group(34, 357, null);
         $paidGroup = $this->group(56, 951, null);
         $fioPayment = new Payment($fioGroup, '-', [], MoneyFactory::fromDecimal('100'), ChronosDate::now(), new VariableSymbol('123'), null, null, '');
-        $gpcPayment = new Payment($gpcGroup, '-', [], MoneyFactory::fromDecimal('100'), ChronosDate::now(), new VariableSymbol('456'), null, null, '');
 
         $groups = m::mock(IGroupRepository::class);
         $groups->shouldReceive('findAutomaticPairingEnabled')->once()->andReturn([$fioGroup, $gpcGroup, $paidGroup]);
@@ -457,7 +460,7 @@ final class BankServiceTest extends Unit
         $pairingService->shouldReceive('pairAutomatically')->once()->andReturn(['payments' => [], 'invoices' => []]);
 
         $payments = m::mock(IPaymentRepository::class);
-        $payments->shouldReceive('findOpenByGroups')->once()->with([12, 34, 56])->andReturn([$fioPayment, $gpcPayment]);
+        $payments->shouldReceive('findGroupIdsWithOpenPayments')->once()->with([12, 34, 56])->andReturn([12, 34]);
         $payments->shouldReceive('saveMany')->once();
 
         $logger = m::mock(LoggerInterface::class);
@@ -541,6 +544,12 @@ final class BankServiceTest extends Unit
                 ->with($bankAccountId)
                 ->andReturn($bankAccount);
         }
+
+        $repository->shouldReceive('findByIds')->andReturnUsing(static function (array $ids) use ($bankAccounts): array {
+            $found = array_intersect_key($bankAccounts, array_flip($ids));
+
+            return count($found) === count(array_unique($ids)) ? $found : throw new BankAccountNotFound();
+        });
 
         return $repository;
     }

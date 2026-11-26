@@ -22,14 +22,9 @@ class UserLoginManager extends AbstractManager
         return UserLogin::class;
     }
 
-    public function start(
-        int $userId,
-        ?int $unitId,
-        ?int $roleId,
-        ?string $roleKey,
-        DeviceInfo $device,
-    ): UserLogin {
-        $login = new UserLogin($userId, $unitId, $roleId, $roleKey, $device);
+    public function start(string $userHash, DeviceInfo $device): UserLogin
+    {
+        $login = new UserLogin($userHash, $device);
         $this->saveEntity($login);
 
         return $login;
@@ -38,6 +33,12 @@ class UserLoginManager extends AbstractManager
     public function touch(UserLogin $login, ?DateTimeImmutable $seenAt = null): void
     {
         $login->touch($seenAt);
+        $this->saveEntity($login);
+    }
+
+    public function reportTheme(UserLogin $login, bool $darkMode): void
+    {
+        $login->reportTheme($darkMode);
         $this->saveEntity($login);
     }
 

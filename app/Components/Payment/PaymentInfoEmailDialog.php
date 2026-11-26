@@ -5,16 +5,11 @@ declare(strict_types=1);
 namespace App\Components\Payment;
 
 use App\Components\Dialog;
-use App\Model\Common\Services\CommandBus;
 use App\Model\DTO\Payment\Payment;
-use App\Model\Google\Exception\OAuthNotSet;
-use App\Model\Google\InvalidOAuth;
-use App\Model\Payment\Commands\Mailing\SendPaymentInfo;
-use App\Model\Payment\InvalidBankAccount;
+use App\Model\Payment\EmailType;
 use App\Model\Payment\InvalidVariableSymbol;
+use App\Model\Payment\Mailing\PaymentEmailQueue;
 use App\Model\Payment\MissingVariableSymbol;
-use App\Model\Payment\PaymentClosed;
-use App\Model\Payment\PaymentHasNoEmails;
 use App\Model\Payment\PaymentService;
 use Nette\Application\Attributes\Persistent;
 
@@ -35,7 +30,7 @@ final class PaymentInfoEmailDialog extends Dialog
     #[Persistent]
     public string $paymentIds = '';
 
-    public function __construct(private int $groupId, private CommandBus $commandBus, private PaymentService $paymentService)
+    public function __construct(private int $groupId, private PaymentEmailQueue $emailQueue, private PaymentService $paymentService)
     {
     }
 
@@ -126,29 +121,15 @@ final class PaymentInfoEmailDialog extends Dialog
         );
     }
 
+    /** The e-mails wait in the queue (PaymentEmailQueue). */
     private function sendPaymentInfoEmails(): void
     {
-        $sentCount = 0;
+        $type = EmailType::get(EmailType::PAYMENT_INFO);
+        $paymentIds = array_map(static fn (Payment $payment): int => $payment->getId(), $this->payments());
+        $dispatch = $this->emailQueue->send($this->groupId, $type, $paymentIds);
 
-        foreach ($this->payments() as $payment) {
-            try {
-                $this->commandBus->handle(new SendPaymentInfo($payment->getId()));
-                ++$sentCount;
-            } catch (OAuthNotSet) {
-                $this->flashMessage(EmailButton::NO_MAILER_MESSAGE, 'warning');
-            } catch (InvalidBankAccount) {
-                $this->flashMessage(EmailButton::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-            } catch (InvalidOAuth $exception) {
-                $this->flashMessage($exception->getExplainedMessage(), 'danger');
-            } catch (PaymentClosed|PaymentHasNoEmails $exception) {
-                $this->flashMessage($exception->getMessage(), 'warning');
-            }
-        }
-
-        if ($sentCount === 1) {
-            $this->flashMessage('1 informační e-mail odeslán', 'success');
-        } elseif ($sentCount > 1) {
-            $this->flashMessage($sentCount.' informačních e-mailů odesláno', 'success');
+        foreach (PaymentEmailMessages::forDispatch($dispatch, $type) as [$message, $flashType]) {
+            $this->flashMessage($message, $flashType);
         }
 
         $this->onSuccess();

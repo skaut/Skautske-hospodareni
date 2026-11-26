@@ -1,0 +1,497 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\Payment\IntegrationTests;
+
+use App\Model\Common\EmailAddress;
+use App\Model\Common\Services\CommandBus;
+use App\Model\Common\Services\QueryBus;
+use App\Model\Common\User;
+use App\Model\Google\Entity\GoogleOAuth;
+use App\Model\Google\InvalidOAuth;
+use App\Model\Google\OAuthId;
+use App\Model\Google\OAuthValidity;
+use App\Model\Payment\Commands\Payment\CreatePayment;
+use App\Model\Payment\EmailTemplate;
+use App\Model\Payment\EmailType;
+use App\Model\Payment\Group;
+use App\Model\Payment\MailerFactoryStub;
+use App\Model\Payment\Mailing\AutomaticPaymentReminders;
+use App\Model\Payment\Mailing\PaymentEmailDispatch;
+use App\Model\Payment\Mailing\PaymentEmailQueue;
+use App\Model\Payment\Mailing\PaymentEmailTaskHandler;
+use App\Model\Payment\Payment;
+use App\Model\Payment\PaymentService;
+use App\Model\Payment\ReadModel\Queries\CountAutomaticReminderGroupsQuery;
+use App\Model\Payment\RecordingMailer;
+use App\Model\Payment\UserRepositoryStub;
+use App\Model\TaskQueue\Entity\TaskItem;
+use App\Model\TaskQueue\Entity\TaskQueueRun;
+use App\Model\TaskQueue\TaskItemState;
+use App\Model\TaskQueue\TaskQueue;
+use App\Model\TaskQueue\TaskQueueProcessor;
+use App\Model\TaskQueue\TaskScope;
+use App\Model\Utils\MoneyFactory;
+use Cake\Chronos\ChronosDate;
+use DateTimeImmutable;
+use Google\Service\Exception as GoogleServiceException;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Psr7\Request;
+use Helpers;
+use IntegrationTest;
+
+use function microtime;
+
+/**
+ * E-mails of payments go through the task queue, each at most once, recorded under the name of who
+ * sent them.
+ */
+final class PaymentEmailQueueTest extends IntegrationTest
+{
+    private const EMAIL = 'test@hospodareni.loc';
+    private const USER_NAME = 'František Maša';
+    private const OAUTH_ID = '42288e92-27fb-453c-9904-36a7ebd14fe2';
+
+    private PaymentService $paymentService;
+
+    private PaymentEmailQueue $emailQueue;
+
+    private UserRepositoryStub $users;
+
+    private RecordingMailer $mailer;
+
+    private int $groupId;
+
+    /** @return string[] */
+    protected function getTestedAggregateRoots(): array
+    {
+        return [Group::class, Payment::class, GoogleOAuth::class, TaskItem::class, TaskQueueRun::class];
+    }
+
+    protected function _before(): void
+    {
+        $this->tester->useConfigFiles(['Payment/UseCases/PaymentCompletedEmailTest.neon']);
+
+        parent::_before();
+
+        $this->paymentService = $this->tester->grabService(PaymentService::class);
+        $this->emailQueue = $this->tester->grabService(PaymentEmailQueue::class);
+        $this->users = $this->tester->grabService(UserRepositoryStub::class);
+        $this->users->setUser(new User(10, self::USER_NAME, self::EMAIL));
+        $this->mailer = new RecordingMailer();
+        $this->tester->grabService(MailerFactoryStub::class)->setMailer($this->mailer);
+        $this->createOAuth();
+    }
+
+    /** Even a single e-mail waits for the cron, so it can never run next to the same e-mail in the queue. */
+    public function testOneEmailAlsoWaitsInQueue(): void
+    {
+        $this->createGroup();
+        $paymentId = $this->createPayment();
+
+        $dispatch = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), [$paymentId]);
+
+        self::assertSame(1, $dispatch->queued);
+        self::assertSame([], $this->mailer->messages);
+
+        $this->users->setUser(null);
+        $this->processQueue();
+
+        self::assertCount(1, $this->mailer->messages);
+        $this->tester->seeInDatabase('pa_payment_sent_emails', [
+            'payment_id' => $paymentId,
+            'type' => EmailType::PAYMENT_INFO,
+            'sender_name' => self::USER_NAME,
+        ]);
+    }
+
+    public function testMoreEmailsWaitInQueueAndKeepTheirSender(): void
+    {
+        $this->createGroup();
+        $paymentIds = [$this->createPayment(), $this->createPayment(), $this->createPayment()];
+
+        $dispatch = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), $paymentIds);
+
+        self::assertSame(3, $dispatch->queued);
+        self::assertSame([], $this->mailer->messages);
+
+        // The cron runs without a logged-in user.
+        $this->users->setUser(null);
+        $this->processQueue();
+
+        self::assertCount(3, $this->mailer->messages);
+        self::assertSame(3, (int) $this->tester->grabNumRecords('pa_payment_sent_emails', ['sender_name' => self::USER_NAME]));
+    }
+
+    public function testEmailWaitingInQueueIsNotQueuedAgain(): void
+    {
+        $this->createGroup();
+        $paymentIds = [$this->createPayment(), $this->createPayment()];
+
+        $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), $paymentIds);
+        $again = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), $paymentIds);
+        $single = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), [$paymentIds[0]]);
+        $this->processQueue();
+
+        self::assertSame(2, $again->alreadyQueued);
+        self::assertSame(0, $single->queued);
+        self::assertSame(1, $single->alreadyQueued);
+        self::assertCount(2, $this->mailer->messages);
+    }
+
+    public function testPaymentsOfOtherGroupsAreLeftOut(): void
+    {
+        $this->createGroup();
+        $foreignPaymentId = $this->createPayment();
+        $this->createGroup();
+
+        $dispatch = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), [$foreignPaymentId]);
+
+        self::assertSame(0, $dispatch->queued);
+        self::assertSame([], $this->mailer->messages);
+    }
+
+    public function testReminderOfPaymentThatCannotGetOneIsNotQueued(): void
+    {
+        $this->createGroup();
+        $overdueId = $this->createPayment();
+        $notDueYetId = $this->createPayment(ChronosDate::today()->addDays(10));
+
+        $dispatch = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_REMINDER), [$overdueId, $notDueYetId]);
+
+        self::assertSame(1, $dispatch->queued);
+        self::assertSame([PaymentEmailDispatch::REMINDER_NOT_ALLOWED => 1], $dispatch->leftOut);
+        $this->tester->dontSeeInDatabase('task_queue_item', ['label' => 'Platba '.$notDueYetId]);
+    }
+
+    /** A payment without an e-mail has nothing to do in the queue. */
+    public function testPaymentWithoutEmailIsNotQueued(): void
+    {
+        $this->createGroup();
+        $withEmailId = $this->createPayment();
+        $withoutEmailId = $this->createPayment(withEmail: false);
+
+        $dispatch = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), [$withEmailId, $withoutEmailId]);
+
+        self::assertSame(1, $dispatch->queued);
+        self::assertSame([PaymentEmailDispatch::NO_RECIPIENT => 1], $dispatch->leftOut);
+        $this->tester->dontSeeInDatabase('task_queue_item', ['label' => 'Platba '.$withoutEmailId]);
+    }
+
+    public function testGroupWithoutSenderQueuesNothing(): void
+    {
+        $this->createGroup(withSender: false);
+        $paymentId = $this->createPayment();
+
+        $dispatch = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), [$paymentId]);
+
+        self::assertSame(0, $dispatch->queued);
+        self::assertNotNull($dispatch->blocked);
+        $this->tester->dontSeeInDatabase('task_queue_item', []);
+    }
+
+    /** A reminder sent by hand and an automatic one are the same e-mail: only one of them may wait or run. */
+    public function testReminderByHandAndAutomaticReminderNeverWaitTogether(): void
+    {
+        $this->createGroup(reminderDaysAfterDue: 3);
+        $paymentId = $this->createPayment(ChronosDate::today()->subDays(5));
+
+        $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_REMINDER), [$paymentId]);
+        $this->queueAutomaticReminders();
+
+        self::assertSame(1, (int) $this->tester->grabNumRecords('task_queue_item', ['label' => 'Platba '.$paymentId]));
+
+        $this->processQueue();
+        $this->queueAutomaticReminders();
+        $this->processQueue();
+
+        self::assertCount(1, $this->mailer->messages);
+        $this->tester->seeInDatabase('pa_payment_sent_emails', ['payment_id' => $paymentId, 'sender_name' => self::USER_NAME]);
+    }
+
+    public function testReminderOfPaymentPaidMeanwhileIsLeftOut(): void
+    {
+        $this->createGroup();
+        $paidId = $this->createPayment();
+        $unpaidId = $this->createPayment();
+
+        $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_REMINDER), [$paidId, $unpaidId]);
+        $this->paymentService->completePayment($paidId);
+        $this->processQueue();
+
+        self::assertCount(1, $this->mailer->messages);
+        $this->tester->seeInDatabase('task_queue_item', ['label' => 'Platba '.$paidId, 'state' => TaskItemState::SKIPPED->value]);
+        $this->tester->seeInDatabase('pa_payment_sent_emails', ['payment_id' => $unpaidId, 'type' => EmailType::PAYMENT_REMINDER]);
+    }
+
+    public function testAutomaticReminderGoesOutOnceAfterChosenDays(): void
+    {
+        $this->createGroup(reminderDaysAfterDue: 3);
+        $dueLongAgo = $this->createPayment(ChronosDate::today()->subDays(5));
+        $dueRecently = $this->createPayment(ChronosDate::today()->subDays(1));
+        $remindedByHand = $this->createPayment(ChronosDate::today()->subDays(10));
+        $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_REMINDER), [$remindedByHand]);
+        $this->processQueue();
+        $this->mailer->messages = [];
+
+        $this->queueAutomaticReminders();
+        $this->processQueue();
+        $this->queueAutomaticReminders();
+        $this->processQueue();
+
+        self::assertCount(1, $this->mailer->messages);
+        $this->tester->seeInDatabase('pa_payment_sent_emails', [
+            'payment_id' => $dueLongAgo,
+            'type' => EmailType::PAYMENT_REMINDER,
+            'sender_name' => 'AUTOMAT',
+        ]);
+        $this->tester->dontSeeInDatabase('pa_payment_sent_emails', ['payment_id' => $dueRecently]);
+    }
+
+    public function testAutomaticReminderThatCouldNotGoOutIsQueuedAgain(): void
+    {
+        $this->createGroup(reminderDaysAfterDue: 3);
+        $paymentId = $this->createPayment(ChronosDate::today()->subDays(5));
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(new InvalidOAuth(self::EMAIL, 'invalid_grant', 'Token has been expired or revoked.'));
+
+        $this->queueAutomaticReminders();
+        $this->processQueue();
+
+        $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::FAILED->value]);
+        $this->tester->seeInDatabase('pa_payment', ['id' => $paymentId, 'automatic_reminder_at' => null]);
+
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(null);
+        $this->queueAutomaticReminders();
+        $this->processQueue();
+
+        self::assertCount(1, $this->mailer->messages);
+    }
+
+    /** The user cancelled the automatic reminder, so it is not queued again on another day. */
+    public function testCancelledAutomaticReminderIsNotQueuedAgain(): void
+    {
+        $this->createGroup(reminderDaysAfterDue: 3);
+        $paymentId = $this->createPayment(ChronosDate::today()->subDays(5));
+        $this->queueAutomaticReminders();
+        $jobId = (int) $this->tester->grabFromDatabase('task_queue_item', 'job_id', ['state' => TaskItemState::PENDING->value]);
+
+        $cancelled = $this->tester->grabService(TaskQueue::class)->cancelWaiting($jobId, TaskScope::paymentGroup($this->groupId), self::USER_NAME);
+        $this->queueAutomaticReminders();
+        $this->processQueue();
+
+        self::assertSame(1, $cancelled);
+        self::assertSame([], $this->mailer->messages);
+        $this->tester->dontSeeInDatabase('task_queue_item', ['state' => TaskItemState::PENDING->value]);
+        $this->tester->dontSeeInDatabase('pa_payment', ['id' => $paymentId, 'automatic_reminder_at' => null]);
+    }
+
+    /** A postponed automatic reminder still waits in the queue, so its payment stays marked. */
+    public function testPostponedAutomaticReminderKeepsItsPaymentMarked(): void
+    {
+        $this->createGroup(reminderDaysAfterDue: 3);
+        $paymentId = $this->createPayment(ChronosDate::today()->subDays(5));
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(new GoogleServiceException('Rate limit exceeded', 429));
+
+        $this->queueAutomaticReminders();
+        $this->processQueue();
+
+        $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::PENDING->value]);
+        $this->tester->dontSeeInDatabase('pa_payment', ['id' => $paymentId, 'automatic_reminder_at' => null]);
+    }
+
+    /** Google not answering before anything was sent postpones the batch instead of failing it. */
+    public function testUnavailableGoogleBeforeSendingPostponesTheBatch(): void
+    {
+        $this->createGroup();
+        $paymentIds = [$this->createPayment(), $this->createPayment()];
+        $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), $paymentIds);
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(new ConnectException('Timed out', new Request('POST', 'https://oauth2.googleapis.com/token')));
+
+        $this->processQueue();
+
+        self::assertSame([], $this->mailer->messages);
+        self::assertSame(2, (int) $this->tester->grabNumRecords('task_queue_item', ['state' => TaskItemState::PENDING->value]));
+
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(null);
+        $this->entityManager->getConnection()->executeStatement('UPDATE task_queue_item SET available_at = NOW() - INTERVAL 1 MINUTE');
+        $this->processQueue();
+
+        self::assertCount(2, $this->mailer->messages);
+    }
+
+    public function testGroupWithoutChosenDaysSendsNoAutomaticReminder(): void
+    {
+        $this->createGroup(reminderDaysAfterDue: null);
+        $this->createPayment(ChronosDate::today()->subDays(30));
+
+        $this->queueAutomaticReminders();
+
+        $this->tester->dontSeeInDatabase('task_queue_item', []);
+    }
+
+    public function testAdministrationCountsGroupsSendingAutomaticReminders(): void
+    {
+        $this->createGroup(reminderDaysAfterDue: 3);
+        $this->createGroup(reminderDaysAfterDue: 7);
+        $this->paymentService->closeGroup($this->groupId, 'Uzavřeno v testu');
+        $this->createGroup(reminderDaysAfterDue: null);
+
+        self::assertSame(1, $this->tester->grabService(QueryBus::class)->handle(new CountAutomaticReminderGroupsQuery()));
+    }
+
+    /** A sender Google refuses gets nothing new into the queue, the user learns why right away. */
+    public function testRefusedSenderQueuesNothing(): void
+    {
+        $this->createGroup();
+        $paymentId = $this->createPayment();
+        $this->refuseSender();
+
+        $dispatch = $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), [$paymentId]);
+
+        self::assertSame(0, $dispatch->queued);
+        self::assertStringContainsString('propojení účtu '.self::EMAIL.' s Gmailem přestalo platit', (string) $dispatch->blocked);
+        $this->tester->dontSeeInDatabase('task_queue_item', []);
+    }
+
+    /** E-mails queued before Google refused the sender fail with the way to fix it, without the words of Google. */
+    public function testEmailsOfRefusedSenderFailWithExplanation(): void
+    {
+        $this->createGroup();
+        $this->emailQueue->send($this->groupId, EmailType::get(EmailType::PAYMENT_INFO), [$this->createPayment(), $this->createPayment()]);
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(new InvalidOAuth(self::EMAIL, 'invalid_grant', 'Bad Request'));
+
+        $this->processQueue();
+
+        self::assertSame(2, (int) $this->tester->grabNumRecords('task_queue_item', ['state' => TaskItemState::FAILED->value]));
+        $message = (string) $this->tester->grabFromDatabase('task_queue_item', 'message', ['state' => TaskItemState::FAILED->value]);
+        self::assertStringContainsString('Propojte účet znovu', $message);
+        self::assertStringNotContainsString('Bad Request', $message);
+    }
+
+    /** Automatic reminders are left out while Google refuses the sender, the payments wait for a later day. */
+    public function testRefusedSenderGetsNoAutomaticReminders(): void
+    {
+        $this->createGroup(reminderDaysAfterDue: 3);
+        $paymentId = $this->createPayment(ChronosDate::today()->subDays(5));
+        $this->refuseSender();
+
+        $this->queueAutomaticReminders();
+
+        $this->tester->dontSeeInDatabase('task_queue_item', []);
+        $this->tester->seeInDatabase('pa_payment', ['id' => $paymentId, 'automatic_reminder_at' => null]);
+
+        $this->tester->grabService(OAuthValidity::class)->markValid(OAuthId::fromString(self::OAUTH_ID));
+        $this->queueAutomaticReminders();
+
+        $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::PENDING->value]);
+    }
+
+    /** The payer gets the confirmation even when Google refused the sender: it waits until the account works again. */
+    public function testConfirmationWaitsForRefusedSenderAndGoesOutWhenItWorksAgain(): void
+    {
+        $this->createGroup(withConfirmation: true);
+        $paymentId = $this->createPayment();
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(new InvalidOAuth(self::EMAIL, 'invalid_grant', 'Bad Request'));
+
+        $this->paymentService->completePayment($paymentId);
+        $this->processQueue();
+
+        self::assertSame([], $this->mailer->messages);
+        $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::PENDING->value, 'message' => PaymentEmailTaskHandler::WAITING_FOR_SENDER_MESSAGE]);
+        $this->tester->dontSeeInDatabase('task_queue_item', ['state' => TaskItemState::FAILED->value]);
+
+        // A remembered refusal keeps it waiting without asking Google, which would accept nothing anyway.
+        $this->refuseSender();
+        $this->tester->grabService(MailerFactoryStub::class)->failWith(null);
+        $this->entityManager->getConnection()->executeStatement('UPDATE task_queue_item SET available_at = NOW() - INTERVAL 1 MINUTE');
+        $this->processQueue();
+
+        self::assertSame([], $this->mailer->messages);
+        $this->tester->seeInDatabase('task_queue_item', ['state' => TaskItemState::PENDING->value, 'message' => PaymentEmailTaskHandler::WAITING_FOR_SENDER_MESSAGE]);
+
+        // Connecting the account again (or Google accepting it again) lets the confirmation go right away.
+        $this->tester->grabService(OAuthValidity::class)->markValid(OAuthId::fromString(self::OAUTH_ID));
+        $this->processQueue();
+
+        self::assertCount(1, $this->mailer->messages);
+        $this->tester->seeInDatabase('pa_payment_sent_emails', ['payment_id' => $paymentId, 'type' => EmailType::PAYMENT_COMPLETED]);
+    }
+
+    /** A sender Google refused, as the real mailer factory remembers it (the stub does not). */
+    private function refuseSender(): void
+    {
+        $this->entityManager->getConnection()->executeStatement(
+            'UPDATE google_oauth SET invalid_since = NOW(), invalid_reason = ? WHERE id = ?',
+            ['invalid_grant => Bad Request', self::OAUTH_ID],
+        );
+        $this->entityManager->clear();
+    }
+
+    private function createGroup(?int $reminderDaysAfterDue = null, bool $withSender = true, bool $withConfirmation = false): void
+    {
+        $emails = [
+            EmailType::PAYMENT_INFO => new EmailTemplate('Platba %name%', 'Zaplaťte prosím %amount%.'),
+            EmailType::PAYMENT_REMINDER => new EmailTemplate('Upomínka %name%', 'Připomínáme platbu.'),
+        ];
+
+        if ($withConfirmation) {
+            $emails[EmailType::PAYMENT_COMPLETED] = new EmailTemplate('Zaplaceno %name%', 'Děkujeme za platbu.');
+        }
+
+        $this->groupId = $this->paymentService->createGroup(
+            11,
+            null,
+            'Test',
+            Helpers::createEmptyPaymentDefaults(),
+            $emails,
+            $withSender ? OAuthId::fromString(self::OAUTH_ID) : null,
+            null,
+            remindersEnabled: true,
+            reminderDaysAfterDue: $reminderDaysAfterDue,
+        );
+    }
+
+    private function createPayment(?ChronosDate $dueDate = null, bool $withEmail = true): int
+    {
+        $this->tester->grabService(CommandBus::class)->handle(new CreatePayment(
+            $this->groupId,
+            'Platba',
+            $withEmail ? [new EmailAddress(self::EMAIL)] : [],
+            MoneyFactory::fromDecimal('100.00'),
+            $dueDate ?? Helpers::getValidDueDate(),
+            null,
+            null,
+            null,
+            '',
+        ));
+
+        $paymentId = (int) $this->entityManager->getConnection()->fetchOne('SELECT MAX(id) FROM pa_payment');
+        $this->entityManager->getConnection()->executeStatement('UPDATE pa_payment SET name = ? WHERE id = ?', ['Platba '.$paymentId, $paymentId]);
+        $this->entityManager->clear();
+
+        return $paymentId;
+    }
+
+    private function queueAutomaticReminders(): void
+    {
+        $this->entityManager->clear();
+        $this->tester->grabService(AutomaticPaymentReminders::class)->queueDue();
+    }
+
+    private function processQueue(): void
+    {
+        $this->tester->grabService(TaskQueueProcessor::class)->processDue(microtime(true) + 60);
+    }
+
+    private function createOAuth(): void
+    {
+        $this->tester->haveInDatabase('google_oauth', [
+            'id' => self::OAUTH_ID,
+            'unit_id' => 27266,
+            'email' => self::EMAIL,
+            'token' => 'token',
+            'updated_at' => (new DateTimeImmutable())->format('Y-m-d H:i:s'),
+        ]);
+    }
+}

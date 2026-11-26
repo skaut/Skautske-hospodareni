@@ -56,6 +56,7 @@ class EventCashbookCest extends BaseAcceptanceCest
         $this->I->click('Akce');
         $this->createEvent();
         $this->checkEventFileActions();
+        $this->openParticipantListWithMissingParticipantInAddress();
         $this->goToCashbookPage();
         $this->createExpenseChit();
         $this->checkChitFileActions();
@@ -103,6 +104,20 @@ class EventCashbookCest extends BaseAcceptanceCest
         $I->seePdfFileAction('participants-export-pdf');
         $I->seeDownloadOnlyFileAction('participants-export-excel');
         $I->seeNoHorizontalOverflowOnPhone('seznam účastníků');
+    }
+
+    /** An address with the edit dialog of a participant who is not in the list (e.g. was removed) opens the list. */
+    private function openParticipantListWithMissingParticipantInAddress(): void
+    {
+        $I = $this->I;
+        $I->amGoingTo('open the participant list with the edit dialog of a participant who is not in it');
+
+        $eventId = (int) $I->grabFromCurrentUrl('~/akce/(\d+)~');
+        $I->amOnPage(sprintf('/akce/%d/ucastnici?participantList-editDialog-opened=1&participantList-editDialog-participantId=999999999', $eventId));
+        $I->waitForElementVisible('[data-test="event-participant-page"]', AcceptanceTester::ELEMENT_LOAD_TIMEOUT);
+        // The dialog renders at the end of the list, so a failure would append the error page to the list.
+        $I->dontSee('Chyba serveru');
+        $I->dontSeeElement('.modal-container .modal');
     }
 
     private function checkChitFileActions(): void

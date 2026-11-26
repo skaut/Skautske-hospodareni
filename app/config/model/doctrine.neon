@@ -58,7 +58,7 @@ dbal:
             user: %database.user%
             password: %database.password%
             dbname: %database.name%
-            serverVersion: '8.0'
+            serverVersion: '8.4'
             driver: pdo_mysql
             charset: utf8mb4
             defaultTableOptions:

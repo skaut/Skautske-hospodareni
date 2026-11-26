@@ -13,6 +13,7 @@ class OAuthFactory
             $origin->getEmail(),
             $origin->getUnitId(),
             $origin->getUpdatedAt(),
+            $origin->getInvalidSince(),
         );
     }
 }

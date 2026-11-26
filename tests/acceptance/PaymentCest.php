@@ -192,7 +192,9 @@ class PaymentCest extends PaymentAcceptanceCest
             'next_variable_symbol' => '777',
             'automatic_pairing_enabled' => 1,
             'pairing_days_back' => 18,
+            // Automatic reminders need the switch and the number of days after the due date.
             'is_reminders_enabled' => 1,
+            'reminder_days_after_due' => 5,
         ], ['id' => $sourceGroupId]);
         $I->updateInDatabase('pa_group_email', [
             'template_subject' => 'Klonovaný předmět',
@@ -250,6 +252,7 @@ class PaymentCest extends PaymentAcceptanceCest
             'automatic_pairing_enabled' => 1,
             'pairing_days_back' => 18,
             'is_reminders_enabled' => 1,
+            'reminder_days_after_due' => 5,
             'groupType' => null,
             'sisId' => null,
         ]);

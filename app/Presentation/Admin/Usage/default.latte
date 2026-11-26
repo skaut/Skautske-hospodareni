@@ -36,258 +36,436 @@
     </div>
 {/define}
 
+{*
+    Share of dark mode among the users of the period: one ratio, so a meter. The fill wears the primary colour,
+    the track a lighter step of it; the figure and the note beside it say the same in words.
+*}
+{define darkModeMeter, int $dark, int $users}
+    {var $share = $users > 0 ? (int) round($dark / $users * 100) : 0}
+    <span class="usage-kpi__value">{$users === 0 ? '–' : $share . ' %'}</span>
+    <span class="usage-kpi__label">Tmavý režim</span>
+    <span n:if="$users > 0" class="usage-meter" role="meter" aria-label="Podíl tmavého režimu"
+          aria-valuemin="0" aria-valuemax="100" aria-valuenow="{$share}" aria-valuetext="{$share} %"
+          title="Tmavý režim má {$dark} z {$users} uživatelů" data-test="admin-usage-dark-mode-meter">
+        <span class="usage-meter__fill" style="width: {$share}%"></span>
+    </span>
+    <span class="usage-kpi__note">
+        {if $users === 0}
+            zatím bez údajů
+        {else}
+            {$dark|num} z {$users|num} uživatelů
+        {/if}
+    </span>
+{/define}
+
+{* Sessions of one table row: per month with a total in the months view, a single number otherwise. *}
+{define sessionCells, App\Model\DTO\Usage\MonthlySessions $sessions, string $period, array $months}
+    {if $period === 'months'}
+        <td n:foreach="$months as $m" class="text-end">{$sessions->getMonth($m) > 0 ? ($sessions->getMonth($m)|num) : '–'}</td>
+        <td class="text-end fw-semibold">{$sessions->getTotal()|num}</td>
+    {else}
+        <td class="text-end">{$sessions->getTotal()|num}</td>
+    {/if}
+{/define}
+
 {block content}
 {* Declared inside the block — a {var} in the template body is not visible here. *}
-{var $logins = $usage->logins}
-{var $preferences = $usage->preferences}
-{var $engagement = $usage->engagement}
+{var $months = $usage->months}
+{var $total = $usage->sessions->getTotal()}
+{var $periodLabel = $period === 'month' ? $monthNames[$month] . ' ' . $year : ($period === 'months' ? $year . ' po měsících' : 'rok ' . $year)}
+{var $scopeLabel = $breadcrumbs[count($breadcrumbs) - 1]['label']}
+{var $level = $district !== null ? 'district' : ($region !== null ? 'region' : 'system')}
 
 <div data-test="admin-usage-page" class="usage-page d-grid gap-4">
 
-    {* Hero *}
     <div class="card page-heading">
         <div class="card-body">
             <h1 class="h3 mb-2">Využití systému</h1>
-            {include pageLead, default: 'Kdo Hospodaření používá, z čeho k němu přistupuje a jak dlouho v něm pracuje. Doménové statistiky o obsahu najdete v sekci Statistiky.'}
+            {include pageLead, default: 'Které části systému se používají a ve kterých krajích. Počítají se sezení: jedno přihlášení se do každé části započítá nejvýš jednou za den. Co v systému je, ukazují Statistiky.'}
+            <nav n:if="$level !== 'system'" class="mt-3" aria-label="Úroveň přehledu" data-test="admin-usage-breadcrumbs">
+                <ol class="breadcrumb mb-0">
+                    {foreach $breadcrumbs as $crumb}
+                        {if $iterator->isLast()}
+                            <li class="breadcrumb-item active" aria-current="page">{$crumb['label']}</li>
+                        {else}
+                            <li class="breadcrumb-item">
+                                <a n:href="this, region => $crumb['region'], district => $crumb['district']" data-test="admin-usage-back-{$iterator->counter}">{$crumb['label']}</a>
+                            </li>
+                        {/if}
+                    {/foreach}
+                </ol>
+            </nav>
         </div>
     </div>
 
-    {* Filter *}
     <div class="card">
         <div class="card-body">
-            {control selectYearForm}
+            <form n:name="filterForm" class="row g-3 align-items-end" data-test="admin-usage-filter">
+                <div class="col-6 col-md-3 col-xl-2">
+                    <label n:name="year" class="form-label">Rok</label>
+                    <select n:name="year" class="form-select"></select>
+                </div>
+                <div class="col-6 col-md-3 col-xl-2">
+                    <label n:name="period" class="form-label">Zobrazení</label>
+                    <select n:name="period" class="form-select"></select>
+                </div>
+                <div class="col-6 col-md-3 col-xl-2" id="usage-filter-month">
+                    <label n:name="month" class="form-label">Měsíc</label>
+                    <select n:name="month" class="form-select"></select>
+                </div>
+                <div class="col-6 col-md-3 col-xl-2" id="usage-filter-section">
+                    <label n:name="section" class="form-label">Sekce v tabulce</label>
+                    <select n:name="section" class="form-select"></select>
+                </div>
+                <div class="col-12 col-md-auto">
+                    <input n:name="submit" class="btn btn-primary">
+                </div>
+            </form>
         </div>
     </div>
 
-    {* ── Přihlášení ─────────────────────────────────────────────── *}
-    <article class="card" data-test="admin-usage-logins-card">
+    {* ── Souhrn ───────────────────────────────────────────────────── *}
+    <article class="card" data-test="admin-usage-summary-card">
         <div class="card-body">
-            <h2 class="h5 mb-3">Přihlášení a sezení</h2>
+            <h2 class="h5 mb-3" data-test="admin-usage-scope">{$scopeLabel} · {$periodLabel}</h2>
 
-            {if ! $logins->available}
-                <div class="alert alert-warning mb-0" data-test="admin-usage-tracking-unavailable">
-                    <strong>Sledování přihlášení zatím neběží.</strong>
-                    Tabulka <code>user_login</code> v databázi chybí — spusťte migrace a údaje se začnou zaznamenávat od dalšího přihlášení.
-                </div>
-            {elseif ! $logins->hasData()}
-                <div class="alert alert-info mb-0" data-test="admin-usage-no-data">
-                    <strong>Za rok {$year} zatím nejsou žádná data.</strong>
-                    Přihlášení se zaznamenávají teprve od nasazení této funkce, starší období tedy zůstane prázdné.
-                </div>
-            {else}
-                {var $sessionsPerUser = $logins->getSessionsPerUser()}
-                {var $logoutShare = $logins->getLogoutShare()}
-
-                <div class="row g-3" data-test="admin-usage-headline">
-                    {include kpi,
-                        label => 'Přihlášení',
-                        value => ($logins->logins|num),
-                        note => 'v celém systému ' . ($logins->loginsAllUnits|num)}
+            <div class="row g-3" data-test="admin-usage-headline">
+                {include kpi,
+                    label => 'Sezení',
+                    value => ($total|num),
+                    note => $level === 'system' ? 'přihlášení za den' : 'přihlášení za den pod jednotkami'}
+                {if $overview !== null}
+                    {var $logins = $overview->logins}
                     {include kpi,
                         label => 'Uživatelé',
                         value => ($logins->users|num),
-                        note => 'v celém systému ' . ($logins->usersAllUnits|num)}
+                        note => 'vracejících se ' . ($logins->getReturningUsers()|num)}
                     {include kpi,
-                        label => 'Aktivní jednotky',
-                        value => ($logins->units|num),
+                        label => 'Přihlášení',
+                        value => ($logins->logins|num),
                         note => ''}
                     {include kpi,
                         label => 'Noví uživatelé',
                         value => ($logins->newUsers|num),
-                        note => 'vracejících se ' . ($logins->getReturningUsers()|num)}
-                </div>
+                        note => 'poprvé přihlášení v období'}
+                {else}
+                    {include kpi,
+                        label => 'Jednotky',
+                        value => ($usage->unitCount|num),
+                        note => 'se sezením v období'}
+                {/if}
+            </div>
 
-                <hr class="my-4">
+            <p n:if="! $usage->hasData()" class="text-body-secondary small mb-0 mt-3" data-test="admin-usage-no-data">
+                Za zvolené období zatím nejsou žádná sezení.
+                {if $usage->countedSince === null}
+                    Sezení se počítají od nasazení této funkce.
+                {else}
+                    Sezení se počítají od {$usage->countedSince|date:'j. n. Y'}.
+                {/if}
+            </p>
+        </div>
+    </article>
 
-                <div class="row g-3">
-                    {include kpi,
-                        label => 'Medián délky sezení',
-                        value => ($logins->sessionMedianSeconds|duration),
-                        note => 'p90 ' . ($logins->sessionP90Seconds|duration)}
-                    {include kpi,
-                        label => 'Sezení na uživatele',
-                        value => $sessionsPerUser === null ? '–' : ($sessionsPerUser|number:1, ',', ' '),
-                        note => 'za rok ' . $year}
-                    {include kpi,
-                        label => 'Ukončeno odhlášením',
-                        value => $logoutShare === null ? '–' : ($logoutShare|number:0, ',', ' ') . ' %',
-                        note => ($logins->endedByLogout|num) . ' sezení'}
-                    {include kpi,
-                        label => 'Zavřeno bez odhlášení',
-                        value => ($logins->getEndedWithoutLogout()|num),
-                        note => 'zavřená karta nebo vypršení'}
-                </div>
-
-                <p class="text-body-secondary small mb-0 mt-3">
-                    Délka sezení se počítá od prvního po poslední skutečný požadavek, ne podle platnosti skautIS tokenu.
-                    Automatické prodlužování přihlášení se do aktivity nezapočítává, jinak by uživatelům s touto funkcí
-                    sezení trvalo tak dlouho, jak dlouho mají otevřenou kartu prohlížeče.
+    {if $usage->hasData()}
+        {* ── Sekce systému ────────────────────────────────────────── *}
+        <article class="card" data-test="admin-usage-sections-card">
+            <div class="card-body">
+                <h2 class="h5 mb-1">Sekce systému</h2>
+                <p class="text-body-secondary small mb-3">
+                    Kolik sezení sekci použilo. Jedno sezení může použít víc sekcí, proto součet sekcí přesahuje celkový počet sezení.
+                    Po rozbalení sekce uvidíte její obrazovky.
                 </p>
-            {/if}
-        </div>
-    </article>
 
-    {* ── Zařízení ───────────────────────────────────────────────── *}
-    <article n:if="$logins->hasData()" class="card" data-test="admin-usage-devices-card">
-        <div class="card-body">
-            <h2 class="h5 mb-4">Zařízení, prohlížeče a role</h2>
-            <div class="row g-4">
-                {include breakdown,
-                    heading => 'Typ zařízení',
-                    rows => $logins->deviceTypes,
-                    emptyText => 'Žádná data.'}
-                {include breakdown,
-                    heading => 'Prohlížeč',
-                    rows => $logins->browsers,
-                    emptyText => 'Žádná data.'}
-                {include breakdown,
-                    heading => 'Platforma',
-                    rows => $logins->platforms,
-                    emptyText => 'Žádná data.'}
-            </div>
-
-            <hr class="my-4">
-
-            <div class="row g-4">
-                {include breakdown,
-                    heading => 'Role při přihlášení',
-                    rows => $logins->roleGroups,
-                    emptyText => 'Žádná data.'}
-            </div>
-        </div>
-    </article>
-
-    {* ── Kdy se pracuje ─────────────────────────────────────────── *}
-    <article n:if="$logins->getWeekTotal() > 0" class="card" data-test="admin-usage-week-card">
-        <div class="card-body">
-            <h2 class="h5 mb-1">Kdy se pracuje</h2>
-            <p class="text-body-secondary small mb-3">Přihlášení podle dne v týdnu a hodiny. Sytější pole znamená víc přihlášení.</p>
-
-            {var $weekPeak = $logins->getWeekPeak()}
-            {var $dayNames = [1 => 'Po', 2 => 'Út', 3 => 'St', 4 => 'Čt', 5 => 'Pá', 6 => 'So', 7 => 'Ne']}
-
-            <div class="table-responsive">
-                <table class="usage-heatmap">
-                    <thead>
-                    <tr>
-                        <th scope="col"><span class="visually-hidden">Den</span></th>
-                        <th n:for="$hour = 0; $hour < 24; $hour++" scope="col">{if $hour % 3 === 0}{$hour}{/if}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr n:foreach="$dayNames as $day => $dayName">
-                        <th scope="row">{$dayName}</th>
-                        <td n:for="$hour = 0; $hour < 24; $hour++"
-                            style="--usage-intensity: {$weekPeak > 0 ? round($logins->weekMap[$day][$hour] / $weekPeak, 3) : 0}"
-                            title="{$dayName} {$hour}:00 — {$logins->weekMap[$day][$hour]} přihlášení">
-                            <span class="visually-hidden">{$logins->weekMap[$day][$hour]}</span>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </article>
-
-    {* ── Volitelné funkce ───────────────────────────────────────── *}
-    <article class="card" data-test="admin-usage-preferences-card">
-        <div class="card-body">
-            <h2 class="h5 mb-1">Volitelné funkce</h2>
-            <p class="text-body-secondary small mb-3">
-                Kolik lidí si funkci nechalo zapnutou. Počítáno napříč celým systémem — nastavení se neváže na jednotku,
-                a zahrnutý je jen ten, kdo si nastavení někdy uložil ({$preferences->users|num} uživatelů).
-            </p>
-
-            {if $preferences->users === 0}
-                <p class="text-body-secondary small mb-0">Zatím si nikdo neuložil vlastní nastavení.</p>
-            {else}
-                <div class="row g-3">
-                    {include kpi,
-                        label => 'Zobrazují nápovědy',
-                        value => ($preferences->getShowHelpShare()|number:0, ',', ' ') . ' %',
-                        note => ($preferences->showHelp|num) . ' uživatelů'}
-                    {include kpi,
-                        label => 'Prodloužené přihlášení',
-                        value => ($preferences->getExtendLoginShare()|number:0, ',', ' ') . ' %',
-                        note => ($preferences->extendLogin|num) . ' uživatelů'}
-                    {include kpi,
-                        label => 'Zapamatovaná role',
-                        value => ($preferences->getRememberRoleShare()|number:0, ',', ' ') . ' %',
-                        note => ($preferences->rememberRole|num) . ' uživatelů'}
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0 usage-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Sekce</th>
+                                {if $period === 'months'}
+                                    <th n:foreach="$months as $m" scope="col" class="text-end">{$m}</th>
+                                    <th scope="col" class="text-end">Celkem</th>
+                                {else}
+                                    <th scope="col" class="text-end">Sezení</th>
+                                    <th scope="col" class="text-end">Podíl</th>
+                                {/if}
+                            </tr>
+                        </thead>
+                        {foreach $usage->sections as $sectionUsage}
+                            {var $sectionId = 'usage-screens-' . $sectionUsage->section->value}
+                            <tbody>
+                                <tr data-test="admin-usage-section-{$sectionUsage->section->value}">
+                                    <th scope="row">
+                                        {if $sectionUsage->screens === []}
+                                            {$sectionUsage->section->getLabel()}
+                                        {else}
+                                            <button type="button" class="btn btn-link p-0 text-reset fw-semibold text-decoration-none usage-table__toggle collapsed"
+                                                    data-bs-toggle="collapse" data-bs-target="#{$sectionId}"
+                                                    aria-expanded="false" aria-controls="{$sectionId}"
+                                                    data-test="admin-usage-section-toggle-{$sectionUsage->section->value}">
+                                                <i class="fi fi-rr-angle-small-right" aria-hidden="true"></i>
+                                                {$sectionUsage->section->getLabel()}
+                                            </button>
+                                        {/if}
+                                    </th>
+                                    {include sessionCells, sessions => $sectionUsage->sessions, period => $period, months => $months}
+                                    <td n:if="$period !== 'months'" class="text-end text-body-secondary">{$sectionUsage->getShare($total)|number:0, ',', ' '} %</td>
+                                </tr>
+                            </tbody>
+                            <tbody n:if="$sectionUsage->screens !== []" class="collapse" id="{$sectionId}">
+                                <tr n:foreach="$sectionUsage->screens as $screen" class="usage-table__screen">
+                                    <td>{$screen->label}</td>
+                                    {include sessionCells, sessions => $screen->sessions, period => $period, months => $months}
+                                    <td n:if="$period !== 'months'"></td>
+                                </tr>
+                            </tbody>
+                        {/foreach}
+                        <tfoot>
+                            <tr data-test="admin-usage-sections-total">
+                                <th scope="row">Sezení v systému</th>
+                                {include sessionCells, sessions => $usage->sessions, period => $period, months => $months}
+                                <td n:if="$period !== 'months'"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
-            {/if}
-        </div>
-    </article>
-
-    {* ── Provozní signály ───────────────────────────────────────── *}
-    <article class="card" data-test="admin-usage-engagement-card">
-        <div class="card-body">
-            <h2 class="h5 mb-1">Signály z provozních dat</h2>
-            <p class="text-body-secondary small mb-3">Odvozené z údajů, které aplikace ukládá kvůli samotným funkcím — proto u nich sedí uvedené výhrady.</p>
-
-            {var $pairingShare = $engagement->getAutomaticPairingShare()}
-
-            <div class="row g-3">
-                {include kpi,
-                    label => 'Automaticky spárováno',
-                    value => $pairingShare === null ? '–' : ($pairingShare|number:0, ',', ' ') . ' %',
-                    note => ($engagement->pairingsAutomatic|num) . ' z ' . ($engagement->pairingsTotal|num) . ' párování'}
-                {include kpi,
-                    label => 'Autoři změn',
-                    value => ($engagement->activeAuthors|num),
-                    note => 'lidí, kteří něco změnili'}
-                {include kpi,
-                    label => 'Zapojení v Platbách',
-                    value => ($engagement->paymentVisitUsers|num),
-                    note => 'lidí s navštívenou skupinou'}
-                {include kpi,
-                    label => 'Zařízení z hlášení',
-                    value => ($engagement->getReportDeviceTotal()|num),
-                    note => 'vzorek jen z nahlášených chyb'}
             </div>
+        </article>
 
-            <div n:if="$engagement->reportDeviceTypes !== []" class="row g-4 mt-1">
-                {include breakdown,
-                    heading => 'Typ zařízení v technických hlášeních',
-                    rows => $engagement->reportDeviceTypes,
-                    emptyText => 'Žádná hlášení.'}
+        {* ── Kraje, okresy kraje nebo střediska okresu ────────────── *}
+        <article class="card" data-test="admin-usage-rows-card">
+            <div class="card-body">
+                <h2 class="h5 mb-1">{$level === 'system' ? 'Kraje' : ($level === 'region' ? 'Okresy' : 'Střediska')}</h2>
+                <p class="text-body-secondary small mb-3">
+                    {if $level === 'system'}
+                        Kraj se určí podle registračního čísla jednotky, pod jejíž rolí uživatel pracuje. Kliknutím na kraj zobrazíte jeho okresy.
+                        Ústředí, zvláštní jednotky (900) a role bez jednotky (Neurčeno) mají vlastní řádek.
+                    {elseif $level === 'region'}
+                        Kliknutím na okres zobrazíte jeho střediska. Řádek s číslem kraje jsou role kraje a střediska vedená přímo pod krajem.
+                    {else}
+                        Oddíly a družiny se počítají pod svým střediskem (621.66.004 pod 621.66). Řádek s číslem okresu jsou role samotného okresu.
+                    {/if}
+                    Kdo za den přepne roli do jiné jednotky, započítá se u obou, proto součet řádků může být vyšší než celkový počet sezení.
+                    {if $period === 'months'}
+                        Tabulka ukazuje {$section === null ? 'sezení v celém systému' : 'sezení v sekci ' . $section->getLabel()}, sekci vyberete nahoře.
+                    {/if}
+                </p>
+
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0 usage-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">{$level === 'system' ? 'Kraj' : ($level === 'region' ? 'Okres' : 'Středisko')}</th>
+                                {if $period === 'months'}
+                                    <th n:foreach="$months as $m" scope="col" class="text-end">{$m}</th>
+                                    <th scope="col" class="text-end">Celkem</th>
+                                {else}
+                                    <th scope="col" class="text-end">Sezení</th>
+                                    <th n:foreach="$sectionColumns as $column" scope="col" class="text-end">{$column->getLabel()}</th>
+                                {/if}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr n:foreach="$usage->rows as $row" data-test="admin-usage-row-{$row->code}">
+                                <th scope="row" class="text-nowrap">
+                                    {if $row->hasUnits()}
+                                        <a n:href="this, region => $row->linkRegion, district => $row->linkDistrict" data-test="admin-usage-open-{$row->code}">{$row->label}</a>
+                                    {else}
+                                        {$row->label}
+                                    {/if}
+                                </th>
+                                {if $period === 'months'}
+                                    {include sessionCells, sessions => $row->get($section), period => $period, months => $months}
+                                {else}
+                                    <td class="text-end fw-semibold">{$row->sessions->getTotal()|num}</td>
+                                    <td n:foreach="$sectionColumns as $column" class="text-end">
+                                        {var $count = $row->get($column)->getTotal()}
+                                        {$count > 0 ? ($count|num) : '–'}
+                                    </td>
+                                {/if}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+        </article>
+    {/if}
 
-            <ul class="text-body-secondary small mb-0 mt-3 ps-3">
-                <li><strong>Autoři změn</strong> jsou lidé zapsaní v provozním logu. Kdo si stránky jen prohlížel, tady není.</li>
-                <li><strong>Zapojení v Platbách</strong> je počet lidí, ne návštěv — u každého se pamatují nejvýš tři poslední skupiny.</li>
-                <li><strong>Zařízení z hlášení</strong> vychází z těch, kdo nahlásili chybu, takže vzorek je vychýlený. Skutečná čísla jsou v sekci výše.</li>
-            </ul>
-        </div>
-    </article>
+    {if $overview !== null}
+        {var $logins = $overview->logins}
+        {var $preferences = $overview->preferences}
 
-    {* ── Aktivita v roce ────────────────────────────────────────── *}
-    <article n:if="$logins->hasData()" class="card" data-test="admin-usage-monthly-card">
-        <div class="card-body">
-            <h2 class="h5 mb-1">Přihlášení v průběhu roku {$year}</h2>
-            <p class="text-body-secondary small mb-3">
-                Kdy v roce se do systému skutečně chodí. Kolik skupin a faktur za měsíc vzniklo
-                najdete ve <a n:href=":Admin:Statistics: unitId => $unitId">Statistikách</a> — je to údaj o obsahu, ne o využití.
-            </p>
+        {* ── Obecný přehled: přihlášení ───────────────────────────── *}
+        <article class="card" data-test="admin-usage-logins-card">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Přihlášení</h2>
 
-            {var $monthNames = [1 => 'Leden', 2 => 'Únor', 3 => 'Březen', 4 => 'Duben', 5 => 'Květen', 6 => 'Červen', 7 => 'Červenec', 8 => 'Srpen', 9 => 'Září', 10 => 'Říjen', 11 => 'Listopad', 12 => 'Prosinec']}
-            {var $monthPeak = $logins->getMonthlyPeak()}
+                {if ! $loginTrackingConfigured}
+                    <div class="alert alert-warning mb-3" data-test="admin-usage-hash-key-missing">
+                        <strong>Přihlášení se nezaznamenávají.</strong>
+                        Na serveru chybí proměnná prostředí <code>APP_KEY</code> (klíč aplikace, se kterým se místo uživatele ukládá jen hash).
+                    </div>
+                {/if}
 
-            {if $monthPeak === 0}
-                <p class="text-body-secondary small mb-0">Za rok {$year} nejsou zaznamenaná žádná přihlášení.</p>
-            {else}
+                {if ! $logins->available}
+                    <div class="alert alert-warning mb-0" data-test="admin-usage-tracking-unavailable">
+                        <strong>Sledování přihlášení zatím neběží.</strong>
+                        Tabulka <code>user_login</code> v databázi chybí — spusťte migrace a údaje se začnou zaznamenávat od dalšího přihlášení.
+                    </div>
+                {elseif ! $logins->hasData()}
+                    <p class="text-body-secondary small mb-0" data-test="admin-usage-no-logins">Za {$periodLabel} nejsou zaznamenaná žádná přihlášení.</p>
+                {else}
+                    {var $loginsPerUser = $logins->getSessionsPerUser()}
+                    {var $logoutShare = $logins->getLogoutShare()}
+
+                    <div class="row g-3">
+                        {include kpi,
+                            label => 'Medián délky přihlášení',
+                            value => ($logins->sessionMedianSeconds|duration),
+                            note => 'p90 ' . ($logins->sessionP90Seconds|duration)}
+                        {include kpi,
+                            label => 'Přihlášení na uživatele',
+                            value => $loginsPerUser === null ? '–' : ($loginsPerUser|number:1, ',', ' '),
+                            note => 'za ' . $periodLabel}
+                        {include kpi,
+                            label => 'Ukončeno odhlášením',
+                            value => $logoutShare === null ? '–' : ($logoutShare|number:0, ',', ' ') . ' %',
+                            note => ($logins->endedByLogout|num) . ' přihlášení'}
+                        {include kpi,
+                            label => 'Zavřeno bez odhlášení',
+                            value => ($logins->getEndedWithoutLogout()|num),
+                            note => 'zavřená karta nebo vypršení'}
+                    </div>
+
+                    <p class="text-body-secondary small mb-0 mt-3">
+                        Délka přihlášení se počítá od prvního po poslední skutečný požadavek, ne podle platnosti skautIS tokenu.
+                        Automatické prodlužování přihlášení se do aktivity nezapočítává, jinak by uživatelům s touto funkcí
+                        přihlášení trvalo tak dlouho, jak dlouho mají otevřenou kartu prohlížeče.
+                    </p>
+                {/if}
+            </div>
+        </article>
+
+        {* ── Zařízení ─────────────────────────────────────────────── *}
+        <article n:if="$logins->hasData()" class="card" data-test="admin-usage-devices-card">
+            <div class="card-body">
+                <h2 class="h5 mb-4">Zařízení a prohlížeče</h2>
+                <div class="row g-4">
+                    {include breakdown,
+                        heading => 'Typ zařízení',
+                        rows => $logins->deviceTypes,
+                        emptyText => 'Žádná data.'}
+                    {include breakdown,
+                        heading => 'Prohlížeč',
+                        rows => $logins->browsers,
+                        emptyText => 'Žádná data.'}
+                    {include breakdown,
+                        heading => 'Platforma',
+                        rows => $logins->platforms,
+                        emptyText => 'Žádná data.'}
+                </div>
+            </div>
+        </article>
+
+        {* ── Kdy se pracuje ───────────────────────────────────────── *}
+        <article n:if="$logins->getWeekTotal() > 0" class="card" data-test="admin-usage-week-card">
+            <div class="card-body">
+                <h2 class="h5 mb-1">Kdy se pracuje</h2>
+                <p class="text-body-secondary small mb-3">Přihlášení podle dne v týdnu a hodiny. Sytější pole znamená víc přihlášení.</p>
+
+                {var $weekPeak = $logins->getWeekPeak()}
+                {var $dayNames = [1 => 'Po', 2 => 'Út', 3 => 'St', 4 => 'Čt', 5 => 'Pá', 6 => 'So', 7 => 'Ne']}
+
+                <div class="table-responsive">
+                    <table class="usage-heatmap">
+                        <thead>
+                        <tr>
+                            <th scope="col"><span class="visually-hidden">Den</span></th>
+                            <th n:for="$hour = 0; $hour < 24; $hour++" scope="col">{if $hour % 3 === 0}{$hour}{/if}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr n:foreach="$dayNames as $day => $dayName">
+                            <th scope="row">{$dayName}</th>
+                            <td n:for="$hour = 0; $hour < 24; $hour++"
+                                style="--usage-intensity: {$weekPeak > 0 ? round($logins->weekMap[$day][$hour] / $weekPeak, 3) : 0}"
+                                title="{$dayName} {$hour}:00 — {$logins->weekMap[$day][$hour]} přihlášení">
+                                <span class="visually-hidden">{$logins->weekMap[$day][$hour]}</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </article>
+
+        {* ── Volitelné funkce ─────────────────────────────────────── *}
+        <article class="card" data-test="admin-usage-preferences-card">
+            <div class="card-body">
+                <h2 class="h5 mb-1">Volitelné funkce</h2>
+                <p class="text-body-secondary small mb-3">
+                    Kolik uživatelů má volbu z uživatelského nastavení zapnutou, počítáno ze všech, kdo si nastavení někdy uložili
+                    ({$preferences->users|num} uživatelů). Tmavý režim počítáme z uživatelů přihlášených za {$periodLabel} podle jejich
+                    posledního přihlášení, včetně tmavého režimu převzatého ze systému. Automatizace ukazují, kolik otevřených platebních skupin je teď používá.
+                </p>
+
+                {var $preferencesNote = $preferences->users === 0 ? 'nikdo si zatím nastavení neuložil' : 'z ' . ($preferences->users|num) . ' uživatelů'}
+
+                <div class="row g-3" data-test="admin-usage-preferences">
+                    {include kpi,
+                        label => 'Automaticky zobrazovat nápovědu u jednotlivých sekcí',
+                        value => ($preferences->showHelp|num),
+                        note => $preferencesNote}
+                    {include kpi,
+                        label => 'Na pozadí prodlužovat přihlášení ke skautISu',
+                        value => ($preferences->extendLogin|num),
+                        note => $preferencesNote}
+                    {include kpi,
+                        label => 'Pamatovat si zvolenou roli ze skautISu',
+                        value => ($preferences->rememberRole|num),
+                        note => $preferencesNote}
+                    <div class="col-6 col-lg-3" data-test="admin-usage-dark-mode">
+                        <div class="usage-kpi">
+                            {include darkModeMeter, dark: $logins->darkModeUsers, users: $logins->themeUsers}
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="h6 text-body-secondary mt-4 mb-3">Automatizace plateb</h3>
+                {var $groupsNote = $automation->openGroups === 0 ? 'žádná otevřená skupina' : 'z ' . ($automation->openGroups|num) . ' otevřených skupin'}
+                <div class="row g-3" data-test="admin-usage-automation">
+                    {include kpi,
+                        label => 'Párování plateb',
+                        value => ($automation->automaticPairing|num),
+                        note => $groupsNote . ($automation->openGroups === 0 ? '' : ' (' . ($automation->getAutomaticPairingShare()|number:0, ',', ' ') . ' %)')}
+                    {include kpi,
+                        label => 'Automatické upomínky plateb',
+                        value => ($automation->automaticReminders|num),
+                        note => $groupsNote . ($automation->openGroups === 0 ? '' : ' (' . ($automation->getAutomaticRemindersShare()|number:0, ',', ' ') . ' %)')}
+                </div>
+            </div>
+        </article>
+
+        {* ── Přihlášení v průběhu roku ────────────────────────────── *}
+        <article n:if="$logins->hasData() && $period !== 'month'" class="card" data-test="admin-usage-monthly-card">
+            <div class="card-body">
+                <h2 class="h5 mb-1">Přihlášení v průběhu roku {$year}</h2>
+                <p class="text-body-secondary small mb-3">Kdy v roce se do systému skutečně chodí.</p>
+
+                {var $monthPeak = $logins->getMonthlyPeak()}
+
                 <div class="usage-bars">
-                    <div n:foreach="$logins->monthly as $month => $count" class="usage-bar">
-                        <span class="usage-bar__label">{$monthNames[$month]}</span>
+                    <div n:foreach="$logins->monthly as $m => $count" class="usage-bar">
+                        <span class="usage-bar__label">{$monthNames[$m]|firstUpper}</span>
                         <span class="usage-bar__track">
-                            <span class="usage-bar__fill" style="width: {round($count / $monthPeak * 100)}%"></span>
+                            <span class="usage-bar__fill" style="width: {$monthPeak > 0 ? round($count / $monthPeak * 100) : 0}%"></span>
                         </span>
                         <span class="usage-bar__value">{$count|num}</span>
                     </div>
                 </div>
-            {/if}
-        </div>
-    </article>
+            </div>
+        </article>
+    {/if}
 
 </div>
 {/block}

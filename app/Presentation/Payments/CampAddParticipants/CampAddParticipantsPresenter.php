@@ -34,7 +34,7 @@ final class CampAddParticipantsPresenter extends BasePresenter
     {
         $group = $this->model->getGroup($id);
 
-        if ($group === null || ! $this->isEditable) {
+        if ($group === null || ! $this->canEditGroup($group)) {
             $this->flashMessage('Neoprávněný přístup ke skupině.', 'danger');
             $this->redirect(':Payments:GroupList:');
         }

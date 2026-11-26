@@ -7,14 +7,15 @@ namespace App\Model\Payment;
 use App\Model\Common\EmailAddress;
 use App\Model\Common\Repositories\IUserRepository;
 use App\Model\Common\UserNotFound;
+use App\Model\Google\Exception\OAuthNotFound;
 use App\Model\Google\Exception\OAuthNotSet;
 use App\Model\Google\InvalidOAuth;
 use App\Model\Mail\IMailerFactory;
 use App\Model\Mail\Repositories\IGoogleRepository;
+use App\Model\Payment\Mailing\ComposedEmail;
 use App\Model\Payment\Mailing\Payment as MailPayment;
 use App\Model\Payment\Repositories\IBankAccountRepository;
 use App\Model\Payment\Repositories\IGroupRepository;
-use App\Model\Payment\Repositories\IPaymentRepository;
 use App\Model\Services\TemplateFactory;
 use App\Model\Utils\MoneyFactory;
 use DateTimeImmutable;
@@ -30,46 +31,11 @@ class MailingService
     public function __construct(
         private IGroupRepository $groups,
         private IMailerFactory $mailerFactory,
-        private IPaymentRepository $payments,
         private IBankAccountRepository $bankAccounts,
         private TemplateFactory $templateFactory,
         private IUserRepository $users,
         private IGoogleRepository $googleRepository,
     ) {
-    }
-
-    /**
-     * Sends email to single payment address.
-     *
-     * @throws PaymentHasNoEmails
-     * @throws PaymentNotFound
-     * @throws InvalidOAuth
-     * @throws EmailTemplateNotSet
-     * @throws OAuthNotSet
-     * @throws PaymentReminderNotAllowed
-     */
-    public function sendEmail(int $paymentId, EmailType $emailType, bool $cli = false): void
-    {
-        $payment = $this->payments->find($paymentId);
-        $group = $this->groups->find($payment->getGroupId());
-
-        if ($emailType->equalsValue(EmailType::PAYMENT_REMINDER) && ! $payment->canSendReminder()) {
-            throw PaymentReminderNotAllowed::withName($payment->getName());
-        }
-
-        $template = $group->getEmailTemplate($emailType);
-
-        if ($template === null || ! $group->isEmailEnabled($emailType)) {
-            throw new EmailTemplateNotSet("E-mail template '".$emailType->getValue()."' not found");
-        }
-
-        $user = $cli ? null : $this->users->findCurrentUser();
-        $userName = $user?->getName() ?? 'AUTOMAT';
-
-        $this->sendForPayment($payment, $group, $template, $userName);
-        $payment->recordSentEmail($emailType, new DateTimeImmutable(), $userName);
-
-        $this->payments->save($payment);
     }
 
     /**
@@ -107,16 +73,26 @@ class MailingService
     }
 
     /**
-     * @throws BankAccountNotFound
-     * @throws InvalidBankAccount
-     * @throws PaymentHasNoEmails
-     * @throws InvalidOAuth
-     * @throws UserNotFound
+     * Builds the e-mail of a payment without sending it, so the task queue can send it as a separate step.
+     *
+     * @param string $senderName who sends the e-mail, it fills the user variable of the template
+     *
+     * @throws EmailTemplateNotSet
      * @throws OAuthNotSet
+     * @throws OAuthNotFound
+     * @throws PaymentHasNoEmails
+     * @throws InvalidBankAccount
+     * @throws BankAccountNotFound
      */
-    private function sendForPayment(Payment $paymentRow, Group $group, EmailTemplate $template, string $userName): void
+    public function composeForPayment(Payment $payment, Group $group, EmailType $emailType, string $senderName): ComposedEmail
     {
-        $this->send($group, $this->createPayment($paymentRow), $template, $userName);
+        $template = $group->getEmailTemplate($emailType);
+
+        if ($template === null || ! $group->isEmailEnabled($emailType)) {
+            throw new EmailTemplateNotSet("E-mail template '".$emailType->getValue()."' not found");
+        }
+
+        return $this->compose($group, $this->createPayment($payment), $template, $senderName);
     }
 
     /**
@@ -127,6 +103,20 @@ class MailingService
      * @throws PaymentHasNoEmails
      */
     private function send(Group $group, MailPayment $payment, EmailTemplate $emailTemplate, string $userName): void
+    {
+        $email = $this->compose($group, $payment, $emailTemplate, $userName);
+
+        $this->mailerFactory->create($email->sender)->send($email->message);
+    }
+
+    /**
+     * @throws InvalidBankAccount
+     * @throws BankAccountNotFound
+     * @throws OAuthNotSet
+     * @throws OAuthNotFound
+     * @throws PaymentHasNoEmails
+     */
+    private function compose(Group $group, MailPayment $payment, EmailTemplate $emailTemplate, string $userName): ComposedEmail
     {
         if ($group->getOauthId() === null) {
             throw new OAuthNotSet();
@@ -162,7 +152,7 @@ class MailingService
             $mail->addTo($emailRecipient->getValue());
         }
 
-        $this->mailerFactory->create($oAuth)->send($mail);
+        return new ComposedEmail($mail, $oAuth);
     }
 
     private function addQrCodeInlineImage(Message $mail, EmailTemplate $emailTemplate, MailPayment $payment, ?string $bankAccountNumber): ?string

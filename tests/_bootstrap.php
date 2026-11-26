@@ -17,5 +17,5 @@ FileSystem::createDir(__DIR__.'/../temp/cache/integration');
 (new RobotLoader())
     ->addDirectory(__DIR__.'/../app')
     ->addDirectory(__DIR__)
-    ->setTempDirectory(__DIR__.'/../temp/cache')
+    ->setCacheDirectory(__DIR__.'/../temp/cache')
     ->register();

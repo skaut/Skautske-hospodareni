@@ -12,7 +12,8 @@
         {if $isGroupSendActive}
             <a n:href="sendGroup!"
                     class="dropdown-item ajax"
-                    data-busy-text="Odesílám e-maily…">
+                    data-test="payment-group-email-send-all"
+                    data-busy-text="Zařazuji e-maily k odeslání…">
                 <i class="fi fi-rr-paper-plane" aria-hidden="true"></i>
                 Rozeslat e-maily
             </a>
@@ -28,7 +29,7 @@
         <a  n:href="sendGroupReminder!"
                 class="dropdown-item"
                 data-confirm="Opravdu chcete rozeslat upomínkové e-maily všem nespárovaným platbám?"
-                data-busy-text="Odesílám upomínky…">
+                data-busy-text="Zařazuji upomínky k odeslání…">
             <i class="fi fi-rr-bell" aria-hidden="true"></i>
                 Rozeslat upomínky
         </a>

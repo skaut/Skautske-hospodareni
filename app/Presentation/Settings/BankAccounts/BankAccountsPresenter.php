@@ -106,7 +106,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
     public function handleImport(): void
     {
         if (! $this->canEdit()) {
-            $this->noAccess();
+            $this->denyAccess();
         }
 
         try {
@@ -132,7 +132,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
                 $accountId,
                 $transactionKey,
                 $paymentId,
-                $this->getAccessibleGroupIds(),
+                $this->getEditableGroupIds(),
                 $this->userService->getUserDetail()->Person,
             );
             $this->flashManualPairingOutcome($outcome);
@@ -175,7 +175,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             return;
         }
 
-        $this->noAccess();
+        $this->denyAccess();
     }
 
     public function actionEdit(int $id): void
@@ -278,6 +278,12 @@ final class BankAccountsPresenter extends SettingsBasePresenter
 
     protected function createComponentForm(): BankAccountForm
     {
+        // The form can be submitted through any action, so it checks the rights itself. Editing an account
+        // is checked in actionEdit(), which is the only place that sets the edited id.
+        if (! $this->canEdit()) {
+            $this->denyAccess();
+        }
+
         return $this->formFactory->create($this->id);
     }
 
@@ -375,6 +381,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             $this->bankService,
             $this->userService,
             fn (int $bankAccountId): bool => $this->canImportGpcForAccountId($bankAccountId),
+            fn (): array => $this->getEditableGroupIds(),
         );
 
         $dialog->onSuccess[] = function (int $bankAccountId): void {
@@ -389,11 +396,6 @@ final class BankAccountsPresenter extends SettingsBasePresenter
         };
 
         return $dialog;
-    }
-
-    private function noAccess(): void
-    {
-        $this->setView('accessDenied');
     }
 
     private function canEdit(?int $unitId = null): bool
@@ -483,13 +485,13 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             return;
         }
 
-        $this->noAccess();
+        $this->denyAccess();
     }
 
     private function assertCanEditBankAccount(int $id): void
     {
         if (! $this->canEdit()) {
-            $this->noAccess();
+            $this->denyAccess();
         }
 
         $account = $this->findBankAccount($id);
@@ -501,7 +503,7 @@ final class BankAccountsPresenter extends SettingsBasePresenter
             return;
         }
 
-        $this->noAccess();
+        $this->denyAccess();
     }
 
     private function isSubunitOf(int $unitId): bool
@@ -545,11 +547,14 @@ final class BankAccountsPresenter extends SettingsBasePresenter
         );
     }
 
-    /** @return int[] */
-    private function getAccessibleGroupIds(): array
+    /**
+     * Pairing completes the payment, so it is allowed only in groups the user may edit.
+     *
+     * @return int[]
+     */
+    private function getEditableGroupIds(): array
     {
-        $readableUnitIds = array_keys($this->unitService->getReadUnits($this->user));
-        $groups = $this->queryBus->handle(new GetGroupList($readableUnitIds, false));
+        $groups = $this->queryBus->handle(new GetGroupList($this->getEditableUnits(), false));
 
         return array_map(static fn ($group): int => $group->getId(), $groups);
     }

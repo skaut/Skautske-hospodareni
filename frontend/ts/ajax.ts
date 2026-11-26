@@ -20,6 +20,7 @@ import netteForms from "./netteForms";
 import {initializeSendMassForm} from "./ChitListExtension"
 import {initializeEditForm} from "./ChitListExtension"
 import {initializePageEnhancements} from "./pageEnhancements";
+import {initializeTaskQueueStatus} from "./taskQueueStatus";
 
 function initializeDropdowns(root: ParentNode): void {
     root.querySelectorAll<HTMLElement>('[data-bs-toggle="dropdown"]').forEach((element) => {
@@ -54,6 +55,7 @@ export default function (): void {
         initializeEmailLists(snippet);
         initializeUnitMemberScopeToggles(snippet);
         initializePageEnhancements(snippet);
+        initializeTaskQueueStatus(snippet, naja);
     }));
 
     naja.registerExtension(new ModalExtension());

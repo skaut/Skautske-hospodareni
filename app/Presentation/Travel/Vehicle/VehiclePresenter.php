@@ -110,9 +110,7 @@ class VehiclePresenter extends TravelBasePresenter
     {
         $vehicle = $this->getVehicle($vehicleId);
         if (! $this->isVehicleEditable($vehicle)) {
-            $this->setView('accessDenied');
-
-            return;
+            $this->denyAccess('Nemáte oprávnění k vozidlu.');
         }
 
         try {
@@ -131,9 +129,7 @@ class VehiclePresenter extends TravelBasePresenter
     {
         $vehicle = $this->getVehicle($vehicleId);
         if (! $this->isVehicleEditable($vehicle)) {
-            $this->setView('accessDenied');
-
-            return;
+            $this->denyAccess('Nemáte oprávnění k vozidlu.');
         }
 
         $this->travelService->archiveVehicle($vehicleId);
@@ -146,9 +142,7 @@ class VehiclePresenter extends TravelBasePresenter
     {
         $vehicle = $this->getVehicle($vehicleId);
         if (! $this->isVehicleEditable($vehicle)) {
-            $this->setView('accessDenied');
-
-            return;
+            $this->denyAccess('Nemáte oprávnění k vozidlu.');
         }
 
         $this->travelService->restoreVehicle($vehicleId);
@@ -159,6 +153,8 @@ class VehiclePresenter extends TravelBasePresenter
 
     protected function createComponentFormCreateVehicle(): Form
     {
+        $this->assertCanEditOfficialUnit();
+
         $form = new BaseForm();
 
         $form->addText('type', 'Typ')

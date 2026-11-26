@@ -37,7 +37,11 @@
             >
                 <div class="me-auto">
                     <strong>{$l->email}</strong>
+                    <span n:if="$l->isInvalid()" class="badge text-bg-danger ms-1" data-test="settings-mail-invalid-{$l->id}">Propojení neplatí</span>
                     <div class="text-body-secondary small">Naposledy upraveno {$l->updatedAt|date:"H:i j.n.Y"}</div>
+                    <div n:if="$l->isInvalid()" class="text-danger-emphasis small" data-test="settings-mail-invalid-help-{$l->id}">
+                        Google propojení odmítl {$l->invalidSince|date:"j. n. Y"}. Klikněte nahoře na „Propojit účet“ a přihlaste se tímto účtem.
+                    </div>
                 </div>
 
                 <div n:if="in_array($l->unitId, $editableUnits, true)">

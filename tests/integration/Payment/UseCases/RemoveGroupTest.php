@@ -48,6 +48,42 @@ final class RemoveGroupTest extends IntegrationTest
 
     public function test(): void
     {
+        $group = $this->createClosedGroup();
+
+        // just to make sure it got the right ID
+        $this->assertSame(1, $group->getId());
+
+        for ($i = 1; $i <= 3; ++$i) {
+            $this->payments->save($this->createPayment($group, 'test'.$i));
+        }
+
+        ($this->handler)(new RemoveGroup(1));
+
+        $this->assertEmpty($this->payments->findByGroup(1));
+
+        $this->expectException(GroupNotFound::class);
+
+        $this->groups->find(1);
+    }
+
+    /** The parts of a split payment point to the original one, which may be removed before them. */
+    public function testGroupWithSplitPaymentIsRemoved(): void
+    {
+        $group = $this->createClosedGroup();
+        $groupId = (int) $group->getId();
+        $original = $this->createPayment($group, 'original');
+        $this->payments->save($original);
+        $this->payments->save($this->createPayment($group, 'first part', $original));
+        $this->payments->save($this->createPayment($group, 'second part', $original));
+
+        ($this->handler)(new RemoveGroup($groupId));
+
+        $this->assertEmpty($this->payments->findByGroup($groupId));
+        $this->tester->dontSeeInDatabase('pa_group', ['id' => $groupId]);
+    }
+
+    private function createClosedGroup(): Group
+    {
         $group = new Group(
             [123],
             null,
@@ -65,21 +101,11 @@ final class RemoveGroupTest extends IntegrationTest
 
         $this->groups->save($group);
 
-        // just to make sure it got the right ID
-        $this->assertSame(1, $group->getId());
+        return $group;
+    }
 
-        for ($i = 1; $i <= 3; ++$i) {
-            $this->payments->save(
-                new Payment($group, 'test'.$i, [], MoneyFactory::fromDecimal('120.00'), Helpers::getValidDueDate(), null, null, null, ''),
-            );
-        }
-
-        ($this->handler)(new RemoveGroup(1));
-
-        $this->assertEmpty($this->payments->findByGroup(1));
-
-        $this->expectException(GroupNotFound::class);
-
-        $this->groups->find(1);
+    private function createPayment(Group $group, string $name, ?Payment $splitFrom = null): Payment
+    {
+        return new Payment($group, $name, [], MoneyFactory::fromDecimal('120.00'), Helpers::getValidDueDate(), null, null, null, '', $splitFrom);
     }
 }

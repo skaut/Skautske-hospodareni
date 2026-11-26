@@ -93,7 +93,7 @@ class AuthPresenter extends BasePresenter
             ));
 
             $this->updateUserAccess();
-            $this->loginTracker->recordLogin($userId, $currentRole, $this->userService->getRoleId());
+            $this->loginTracker->recordLogin($userId);
 
             if ($ReturnUrl !== null) {
                 $this->restoreRequest(substr($ReturnUrl, strlen($this->getHttpRequest()->getUrl()->getBaseUrl())));

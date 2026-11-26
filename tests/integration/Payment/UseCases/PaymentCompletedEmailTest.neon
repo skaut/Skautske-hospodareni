@@ -16,7 +16,9 @@ services:
     - Stubs\BankAccountAccessCheckerStub
     - Stubs\OAuthsAccessCheckerStub
     - App\Model\Payment\PaymentService
-    - Stubs\GoogleRepositoryStub
+    # The real accounts: a sender Google refuses is remembered in the database.
+    - App\Model\Infrastructure\Repositories\Mail\GoogleRepository
+    - App\Model\Google\OAuthValidity
     - App\Model\Google\GoogleService('', '')
 
     - factory: App\Model\Payment\MailerFactoryStub
@@ -25,6 +27,17 @@ services:
     - Psr\Log\NullLogger
     - App\Model\Services\TemplateFactory
     - App\Model\Payment\MailingService
+    - App\Model\TaskQueue\Repository\TaskQueueRepository
+    - App\Model\TaskQueue\TaskQueue
+    - App\Model\TaskQueue\TaskQueueProcessor(handlers: typed(App\Model\TaskQueue\TaskHandler), budgetSeconds: 20, leaseSeconds: 600)
+    - App\Model\Payment\Mailing\PaymentEmailQueue
+    - App\Model\Payment\Mailing\PaymentEmailTaskHandler
+    - App\Model\Payment\Mailing\AutomaticPaymentReminders
+    - App\Model\TaskQueue\ReadModel\TaskJobStatusReader
+    - class: App\Model\Payment\ReadModel\QueryHandlers\CountAutomaticReminderGroupsQueryHandler
+      tags:
+          messenger.messageHandler:
+              bus: queryBus
 
     - class: App\Model\Payment\Handlers\Payment\CreatePaymentHandler
       tags:
@@ -32,6 +45,11 @@ services:
               bus: commandBus
 
     - class: App\Model\Payment\Subscribers\PaymentMailSubscriber
+      tags:
+          messenger.messageHandler:
+              bus: eventBus
+
+    - class: App\Model\Payment\Subscribers\OAuthRestoredSubscriber
       tags:
           messenger.messageHandler:
               bus: eventBus
