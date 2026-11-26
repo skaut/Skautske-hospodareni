@@ -126,9 +126,10 @@
 }
 
 @media (min-width: 768px) {
-  // Content-sized basis: a title too long to share the row pushes the actions onto the next line.
+  // Shares the row with the actions until it would get narrower than 20rem; then the actions wrap below.
   .page-heading > .card-body > h1 {
-    flex: 1 1 auto;
+    flex: 1 1 0;
+    min-width: min(100%, 20rem);
   }
 }
 
