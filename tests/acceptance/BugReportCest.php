@@ -92,7 +92,8 @@ final class BugReportCest extends BaseAcceptanceCest
 
         Assert::assertSame('table-cell', $paginatorLayout['footerDisplay']);
         Assert::assertSame('center', $paginatorLayout['paginationJustify']);
-        Assert::assertSame('flex-end', $paginatorLayout['perPageJustify']);
+        // Chrome 158 serializes computed `flex-end` as `flow-end`.
+        Assert::assertContains($paginatorLayout['perPageJustify'], ['flex-end', 'flow-end']);
         Assert::assertSame('rgb(77, 135, 70)', $paginatorLayout['submitBackgroundColor']);
         Assert::assertSame('rgb(255, 255, 255)', $paginatorLayout['submitColor']);
         Assert::assertSame('visible', $paginatorLayout['submitVisibility']);
