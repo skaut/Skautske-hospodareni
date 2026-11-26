@@ -23,12 +23,7 @@ final class GroupPresenter extends PaymentsBasePresenter
 
     public function actionNewGroup(): void
     {
-        if ($this->isEditable) {
-            return;
-        }
-
-        $this->setView('accessDenied');
-        $this->template->setParameters(['message' => 'Nemáte oprávnění upravovat skupiny plateb.']);
+        $this->assertCanCreateGroup();
     }
 
     public function actionEdit(int $id): void
@@ -69,6 +64,8 @@ final class GroupPresenter extends PaymentsBasePresenter
 
     protected function createComponentNewGroupForm(): GroupForm
     {
+        // The form can be submitted through any action of this presenter, so it checks the rights itself.
+        $this->assertCanCreateGroup();
         $unitId = $this->getCurrentUnitId();
 
         return $this->groupFormFactory->create($unitId, null);
@@ -84,5 +81,14 @@ final class GroupPresenter extends PaymentsBasePresenter
             null,
             $this->cloneSourceGroupId,
         );
+    }
+
+    private function assertCanCreateGroup(): void
+    {
+        if ($this->isEditable) {
+            return;
+        }
+
+        $this->denyAccess('Nemáte oprávnění zakládat skupiny plateb v této jednotce.');
     }
 }

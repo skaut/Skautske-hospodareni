@@ -5,17 +5,15 @@ declare(strict_types=1);
 namespace App\Components\Payment;
 
 use App\Components\BaseControl;
-use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Payment\Group;
 use App\Model\DTO\Payment\Payment;
 use App\Model\Google\Exception\OAuthNotSet;
 use App\Model\Google\InvalidOAuth;
-use App\Model\Payment\Commands\Mailing\SendPaymentReminder;
 use App\Model\Payment\EmailNotSet;
-use App\Model\Payment\EmailTemplateNotSet;
 use App\Model\Payment\EmailType;
 use App\Model\Payment\InvalidBankAccount;
+use App\Model\Payment\Mailing\PaymentEmailQueue;
 use App\Model\Payment\MailingService;
 use App\Model\Payment\ReadModel\Queries\GroupEmailQuery;
 
@@ -36,7 +34,7 @@ class EmailButton extends BaseControl
     public array $onSendPaymentInfoRequested = [];
 
     /** @param Payment[] $payments */
-    public function __construct(private QueryBus $queryBus, private CommandBus $commandBus, private MailingService $mailing, private bool $isEditable, private array $payments, private Group $group)
+    public function __construct(private QueryBus $queryBus, private PaymentEmailQueue $emailQueue, private MailingService $mailing, private bool $isEditable, private array $payments, private Group $group)
     {
     }
 
@@ -72,7 +70,18 @@ class EmailButton extends BaseControl
 
     public function handleSendGroupReminder(): void
     {
-        $this->sendPaymentReminderEmails($this->paymentsAvailableForGroupReminderSending($this->payments));
+        $type = EmailType::get(EmailType::PAYMENT_REMINDER);
+        $dispatch = $this->emailQueue->send(
+            $this->group->id,
+            $type,
+            array_map(static fn (Payment $payment): int => $payment->getId(), $this->paymentsAvailableForGroupReminderSending($this->payments)),
+        );
+
+        foreach (PaymentEmailMessages::forDispatch($dispatch, $type) as [$message, $flashType]) {
+            $this->getPresenter()->flashMessage($message, $flashType);
+        }
+
+        $this->getPresenter()->redirect('this');
     }
 
     public function handleSendTest(): void
@@ -96,42 +105,6 @@ class EmailButton extends BaseControl
         }
 
         $this->redirect('this');
-    }
-
-    /** @param Payment[] $payments */
-    private function sendPaymentReminderEmails(array $payments): void
-    {
-        $sentCount = 0;
-
-        try {
-            foreach ($payments as $payment) {
-                $this->commandBus->handle(new SendPaymentReminder($payment->getId()));
-                ++$sentCount;
-            }
-        } catch (OAuthNotSet) {
-            $this->getPresenter()->flashMessage(self::NO_MAILER_MESSAGE, 'warning');
-            $this->getPresenter()->redirect('this');
-        } catch (InvalidBankAccount) {
-            $this->getPresenter()->flashMessage(self::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-            $this->getPresenter()->redirect('this');
-        } catch (InvalidOAuth $e) {
-            $this->oauthError($e);
-            $this->getPresenter()->redirect('this');
-        } catch (EmailTemplateNotSet) {
-            $this->getPresenter()->flashMessage(self::NO_TEMPLATE_ASSIGNED, 'warning');
-            $this->getPresenter()->redirect('this');
-        }
-
-        if ($sentCount > 0) {
-            $this->getPresenter()->flashMessage(
-                $sentCount === 1
-                    ? 'E-mail s upomínkou byl odeslán'
-                    : 'E-maily s upomínkou  byly odeslány (celkem: '.$sentCount.')',
-                'success',
-            );
-        }
-
-        $this->getPresenter()->redirect('this');
     }
 
     /**

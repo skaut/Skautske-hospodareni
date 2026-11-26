@@ -36,7 +36,7 @@ abstract class SettingsBasePresenter extends BaseSectionPresenter
             return;
         }
 
-        $this->setView('accessDenied');
+        $this->denyAccess();
     }
 
     /** @return int[] */

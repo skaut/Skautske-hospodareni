@@ -11,6 +11,8 @@ use InvalidArgumentException;
 
 final class UserLoginTest extends TestCase
 {
+    private const USER_HASH = 'a3c5e7f9a3c5e7f9a3c5e7f9a3c5e7f9a3c5e7f9a3c5e7f9a3c5e7f9a3c5e7f9';
+
     public function testSessionStartsWithZeroActiveTime(): void
     {
         $login = $this->createLogin(new DateTimeImmutable('2026-08-28 09:00:00'));
@@ -54,25 +56,33 @@ final class UserLoginTest extends TestCase
         self::assertSame(30 * 60, $login->getActiveSecondsSoFar());
     }
 
-    public function testBlankRoleDetailsAreStoredAsNull(): void
+    /** Only a hash of the user is kept, never the user itself. */
+    public function testLoginKeepsOnlyAHashOfTheUser(): void
     {
-        $login = new UserLogin(42, 0, 0, '', $this->createDevice());
-
-        self::assertNull($login->getUnitId());
-        self::assertNull($login->getRoleId());
-        self::assertNull($login->getRoleKey());
+        self::assertSame(self::USER_HASH, $this->createLogin(new DateTimeImmutable())->getUserHash());
     }
 
-    public function testUserIdMustBePositive(): void
+    public function testThemeIsUnknownUntilTheBrowserReportsIt(): void
+    {
+        $login = $this->createLogin(new DateTimeImmutable('2026-08-28 09:00:00'));
+
+        self::assertNull($login->isDarkMode());
+
+        $login->reportTheme(true);
+
+        self::assertTrue($login->isDarkMode());
+    }
+
+    public function testUserMustBeAHash(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
-        new UserLogin(0, 1, 1, 'vedouciStredisko', $this->createDevice());
+        new UserLogin('42', $this->createDevice());
     }
 
     private function createLogin(DateTimeImmutable $loggedInAt): UserLogin
     {
-        return new UserLogin(42, 100, 7, 'vedouciStredisko', $this->createDevice(), $loggedInAt);
+        return new UserLogin(self::USER_HASH, $this->createDevice(), $loggedInAt);
     }
 
     private function createDevice(): DeviceInfo

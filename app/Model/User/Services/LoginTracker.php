@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Model\User\Services;
 
+use App\Model\Common\Services\KeyedHasher;
 use App\Model\User\DeviceInfo;
 use App\Model\User\Entity\UserLogin;
 use App\Model\User\Manager\UserLoginManager;
 use App\Model\User\Repository\UserLoginRepository;
-use App\Model\User\SkautisRole;
 use DateTimeImmutable;
 use Nette\Http\IRequest;
 use Nette\Http\Session;
@@ -34,34 +34,41 @@ final class LoginTracker
 
     private const SESSION_SECTION = 'userLoginTracking';
 
+    /** Logins keep only this hash of the user, never the user. */
+    private const USER_HASH_PURPOSE = 'usage-user';
+
     public function __construct(
         private Session $session,
         private IRequest $httpRequest,
         private UserLoginRepository $repository,
         private UserLoginManager $manager,
         private DeviceClassifier $deviceClassifier,
+        private KeyedHasher $hasher,
         private LoggerInterface $logger,
     ) {
     }
 
-    public function recordLogin(int $userId, ?SkautisRole $role, ?int $roleId): void
+    public function recordLogin(int $userId): void
     {
         try {
+            $userHash = $this->hasher->hash(self::USER_HASH_PURPOSE, $userId);
+
+            if ($userHash === null) {
+                $this->logger->warning('Přihlášení se nezaznamenává: chybí klíč APP_KEY.');
+
+                return;
+            }
+
             if (! $this->repository->isStorageAvailable()) {
                 return;
             }
 
-            $login = $this->manager->start(
-                $userId,
-                $role?->getUnitId(),
-                $roleId,
-                $this->resolveRoleKey($role),
-                $this->classifyCurrentDevice(),
-            );
+            $login = $this->manager->start($userHash, $this->classifyCurrentDevice());
 
             $section = $this->session->getSection(self::SESSION_SECTION);
             $section->set('loginId', $login->getId());
             $section->set('touchedAt', time());
+            $section->set('themeReported', false);
         } catch (Throwable $e) {
             $this->logger->warning('Nepodařilo se zaznamenat přihlášení pro statistiky využití.', ['exception' => $e]);
         }
@@ -105,6 +112,45 @@ final class LoginTracker
         }
     }
 
+    /** The page reports its theme once per login; afterwards it stops asking. */
+    public function needsThemeReport(): bool
+    {
+        try {
+            $section = $this->session->getSection(self::SESSION_SECTION);
+
+            return is_int($section->get('loginId')) && $section->get('themeReported') !== true;
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
+    /**
+     * Stores whether the pages of this login show dark. Only the browser knows it: the choice lives in its
+     * local storage or comes from the system settings.
+     */
+    public function recordTheme(bool $darkMode): void
+    {
+        try {
+            $section = $this->session->getSection(self::SESSION_SECTION);
+            $loginId = $section->get('loginId');
+
+            if (! is_int($loginId) || $section->get('themeReported') === true) {
+                return;
+            }
+
+            $section->set('themeReported', true);
+            $login = $this->repository->findById($loginId);
+
+            if (! $login instanceof UserLogin) {
+                return;
+            }
+
+            $this->manager->reportTheme($login, $darkMode);
+        } catch (Throwable $e) {
+            $this->logger->warning('Nepodařilo se zaznamenat tmavý režim pro statistiky využití.', ['exception' => $e]);
+        }
+    }
+
     public function recordLogout(): void
     {
         try {
@@ -135,10 +181,5 @@ final class LoginTracker
             $this->httpRequest->getHeader('Sec-CH-UA-Mobile'),
             $this->httpRequest->getHeader('Sec-CH-UA-Platform'),
         );
-    }
-
-    private function resolveRoleKey(?SkautisRole $role): ?string
-    {
-        return $role?->getKey();
     }
 }

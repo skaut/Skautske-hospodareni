@@ -9,15 +9,21 @@ use App\Components\Factories\Payment\IPairButtonFactory;
 use App\Components\Payment\CreateButton;
 use App\Components\Payment\PairButton;
 use App\Model\Announcement\Repository\AnnouncementRepository;
+use App\Model\DTO\Payment\Group;
 use App\Model\Event\ReadModel\Queries\CampStatsQuery;
 use App\Model\Event\ReadModel\Queries\EventStatsQuery;
+use App\Model\Google\OAuthId;
+use App\Model\Google\ReadModel\Queries\BrokenSenderAccountsQuery;
 use App\Model\Payment\ReadModel\Queries\GetGroupList;
 use DateTimeImmutable;
 use Nette\Utils\DateTime;
 use Skautis\Wsdl\AuthenticationException;
 
+use function array_filter;
 use function array_keys;
+use function array_map;
 use function array_slice;
+use function array_values;
 use function count;
 
 class DashboardPresenter extends BasePresenter
@@ -39,6 +45,7 @@ class DashboardPresenter extends BasePresenter
         $visibleAnnouncements = $this->announcementRepository->findVisible(new DateTimeImmutable(), 4);
         $this->template->hasMoreAnnouncements = count($visibleAnnouncements) > 3;
         $this->template->dashboardAnnouncements = array_slice($visibleAnnouncements, 0, 3);
+        $this->template->brokenSenders = [];
 
         try {
             $this->template->campsCount = $this->queryBus->handle(new CampStatsQuery((int) (new DateTime())->format('Y')));
@@ -55,6 +62,11 @@ class DashboardPresenter extends BasePresenter
             }
 
             $this['pairButton']->setGroups($groupIds);
+
+            // Only users of the groups that send from a refused account learn about it; it does not take a place of the announcements.
+            $this->template->brokenSenders = $this->queryBus->handle(new BrokenSenderAccountsQuery(array_values(array_filter(
+                array_map(static fn (Group $group): ?OAuthId => $group->getOAuthId(), $groups),
+            ))));
         } catch (AuthenticationException) {
             $this->getUser()->logout(true);
             $this->flashMessage('Uživatel byl odhlášen', 'danger');

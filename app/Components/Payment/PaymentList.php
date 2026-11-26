@@ -9,27 +9,26 @@ use App\Components\DataGrid;
 use App\Components\Grids\DtoListDataSource;
 use App\Components\Grids\GridFactory;
 use App\Helpers\AccountancyHelpers;
-use App\Model\Common\Services\CommandBus;
 use App\Model\Common\Services\QueryBus;
 use App\Model\DTO\Payment\Payment;
-use App\Model\Google\Exception\OAuthNotSet;
-use App\Model\Google\InvalidOAuth;
-use App\Model\Payment\Commands\Mailing\SendPaymentReminder;
-use App\Model\Payment\EmailTemplateNotSet;
 use App\Model\Payment\EmailType;
-use App\Model\Payment\InvalidBankAccount;
+use App\Model\Payment\Mailing\PaymentEmailQueue;
 use App\Model\Payment\Payment\State;
 use App\Model\Payment\PaymentClosed;
-use App\Model\Payment\PaymentHasNoEmails;
 use App\Model\Payment\PaymentNotFound;
 use App\Model\Payment\PaymentReminderNotAllowed;
 use App\Model\Payment\PaymentService;
 use App\Model\Payment\ReadModel\Queries\GroupEmailQuery;
 use App\Model\Payment\ReadModel\Queries\PaymentListQuery;
 use App\Utils\CzechStringComparator;
+use Nette\Application\BadRequestException;
+use Nette\Http\IResponse;
 
 use function array_flip;
+use function array_intersect;
+use function array_map;
 use function array_reverse;
+use function array_values;
 use function usort;
 
 final class PaymentList extends BaseControl
@@ -58,7 +57,7 @@ final class PaymentList extends BaseControl
         State::CANCELED,
     ];
 
-    public function __construct(private PaymentService $model, private CommandBus $commandBus, private int $groupId, private bool $isEditable, private QueryBus $queryBus, private GridFactory $gridFactory)
+    public function __construct(private PaymentService $model, private PaymentEmailQueue $emailQueue, private int $groupId, private bool $isEditable, private QueryBus $queryBus, private GridFactory $gridFactory)
     {
     }
 
@@ -94,14 +93,14 @@ final class PaymentList extends BaseControl
         $grid->setColumnsHideable();
 
         $grid->addGroupButtonAction('Odeslat email')
-            ->setAttribute('data-busy-text', 'Odesílám e-maily…')
+            ->setAttribute('data-busy-text', 'Zařazuji e-maily k odeslání…')
             ->onClick[] = [$this, 'requestPaymentInfoEmail'];
         if ($this->isEditable) {
             $grid->addGroupButtonAction('Úprava e-mailů', 'btn btn-sm btn-light')->onClick[] = [$this, 'openBulkEmailRecipientsDialog'];
         }
         if ($email !== null && $email->isEnabled()) {
             $grid->addGroupButtonAction('Odeslat upomínku')
-                ->setAttribute('data-busy-text', 'Odesílám upomínky…')
+                ->setAttribute('data-busy-text', 'Zařazuji upomínky k odeslání…')
                 ->onClick[] = [$this, 'sendReminder'];
         }
 
@@ -173,7 +172,7 @@ final class PaymentList extends BaseControl
 
     public function handleSend(int $pid): void
     {
-        $payment = $this->model->findPayment($pid);
+        $payment = $this->editablePaymentIds([$pid]) === [] ? null : $this->model->findPayment($pid);
 
         if ($payment === null) {
             $this->getPresenter()->flashMessage('Zadaná platba neexistuje', 'danger');
@@ -194,7 +193,7 @@ final class PaymentList extends BaseControl
 
     public function handleSendReminder(int $pid): void
     {
-        $payment = $this->model->findPayment($pid);
+        $payment = $this->editablePaymentIds([$pid]) === [] ? null : $this->model->findPayment($pid);
 
         if ($payment === null) {
             $this->getPresenter()->flashMessage('Zadaná platba neexistuje', 'danger');
@@ -233,51 +232,27 @@ final class PaymentList extends BaseControl
     /** @param array<int,int> $ids */
     public function requestPaymentInfoEmail(array $ids): void
     {
-        $this->onSendPaymentInfoRequested($ids);
+        $this->onSendPaymentInfoRequested($this->editablePaymentIds($ids));
     }
 
     /** @param array<int,int> $ids */
     public function openBulkEmailRecipientsDialog(array $ids): void
     {
-        $this->onBulkEmailRecipientsEditRequested($ids);
+        $this->onBulkEmailRecipientsEditRequested($this->editablePaymentIds($ids));
     }
 
-    /** @param array<int,int> $ids */
+    /**
+     * Reminders wait in the queue (PaymentEmailQueue), payments that cannot get one now are left out.
+     *
+     * @param array<int,int> $ids
+     */
     public function sendReminder(array $ids): void
     {
-        $count = 0;
-        try {
-            foreach ($ids as $id) {
-                try {
-                    $payment = $this->model->findPayment($id);
-                    if ($payment === null || ! $payment->canSendReminder()) {
-                        continue;
-                    }
+        $type = EmailType::get(EmailType::PAYMENT_REMINDER);
+        $dispatch = $this->emailQueue->send($this->groupId, $type, $this->editablePaymentIds($ids));
 
-                    $this->commandBus->handle(new SendPaymentReminder($id));
-                    ++$count;
-                } catch (OAuthNotSet) {
-                    $this->flashMessage(EmailButton::NO_MAILER_MESSAGE, 'warning');
-                } catch (InvalidBankAccount) {
-                    $this->flashMessage(EmailButton::NO_BANK_ACCOUNT_MESSAGE, 'warning');
-                } catch (InvalidOAuth $e) {
-                    $this->flashMessage($e->getExplainedMessage(), 'danger');
-                } catch (PaymentClosed $e) {
-                    $this->flashMessage($e->getMessage(), 'warning');
-                } catch (PaymentHasNoEmails $e) {
-                    $this->flashMessage($e->getMessage(), 'warning');
-                } catch (PaymentReminderNotAllowed $e) {
-                    $this->flashMessage($e->getMessage(), 'warning');
-                }
-            }
-
-            if ($count === 1) {
-                $this->getPresenter()->flashMessage($count.' upomínkový e-mailů odeslán', 'info');
-            } else {
-                $this->getPresenter()->flashMessage($count.' upomínkových e-mailů odesláno', 'info');
-            }
-        } catch (EmailTemplateNotSet) {
-            $this->flashMessage('Platební skupina nemá povolené upomínky', 'warning');
+        foreach (PaymentEmailMessages::forDispatch($dispatch, $type) as [$message, $flashType]) {
+            $this->getPresenter()->flashMessage($message, $flashType);
         }
 
         $this->finishMutation();
@@ -286,21 +261,12 @@ final class PaymentList extends BaseControl
     /** @param array<int,int> $ids */
     public function setPay(array $ids): void
     {
-        if (! $this->isEditable) {
-            $this->flashMessage('Nejste oprávněni k uzavření platby!', 'danger');
-            $this->finishMutation();
-
-            return;
-        }
-
-        foreach ($ids as $id) {
+        foreach ($this->editablePaymentIds($ids) as $id) {
             try {
                 $this->model->completePayment($id);
                 $this->flashMessage('Platba byla zaplacena.');
             } catch (PaymentClosed $e) {
                 $this->flashMessage($e->getMessage(), 'warning');
-            } catch (InvalidOAuth $exc) {
-                $this->flashMessage($exc->getExplainedMessage(), 'danger');
             }
         }
 
@@ -310,7 +276,7 @@ final class PaymentList extends BaseControl
     /** @param array<int,int> $ids */
     public function setCancel(array $ids): void
     {
-        foreach ($ids as $id) {
+        foreach ($this->editablePaymentIds($ids) as $id) {
             try {
                 $this->model->cancelPayment($id);
                 $this->flashMessage('Platba byla uzavřena');
@@ -322,6 +288,28 @@ final class PaymentList extends BaseControl
         }
 
         $this->finishMutation();
+    }
+
+    /**
+     * Payment IDs come from the request (row links and grid group actions), so only payments of this
+     * group are kept, and nothing happens without the right to edit the group.
+     *
+     * @param array<int|string, int|string> $ids
+     *
+     * @return list<int>
+     */
+    private function editablePaymentIds(array $ids): array
+    {
+        if (! $this->isEditable) {
+            throw new BadRequestException('Nemáte oprávnění upravovat platby této skupiny.', IResponse::S403_Forbidden);
+        }
+
+        $groupPaymentIds = array_map(
+            static fn (Payment $payment): int => $payment->getId(),
+            $this->payments ?? $this->queryBus->handle(new PaymentListQuery($this->groupId)),
+        );
+
+        return array_values(array_intersect(array_map('intval', $ids), $groupPaymentIds));
     }
 
     private function finishMutation(): void

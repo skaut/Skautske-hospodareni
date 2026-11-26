@@ -54,8 +54,7 @@ class BasePresenter extends \App\BaseSectionPresenter
                 'isEditable' => $this->isEditable,
             ]);
         } catch (CampNotFound) {
-            $this->template->setParameters(['message' => 'Nemáte oprávnění načíst tábor nebo tábor neexsituje.']);
-            $this->forward('Default:accessDenied');
+            $this->denyAccess('Nemáte oprávnění načíst tábor nebo tábor neexistuje.');
         }
     }
 

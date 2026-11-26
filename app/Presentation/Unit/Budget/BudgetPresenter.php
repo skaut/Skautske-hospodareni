@@ -85,8 +85,6 @@ class BudgetPresenter extends UnitBasePresenter
         $form->addText('year', 'Rok')
             ->addRule(Form::FILLED, 'Vyplňte rok');
 
-        $form->addHidden('oid', $this->unitId->toInt());
-
         $form->addSubmit('submit', 'Založit kategorii')
             ->setHtmlAttribute('class', 'btn btn-primary');
 
@@ -104,7 +102,8 @@ class BudgetPresenter extends UnitBasePresenter
         }
 
         $v = $form->values;
-        $this->budgetService->addCategory((int) $v->oid, $v->label, $v->type, $v->parentId === 0 ? null : $v->parentId, $v->value, (int) $v->year);
+        // The unit comes from the checked URL, never from the form, so a category cannot be added to a foreign unit.
+        $this->budgetService->addCategory($this->unitId->toInt(), $v->label, $v->type, $v->parentId === 0 ? null : $v->parentId, $v->value, (int) $v->year);
         $this->flashMessage('Kategorie byla přidána.', 'success');
         $this->redirect('default', ['unitId' => $this->unitId->toInt(), 'year' => (int) $v->year]);
     }

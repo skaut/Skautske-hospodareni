@@ -1,0 +1,21 @@
+{*
+ * Jak opravit propojení e-mailu, které Google odmítá (App\Model\DTO\Google\BrokenSenderAccount).
+ *
+ * Kdo účet může znovu propojit hned (aktivní role je v jednotce účtu a smí ji upravovat), dostane tlačítko,
+ * které rovnou otevře přihlášení k Googlu s nabídnutým účtem. Ostatní se dozví, kdo to musí udělat.
+ *
+ * Parametry: sender (BrokenSenderAccount), dataTest (prefix data-test).
+ *}
+{if $sender->canReconnect}
+    <div class="d-flex flex-wrap align-items-center gap-2">
+        <a n:href=":Settings:Google:oauth email => $sender->email" class="btn btn-sm btn-primary" data-test="{$dataTest}-reconnect">
+            <i class="fi fi-rr-envelope" aria-hidden="true"></i>
+            <span>Propojit účet znovu</span>
+        </a>
+        <span class="small">Přihlaste se účtem {$sender->email}.</span>
+    </div>
+{else}
+    <p class="mb-0" data-test="{$dataTest}-ask">
+        Propojit ho znovu musí někdo s oprávněním upravovat jednotku {$sender->unitName}. Dejte mu prosím vědět, nebo se do takové role přepněte, pokud ji máte.
+    </p>
+{/if}

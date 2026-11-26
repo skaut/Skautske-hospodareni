@@ -93,6 +93,13 @@ class Payment extends Aggregate
     #[ORM\OneToMany(targetEntity: SentEmail::class, mappedBy: 'payment', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $sentEmails;
 
+    /**
+     * When the automatic reminder was queued. It is set together with queuing, so the automatic
+     * reminder goes out exactly once; when it provably could not be sent, the mark is removed again.
+     */
+    #[ORM\Column(name: 'automatic_reminder_at', type: 'datetime_immutable', nullable: true)]
+    private ?DateTimeImmutable $automaticReminderAt = null;
+
     /** @param EmailAddress[] $recipients */
     public function __construct(
         Group $group,
@@ -369,6 +376,40 @@ class Payment extends Aggregate
         }
 
         return false;
+    }
+
+    public function hasSentReminder(): bool
+    {
+        foreach ($this->sentEmails as $sentEmail) {
+            if ($sentEmail->getType()->equalsValue(EmailType::PAYMENT_REMINDER)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getAutomaticReminderAt(): ?DateTimeImmutable
+    {
+        return $this->automaticReminderAt;
+    }
+
+    /**
+     * Whether the automatic reminder of the group is due: it goes out once, the given number of days
+     * after the due date, and only when no reminder was sent before, not even by hand.
+     */
+    public function isAutomaticReminderDue(int $daysAfterDueDate, ChronosDate $today): bool
+    {
+        return $this->automaticReminderAt === null
+            && ! $this->hasSentReminder()
+            && $this->getEmailRecipients() !== []
+            && $this->state->equalsValue(State::PREPARING)
+            && $this->dueDate->addDays($daysAfterDueDate)->lessThanOrEquals($today);
+    }
+
+    public function markAutomaticReminderQueued(DateTimeImmutable $time): void
+    {
+        $this->automaticReminderAt = $time;
     }
 
     public function canSendReminder(?DateTimeImmutable $today = null): bool

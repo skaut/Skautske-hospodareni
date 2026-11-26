@@ -42,13 +42,15 @@ final class GpcImportDialog extends Dialog
     public int $bankAccountId = -1;
 
     /**
-     * @param Closure(int): bool $canImportBankAccount
+     * @param Closure(int): bool    $canImportBankAccount
+     * @param Closure(): array<int> $editableGroupIds     groups the user may edit, the only ones paired after the import
      */
     public function __construct(
         private readonly BankAccountService $bankAccounts,
         private readonly BankService $bankService,
         private readonly UserService $userService,
         private readonly Closure $canImportBankAccount,
+        private readonly Closure $editableGroupIds,
     ) {
     }
 
@@ -145,7 +147,9 @@ final class GpcImportDialog extends Dialog
             );
 
             if ($values->pairPayments && $import->statementStart !== null) {
-                foreach (PairButtonFlashMessage::fromPairingResults($this->bankService->pairImportedStatement($bankAccountId, $import->statementStart)) as $message) {
+                $pairingResults = $this->bankService->pairImportedStatement($bankAccountId, $import->statementStart, ($this->editableGroupIds)());
+
+                foreach (PairButtonFlashMessage::fromPairingResults($pairingResults) as $message) {
                     $this->flashMessage($message->message, $message->type);
                 }
             }

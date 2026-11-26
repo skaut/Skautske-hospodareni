@@ -88,6 +88,7 @@ final class EnvironmentTest extends Unit
         self::assertTrue($configuration['skautis']['testMode']);
         self::assertNull($configuration['sentry']['dsn']);
         self::assertSame('dev', $configuration['sentry']['releaseHash']);
+        self::assertSame('hospodareni-dev-app-key', $configuration['appKey'], 'vývoj má vlastní klíč');
     }
 
     public function testProductionEnvironmentFlipsEmailAndTracyDefaults(): void
@@ -102,6 +103,7 @@ final class EnvironmentTest extends Unit
         self::assertSame('prod', $configuration['environmentMode']);
         self::assertFalse($configuration['tracyShowBar']);
         self::assertFalse($configuration['skautis']['testMode']);
+        self::assertNull($configuration['appKey'], 'nasazený server musí dostat vlastní klíč');
     }
 
     public function testEnvironmentSpecificFileOverridesBaseFile(): void
@@ -263,6 +265,7 @@ final class EnvironmentTest extends Unit
             'APP_BASE_URL',
             'APP_MAINTENANCE_BYPASS',
             'APP_RELEASE_HASH',
+            'APP_KEY',
             'APPLICATION_ID',
             'DB_HOST',
             'DB_USER',

@@ -30,6 +30,8 @@ class GroupFactory
             $group->isAutomaticPairingEnabled(),
             $group->getPairingDaysBack(),
             $group->getCreatedAt(),
+            $group->getReminderDaysAfterDue(),
+            $group->hasAutomaticRemindersEnabled(),
         );
     }
 }

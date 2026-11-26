@@ -7,7 +7,11 @@ namespace App\Components\Payment;
 use App\BasePresenter;
 use App\Model\Common\Services\CommandBus;
 use App\Model\DTO\Payment\Group;
+use App\Model\Invoice\Repository\InvoiceRepository;
 use App\Model\Payment\PaymentService;
+use App\Model\Payment\Repositories\IGroupRepository;
+use App\Model\Payment\Repositories\IPaymentRepository;
+use App\Model\Payment\Services\VariableSymbolCollisionChecker;
 use App\Model\Utils\MoneyFactory;
 use Cake\Chronos\ChronosDate;
 use Codeception\Test\Unit;
@@ -121,7 +125,13 @@ final class MassAddFormTest extends Unit
             ->with(self::GROUP_ID)
             ->andReturn($group);
 
-        $component = new MassAddForm(self::GROUP_ID, $payments, Mockery::mock(CommandBus::class));
+        $component = new MassAddForm(
+            self::GROUP_ID,
+            $payments,
+            Mockery::mock(CommandBus::class),
+            Mockery::mock(IGroupRepository::class),
+            new VariableSymbolCollisionChecker(Mockery::mock(IPaymentRepository::class), Mockery::mock(InvoiceRepository::class)),
+        );
         $request = new Request(new UrlScript('http://localhost/'));
         $response = new Response();
         $sessionSavePath = sys_get_temp_dir().'/hskauting-mass-add-form-test-sessions';

@@ -8,7 +8,7 @@ use App\Model\Help\Entity\PageHelp;
 use App\Model\Help\HelpSection;
 use App\Model\Help\Manager\PageHelpManager;
 use App\Model\Help\PageCatalog;
-use App\Model\PageView\ReadModel\Queries\PageViewSummaryQuery;
+use App\Model\Usage\ReadModel\Queries\PageSessionsQuery;
 use App\Presentation\Admin\AdminBasePresenter;
 use Component\Forms\BaseForm;
 use DateTimeImmutable;
@@ -37,7 +37,7 @@ final class HelpPresenter extends AdminBasePresenter
     private const SECTION_SLOTS = 5;
 
     /** Long enough to cover a whole season of the year, short enough to describe today. */
-    private const VIEW_WINDOW_DAYS = 90;
+    private const SESSION_WINDOW_DAYS = 90;
 
     private ?string $pageKey = null;
 
@@ -56,8 +56,8 @@ final class HelpPresenter extends AdminBasePresenter
         }
 
         $today = new DateTimeImmutable('today');
-        $pageViews = $this->queryBus->handle(
-            new PageViewSummaryQuery($today->modify('-'.self::VIEW_WINDOW_DAYS.' days'), $today),
+        $pageSessions = $this->queryBus->handle(
+            new PageSessionsQuery($today->modify('-'.self::SESSION_WINDOW_DAYS.' days'), $today),
         );
 
         $rows = [];
@@ -73,7 +73,7 @@ final class HelpPresenter extends AdminBasePresenter
                 'hasLead' => $help?->getLead() !== null,
                 'updatedAt' => $help?->getUpdatedAt(),
                 'updatedByName' => $help?->getUpdatedByName(),
-                'views' => $pageViews->getViews($pageKey),
+                'sessions' => $pageSessions->get($pageKey),
             ];
         }
 
@@ -81,16 +81,16 @@ final class HelpPresenter extends AdminBasePresenter
         // overview; the most used pages lead within each group, which is the order
         // in which writing the missing texts pays off.
         usort($rows, static function (array $a, array $b): int {
-            return [$b['sectionCount'] > 0, $b['views'], $a['pageKey']]
-                <=> [$a['sectionCount'] > 0, $a['views'], $b['pageKey']];
+            return [$b['sectionCount'] > 0, $b['sessions'], $a['pageKey']]
+                <=> [$a['sectionCount'] > 0, $a['sessions'], $b['pageKey']];
         });
 
         $this->template->setParameters([
             'rows' => $rows,
             'filledCount' => count($existing),
             'totalCount' => count($this->pageCatalog->getPages()),
-            'viewWindowDays' => self::VIEW_WINDOW_DAYS,
-            'viewsSince' => $pageViews->countedSince,
+            'sessionWindowDays' => self::SESSION_WINDOW_DAYS,
+            'sessionsSince' => $pageSessions->countedSince,
         ]);
     }
 

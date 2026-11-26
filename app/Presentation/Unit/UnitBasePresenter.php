@@ -38,7 +38,7 @@ class UnitBasePresenter extends BaseSectionPresenter
             return;
         }
 
-        $this->setView('accessDenied');
+        $this->denyAccess();
     }
 
     protected function beforeRender(): void

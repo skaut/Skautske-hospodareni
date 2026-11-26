@@ -69,6 +69,11 @@ abstract class DataSource implements IDataSource
             $callback = $filter->getConditionCallback();
 
             if ($callback !== null) {
+                // A filter nobody chose has no value; the data sources of the datagrid skip it as well.
+                if (! $filter->isValueSet()) {
+                    continue;
+                }
+
                 $callback($this, $filter->getValue());
                 continue;
             }

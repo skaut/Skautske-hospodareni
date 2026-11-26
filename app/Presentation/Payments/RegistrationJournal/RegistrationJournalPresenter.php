@@ -6,7 +6,6 @@ namespace App\Presentation\Payments\RegistrationJournal;
 
 use App\Model\Payment\PaymentService;
 use App\Presentation\Payments\PaymentsBasePresenter as BasePresenter;
-use RuntimeException;
 
 use function array_keys;
 
@@ -19,13 +18,12 @@ final class RegistrationJournalPresenter extends BasePresenter
 
     public function renderDefault(int $groupId): void
     {
-        if (! $this->isEditable) {
-            $this->setView('accessDenied');
+        $group = $this->model->getGroup($groupId);
 
-            return;
+        if ($group === null || ! $this->canEditGroup($group)) {
+            $this->denyAccess('Nemáte oprávnění pracovat s touto platební skupinou.');
         }
 
-        $group = $this->model->getGroup($groupId) ?? throw new RuntimeException('Platební skupina nebyla nalezena.');
         $year = $this->model->getRegistrationYear((int) $group->getSkautisId());
         if ($year === null) {
             $this->flashMessage('Registrace nebyla nalezena', 'danger');

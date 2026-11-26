@@ -74,6 +74,12 @@ class DataGrid extends \Contributte\Datagrid\Datagrid
      */
     public function getFilteredAndSortedData(): array
     {
+        // The grid may not be rendered yet (an export opens by a signal), so it loads the filters and the sort
+        // the user sees first, as the export of the datagrid itself does.
+        $this->findStorageValues();
+        $this->findDefaultFilter();
+        $this->findDefaultSort();
+
         $data = ($this->dataModel ?? throw new LogicException('Data source not set.'))->filterData(
             $this->getPaginator(),
             $this->createSorting($this->sort, $this->sortCallback),

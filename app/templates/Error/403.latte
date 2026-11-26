@@ -4,7 +4,7 @@
 <h1>403</h1>
 <h2>Přístup zamítnut</h2>
 
-<p class="mt-4">Nemáš oprávnění pro přístup k této stránce.</p>
+<p class="mt-4" data-test="error-403-reason">{$reason ?? 'Nemáte oprávnění k této stránce.'} Zkuste si změnit roli nebo zkontrolujte odkaz.</p>
 
 <a n:href=":Default:" class="btn btn-primary">Na hlavní stránku</a>
 <a n:href=":Auth:logoutSis" class="btn btn-link">Odhlásit se</a>

@@ -27,10 +27,7 @@ final class NewEventPresenter extends BasePresenter
         parent::startup();
 
         if (! $this->authorizator->isAllowed(EventResource::CREATE, null)) {
-            $this->setView('accessDenied');
-            $this->template->setParameters(['message' => 'Nemáte oprávnění založit novou akci.']);
-
-            return;
+            $this->denyAccess('Nemáte oprávnění založit novou akci.');
         }
     }
 

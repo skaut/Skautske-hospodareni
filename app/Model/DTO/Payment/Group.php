@@ -50,7 +50,20 @@ class Group
         private bool $automaticPairingEnabled = false,
         private ?int $pairingDaysBack = null,
         private ?DateTimeImmutable $createdAt = null,
+        private ?int $reminderDaysAfterDue = null,
+        private bool $automaticRemindersEnabled = false,
     ) {
+    }
+
+    public function getReminderDaysAfterDue(): ?int
+    {
+        return $this->reminderDaysAfterDue;
+    }
+
+    /** Switched on, with the days chosen and an active reminder template. */
+    public function hasAutomaticRemindersEnabled(): bool
+    {
+        return $this->automaticRemindersEnabled;
     }
 
     public function getId(): int

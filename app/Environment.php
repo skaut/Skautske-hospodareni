@@ -218,6 +218,9 @@ final class Environment
                 'applicationId' => self::requireString('APPLICATION_ID'),
                 'testMode' => self::getBool('SKAUTIS_TEST_MODE', $appEnv !== 'prod'),
             ],
+            // Secret key of the application, e.g. for the keyed hashes. Deployed servers get their own, see deploy.php.
+            'appKey' => self::getNullableString('APP_KEY')
+                ?? (in_array($appEnv, ['dev', 'test', 'ci'], true) ? 'hospodareni-'.$appEnv.'-app-key' : null),
             'sentry' => [
                 'dsn' => self::getNullableString('SENTRY_DSN'),
                 'releaseHash' => self::getString('APP_RELEASE_HASH', 'dev'),

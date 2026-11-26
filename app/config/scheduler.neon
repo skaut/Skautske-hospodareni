@@ -13,6 +13,9 @@ messenger:
 scheduler:
     jobs:
         paymentPairing: { cron: '0 */2 * * *', callback: [ @App\Model\Bank\BankService, pairAutomaticGroups ] }
+        paymentReminders: { cron: '0 6 * * *', callback: [ @App\Model\Payment\Mailing\AutomaticPaymentReminders, queueDue ] }
+        # Last: the queue uses only the time the jobs before it left in the 30 s of the request.
+        taskQueue: { cron: '* * * * *', callback: [ @App\Model\TaskQueue\TaskQueueProcessor, processDue ] }
 
 services:
     - App\Model\Cron\CronRunner(lockDir: %tempDir%/scheduler)

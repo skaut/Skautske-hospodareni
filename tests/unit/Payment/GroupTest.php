@@ -281,6 +281,32 @@ class GroupTest extends Unit
         $this->assertSame($oAuthId, $group->getOauthId());
     }
 
+    public function testAutomaticRemindersNeedTheChosenDaysAndActiveTemplate(): void
+    {
+        $group = $this->createGroup(oAuthId: OAuthId::generate());
+
+        $group->configureAutomaticReminders(true, null);
+        self::assertFalse($group->hasAutomaticRemindersEnabled());
+
+        $group->configureAutomaticReminders(true, 7);
+        self::assertFalse($group->hasAutomaticRemindersEnabled(), 'The reminder template is not active.');
+
+        $group->updateEmail(EmailType::get(EmailType::PAYMENT_REMINDER), new EmailTemplate('Upomínka', 'Zaplaťte prosím.'));
+        self::assertTrue($group->hasAutomaticRemindersEnabled());
+        self::assertTrue($group->sendsAutomaticReminders());
+        self::assertSame(7, $group->getReminderDaysAfterDue());
+
+        $group->close('Uzavřeno');
+        self::assertFalse($group->sendsAutomaticReminders(), 'A closed group sends no automatic reminders.');
+    }
+
+    public function testAutomaticReminderCannotGoOutOnTheDueDate(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->createGroup()->configureAutomaticReminders(true, 0);
+    }
+
     private function mockBankAccount(int $id): BankAccount
     {
         return m::mock(BankAccount::class, ['getId' => $id, 'getUnitId' => 50, 'isAllowedForSubunits' => true]);

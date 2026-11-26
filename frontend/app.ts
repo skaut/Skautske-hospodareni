@@ -14,6 +14,7 @@ import {initializeMassEmailSelection} from './ts/massEmailSelection';
 import {initializeMassAddStickyActions} from './ts/massAddStickyAction';
 import {initializePageEnhancements} from './ts/pageEnhancements';
 import {initializeSessionKeepAlive} from './ts/sessionKeepAlive';
+import {initializeThemeReport} from './ts/themeReport';
 import './app.scss';
 
 // Use czech language for dates
@@ -41,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeMassAddStickyActions();
     initializePageEnhancements();
     initializeSessionKeepAlive();
+    initializeThemeReport();
     initializeAppInstall();
     initializeDecimalInputs();
 });

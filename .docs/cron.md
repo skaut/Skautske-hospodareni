@@ -2,11 +2,15 @@
 
 Hosting aplikace neumí spouštět cron ani příkazy v konzoli. Pravidelné úlohy proto spouští adresa `/cron.php`, kterou volá externí server. Aplikace sama pozná, které úlohy jsou právě na řadě, a spustí jen ty.
 
+Jeden požadavek smí na hostingu běžet nejvýš 30 sekund. Dlouhou práci (např. rozeslání stovek e-mailů) proto úlohy jen zařadí do fronty v databázi a fronta ji zpracovává po částech každou minutu. Podrobnosti jsou ve [fronta-uloh.md](fronta-uloh.md).
+
 ## Které úlohy běží
 
 | Úloha | Kdy | Co dělá |
 | --- | --- | --- |
 | Párování plateb | každé 2 hodiny, vždy v celou sudou hodinu (0:00, 2:00, …) | Páruje transakce z účtů napojených na FIO s platbami v otevřených skupinách, které mají zapnutou volbu „Automaticky párovat úhrady v cronu“. |
+| Automatické upomínky plateb | denně v 6:00; **po nasazení je pozastavená**, zapíná ji administrátor v Admin → Cron | Zařadí do fronty upomínky nezaplacených plateb ve skupinách, které mají automatické upomínky zapnuté a nastavený počet dní po splatnosti. Každá platba dostane automatickou upomínku jen jednou, a jen když jí ještě žádná upomínka neodešla, ani ručně. |
+| Fronta úloh | každou minutu, jako poslední úloha | Zpracuje úlohy z fronty, dnes hlavně e-maily plateb. Nové úlohy bere jen do 20 s od začátku požadavku. |
 
 Podrobnosti párování:
 
@@ -14,7 +18,14 @@ Podrobnosti párování:
 - Účty s importem výpisů (GPC) cron vynechává. Výpis se po importu nemění, a tak by další průchod nic nového nenašel. Ve formuláři skupiny s účtem GPC proto automatické párování zapnout nejde. Platby se párují ručně, nebo hned po importu, když v dialogu importu zaškrtnete „Po importu spárovat platby“. Párují se pak všechny otevřené skupiny s tímto účtem podle transakcí od prvního dne nahraného výpisu.
 - Skupiny, kterým už nezbývá žádná nezaplacená platba, se přeskočí. Když nezbývá nic na celém účtu, banka se vůbec nevolá.
 - Když se nepodaří načíst transakce jednoho účtu (např. kvůli neplatnému tokenu FIO nebo výpadku banky), ostatní účty se spárují normálně a chyba se zapíše do logu.
-- E-mail „platba přijata“ se odešle i z cronu, za odesílatele se do něj doplní „AUTOMAT“.
+- E-mail „platba přijata“ se po spárování zařadí do fronty a odejde s ní. Za odesílatele se do něj doplní „AUTOMAT“.
+
+Podrobnosti automatických upomínek:
+
+- Nastavují se ve formuláři skupiny u „E-mail upomínka platby“: šablona musí být aktivní, zapnutá volba „Automaticky odeslat upomínku po splatnosti“ a vyplněný „Počet dní po splatnosti“. Skupina musí mít e-mail odesílatele a být otevřená.
+- Upomínka odejde v den, kdy od splatnosti uplyne nastavený počet dní. Platby, které jsou po splatnosti už déle, ji dostanou při nejbližším běhu.
+- Když upomínka prokazatelně neodejde (např. platba nemá e-mail, Google účet odesílatele je potřeba znovu propojit), zkusí se to při dalším běhu znovu.
+- Skupiny se starou volbou bez vyplněného počtu dní upomínky automaticky neposílají, dokud počet dní někdo nevyplní.
 
 Úloha se přidává do `app/config/scheduler.neon` (co se má spustit a výchozí interval). Název a popis pro lidi jí doplňte v `CronJobRegistry`. Uživatelům úlohy ukazuje stránka Nastavení → Automatizace.
 
@@ -23,11 +34,14 @@ Podrobnosti párování:
 Administrátor vidí úlohy v Admin → Cron (`/admin/cron`):
 
 - kdy úloha poběží příště a kdy a s jakým výsledkem proběhla naposledy, včetně textu chyby,
+- využití: kolik otevřených skupin automatické párování a automatické upomínky používají a kolik úloh čeká ve frontě (uzavřené skupiny se nepočítají),
 - upozornění, když plánované spuštění neproběhlo, typicky proto, že externí server přestal volat `/cron.php`,
 - **Pozastavit / Obnovit**: pozastavená úloha se nespouští, dokud ji někdo neobnoví,
 - **Změnit interval**: výběr z pevných intervalů (od 15 minut po jednou denně). Volba výchozího intervalu vrátí úlohu k nastavení ze `scheduler.neon`.
 
 Změny se ukládají do tabulky `cron_job` a projeví se při nejbližším volání cronu, bez nasazení.
+
+Stav fronty a statistika jejích posledních běhů je v Admin → Fronta úloh (`/admin/fronta`).
 
 ## Nastavení
 
